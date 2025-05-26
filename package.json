@@ -1,0 +1,70 @@
+{
+	"name": "@goobits/forms",
+	"version": "1.0.0",
+	"description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
+	"type": "module",
+	"main": "index.js",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "echo 'No tests configured'"
+	},
+	"exports": {
+		".": "./index.js",
+		"./ui": "./ui/index.js",
+		"./config": "./config/index.js",
+		"./validation": "./validation/index.js",
+		"./services": "./services/index.js",
+		"./handlers": "./handlers/index.js",
+		"./utils": "./utils/index.js"
+	},
+	"files": [
+		"index.js",
+		"ui",
+		"config",
+		"validation",
+		"services",
+		"utils",
+		"handlers",
+		"templates",
+		"README.md",
+		"LICENSE",
+		"CHANGELOG.md"
+	],
+	"dependencies": {
+		"@lucide/svelte": "^0.511.0",
+		"@sveltejs/kit": "^2.21.1",
+		"formsnap": "^2.0.1",
+		"svelte": "^5.32.1",
+		"sveltekit-superforms": "^2.25.0",
+		"zod": "^3.25.20"
+	},
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"forms",
+		"form",
+		"contact-form",
+		"validation",
+		"recaptcha",
+		"i18n",
+		"internationalization",
+		"form-builder",
+		"form-components"
+	],
+	"license": "MIT",
+	"author": "GooBits",
+	"homepage": "https://github.com/goobits/forms#readme",
+	"bugs": {
+		"url": "https://github.com/goobits/forms/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=9.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/goobits/forms.git"
+	}
+}

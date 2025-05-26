@@ -1,0 +1,203 @@
+// Variables
+@use "sass:color";
+
+$amber-50: #fffbeb;
+$amber-100: #fef3c7;
+$amber-200: #fde68a;
+$amber-300: #fcd34d;
+$amber-400: #fbbf24;
+$amber-500: #f59e0b;
+$amber-600: #d97706;
+$amber-700: #b45309;
+$amber-800: #92400e;
+$amber-900: #78350f;
+
+$green-50: #f0fdf4;
+$green-100: #dcfce7;
+$green-200: #bbf7d0;
+$green-500: #22c55e;
+$green-600: #16a34a;
+$green-700: #15803d;
+
+$blue-100: #dbeafe;
+$blue-200: #bfdbfe;
+$blue-500: #3b82f6;
+$blue-600: #2563eb;
+$blue-700: #1d4ed8;
+
+$purple-100: #f3e8ff;
+$purple-200: #e9d5ff;
+$purple-300: #d8b4fe;
+$purple-700: #7e22ce;
+
+$red-500: #ef4444; // Added for badges/notifications
+// Grays & White
+$white: #ffffff;
+$gray-100: #f3f4f6; // Added for light backgrounds
+$gray-200: #e5e7eb; // Existing, good for borders
+$gray-500: #6b7280; // Added for secondary text
+$gray-600: #4b5563; // Added for regular body text
+$gray-700: #374151; // Added for strong body text
+$gray-800: #1f2937; // Added for primary text
+$black: #000000;
+
+// --- Semantic Colors ---
+$color-primary: $amber-600;
+$color-primary-dark: $amber-800;
+$color-primary-light: $amber-500; // Add this for lighter variant
+$color-accent: $green-600;
+$color-accent-dark: color.adjust($green-600, $lightness: -10%);
+$color-secondary: $purple-700; // Example, adjust as needed
+$color-secondary-light: color.adjust($purple-700, $lightness: 30%);
+$color-info: $blue-600;
+$color-success: $green-600; // For success messages/notifications
+$color-danger: $red-500; // For errors/danger states
+$color-danger-light: color.adjust($red-500, $lightness: 30%); // Lighter version for error backgrounds
+$color-border-light: color.adjust($gray-200, $lightness: 5%);
+
+$color-text-primary: $gray-800;
+$color-text-secondary: $gray-500;
+$color-text-light: $white;
+
+$color-background-light: $white;
+$color-background-alt: $gray-100;
+$color-border: $gray-200;
+
+// --- Spacing ---
+$spacing-xsmall: 0.25rem; // 4px
+$spacing-small: 0.5rem;   // 8px
+$spacing-medium: 1rem;    // 16px
+$spacing-large: 1.5rem;  // 24px
+$spacing-xlarge: 2.5rem; // 40px
+$spacing-xxlarge: 4rem;   // 64px
+
+// --- Typography ---
+$font-family-base: 'Arial', sans-serif; // Replace with your actual font stack
+$font-family-heading: 'Georgia', serif; // Example heading font
+
+$font-size-small: 0.875rem; // 14px
+$font-size-base: 1rem;      // 16px
+$font-size-medium: 1.125rem; // 18px
+$font-size-large: 1.25rem;  // 20px
+$font-size-xlarge: 1.5rem;  // 24px
+$font-size-h3: 1.5rem;    // 24px
+$font-size-h2: 1.875rem; // 30px
+$font-size-h1: 2.25rem;  // 36px
+
+// Font weights
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// --- Borders ---
+$border-radius-small: 4px;
+$border-radius-medium: 8px;
+$border-radius-large: 16px;
+$border-radius-full: 9999px; // For fully rounded elements
+
+// --- Transitions ---
+$transition-base: all 0.3s ease;
+
+// --- CSS Variables ---
+:root {
+    /* Brand colors - honey themed */
+    --amber-50: #{$amber-50};
+    --amber-100: #{$amber-100};
+    --amber-200: #{$amber-200};
+    --amber-300: #{$amber-300};
+    --amber-400: #{$amber-400};
+    --amber-500: #{$amber-500};
+    --amber-600: #{$amber-600};
+    --amber-700: #{$amber-700};
+    --amber-800: #{$amber-800};
+    --amber-900: #{$amber-900};
+
+    /* Secondary accents - green for nature/sustainability */
+    --green-50: #{$green-50};
+    --green-100: #{$green-100};
+    --green-200: #{$green-200};
+    --green-500: #{$green-500};
+    --green-600: #{$green-600};
+    --green-700: #{$green-700};
+
+    /* Accent colors */
+    --blue-100: #{$blue-100};
+    --blue-200: #{$blue-200};
+    --blue-500: #{$blue-500};
+    --blue-600: #{$blue-600};
+    --blue-700: #{$blue-700};
+
+    /* Purple colors */
+    --purple-100: #{$purple-100};
+    --purple-200: #{$purple-200};
+    --purple-300: #{$purple-300};
+    --purple-700: #{$purple-700};
+
+    /* Red color */
+    --red-500: #{$red-500};
+
+    /* Gray scale */
+    --white: #{$white};
+    --black: #{$black};
+    --gray-100: #{$gray-100};
+    --gray-200: #{$gray-200};
+    --gray-500: #{$gray-500};
+    --gray-600: #{$gray-600};
+    --gray-700: #{$gray-700};
+    --gray-800: #{$gray-800};
+    --gray-900: #{$gray-800}; /* Use gray-800 for both */
+    
+    /* Semantic colors */
+    --color-primary: #{$color-primary};
+    --color-primary-dark: #{$color-primary-dark};
+    --color-primary-light: #{$color-primary-light};
+    --color-accent: #{$color-accent};
+    --color-accent-dark: #{$color-accent-dark};
+    --color-secondary: #{$color-secondary};
+    --color-secondary-light: #{$color-secondary-light};
+    --color-info: #{$color-info};
+    --color-success: #{$color-success};
+    --color-danger: #{$color-danger};
+    --color-danger-light: #{$color-danger-light};
+    --color-border-light: #{$color-border-light};
+    --color-text-primary: #{$color-text-primary};
+    --color-text-secondary: #{$color-text-secondary};
+    --color-text-light: #{$color-text-light};
+    --color-background-light: #{$color-background-light};
+    --color-background-alt: #{$color-background-alt};
+    --color-border: #{$color-border};
+    
+    /* Spacing */
+    --spacing-xsmall: #{$spacing-xsmall};
+    --spacing-small: #{$spacing-small};
+    --spacing-medium: #{$spacing-medium};
+    --spacing-large: #{$spacing-large};
+    --spacing-xlarge: #{$spacing-xlarge};
+    --spacing-xxlarge: #{$spacing-xxlarge};
+    
+    /* Typography */
+    --font-family-base: #{$font-family-base};
+    --font-family-heading: #{$font-family-heading};
+    --font-size-small: #{$font-size-small};
+    --font-size-base: #{$font-size-base};
+    --font-size-medium: #{$font-size-medium};
+    --font-size-large: #{$font-size-large};
+    --font-size-xlarge: #{$font-size-xlarge};
+    --font-size-h3: #{$font-size-h3};
+    --font-size-h2: #{$font-size-h2};
+    --font-size-h1: #{$font-size-h1};
+    --font-weight-normal: #{$font-weight-normal};
+    --font-weight-medium: #{$font-weight-medium};
+    --font-weight-semibold: #{$font-weight-semibold};
+    --font-weight-bold: #{$font-weight-bold};
+    
+    /* Borders */
+    --border-radius-small: #{$border-radius-small};
+    --border-radius-medium: #{$border-radius-medium};
+    --border-radius-large: #{$border-radius-large};
+    --border-radius-full: #{$border-radius-full};
+    
+    /* Transitions */
+    --transition-base: #{$transition-base};
+}
