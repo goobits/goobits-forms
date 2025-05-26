@@ -4,7 +4,10 @@
 
 import { z } from 'zod'
 import { defaultConfig } from './defaults.js'
+import { createLogger } from '../utils/logger.js'
 export { defaultMessages } from './defaultMessages.js'
+
+const logger = createLogger('Config')
 
 // Configuration state
 let currentConfig = null
@@ -57,7 +60,7 @@ export function initContactFormConfig(userConfig = {}) {
  */
 export function getContactFormConfig() {
 	if (!currentConfig) {
-		console.warn('@goobits/contactform: Config not initialized, using defaults. Call initContactFormConfig() at app startup.')
+		logger.warn('Config not initialized, using defaults. Call initContactFormConfig() at app startup.')
 		currentConfig = { ...defaultConfig }
 		currentConfig.schemas = buildValidationSchemas(currentConfig)
 		currentConfig.categoryToFieldMap = buildCategoryFieldMap(currentConfig)

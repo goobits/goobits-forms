@@ -3,6 +3,10 @@
  * Prevents prototype pollution and property traversal attacks
  */
 
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('SecureDeepMerge')
+
 /**
  * Checks if a key is safe to use in object merging/access
  * Prevents __proto__, constructor, and other dangerous property names
@@ -38,7 +42,7 @@ export function secureDeepMerge(target, source) {
 		Object.keys(source).forEach(key => {
 			// Skip potentially dangerous keys
 			if (!isSafeKey(key)) {
-				console.warn(`[secureDeepMerge] Skipping potentially unsafe key: ${ key }`)
+				logger.warn(`Skipping potentially unsafe key: ${ key }`)
 				return
 			}
 

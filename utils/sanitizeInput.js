@@ -2,9 +2,13 @@
  * Utilities for sanitizing user input to prevent XSS attacks
  */
 
+import { createLogger } from './logger.js'
+
+const logger = createLogger('SanitizeInput')
+
 // Local error handling implementation
 function handleError(moduleName, error) {
-	console.error(`[${ moduleName }] Error:`, error)
+	logger.error(`Error:`, error)
 	return error
 }
 
