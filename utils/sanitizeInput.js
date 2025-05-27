@@ -8,7 +8,7 @@ const logger = createLogger('SanitizeInput')
 
 // Local error handling implementation
 function handleError(moduleName, error) {
-	logger.error(`Error:`, error)
+	logger.error('Error:', error)
 	return error
 }
 
