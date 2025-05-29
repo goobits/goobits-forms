@@ -164,8 +164,8 @@
 				onclick={() => fileInput.click()}
 				aria-label="Add image"
 			>
-				<ImagePlus size={32} />
-				<span>Add image</span>
+				<ImagePlus size={36} />
+				<span class="upload-text" style="padding: 0 12px; font-weight: 500;">Add image</span>
 			</button>
 		{/if}
 	</div>

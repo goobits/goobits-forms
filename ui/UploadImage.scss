@@ -21,8 +21,8 @@
 
 	&__preview {
 		position: relative;
-		width: var(--spacing-xlarge, 5rem);
-		height: var(--spacing-xlarge, 5rem);
+		width: var(--spacing-xxlarge, 6rem);
+		height: var(--spacing-xxlarge, 6rem);
 		border-radius: var(--border-radius-medium, 8px);
 		overflow: hidden;
 		border: 1px solid var(--gray-200, #e5e7eb);
@@ -64,12 +64,13 @@
 	}
 
 	&__add-btn {
-		width: var(--spacing-xlarge, 5rem);
-		height: var(--spacing-xlarge, 5rem);
-		border: 2px dashed var(--gray-200, #e5e7eb);
+		width: var(--spacing-xxlarge, 6rem);
+		height: var(--spacing-xxlarge, 6rem);
+		padding: var(--spacing-small, 0.5rem);
+		border: 2px dashed var(--color-primary-light, #f59e0b);
 		border-radius: var(--border-radius-medium, 8px);
-		background: none;
-		color: var(--gray-500, #6b7280);
+		background: rgba(247, 212, 147, 0.1);
+		color: var(--color-primary, #d97706);
 		cursor: pointer;
 		display: flex;
 		flex-direction: column;
@@ -79,13 +80,17 @@
 		transition: var(--transition-base, all 0.2s ease);
 
 		span {
-			font-size: var(--font-size-small, 0.75rem);
+			font-size: var(--font-size-base, 0.9rem);
+			font-weight: var(--font-weight-medium, 500);
+			letter-spacing: 0.02em;
+			margin-top: 0;
 		}
 
 		&:hover {
-			border-color: var(--color-info, #3b82f6);
-			color: var(--color-info, #3b82f6);
-			background: rgba(59, 130, 246, 0.05);
+			border-color: var(--color-primary-dark, #b45309);
+			color: var(--color-primary-dark, #b45309);
+			background: rgba(247, 212, 147, 0.2);
+			transform: scale(1.02);
 		}
 	}
 
@@ -104,5 +109,11 @@
 
 	&__input {
 		display: none;
+	}
+	
+	.upload-text {
+		padding: 0 12px !important;
+		font-weight: 500 !important;
+		display: inline-block !important;
 	}
 }
