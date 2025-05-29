@@ -53,7 +53,7 @@ export class AwsSesProvider extends EmailProvider {
 			})
 			
 			// Create Nodemailer SES transporter
-			this.transporter = nodemailer.createTransporter({
+			this.transporter = nodemailer.createTransport({
 				SES: { ses, aws }
 			})
 			

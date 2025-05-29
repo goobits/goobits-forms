@@ -466,7 +466,7 @@
 		</div>
 	{/if}
 
-	<form class="contact-form" method="POST" use:enhance enctype="multipart/form-data">
+	<form class="contact-form" method="POST" use:enhance enctype="multipart/form-data" data-redirect="true">
 		{#if $errors}
 			<FormErrors errors={$errors} title={getMessage('formErrorsTitle', 'Please check the form for errors')} {messages} />
 		{/if}
