@@ -1,11 +1,12 @@
 /**
- * Configuration management for @goobits/contactform
+ * Configuration management for @goobits/forms
  */
 
 import { z } from 'zod'
 import { defaultConfig } from './defaults.js'
 import { createLogger } from '../utils/logger.js'
 export { defaultMessages } from './defaultMessages.js'
+export { initContactFormConfig as initFormConfig, getValidatorForCategory } from './contactSchemas.js'
 
 const logger = createLogger('Config')
 
