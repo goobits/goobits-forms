@@ -12,7 +12,12 @@ const logger = createLogger('Config')
 // Configuration state
 let currentConfig = null
 
-// Deep merge utility
+/**
+ * Deep merge utility to combine configuration objects
+ * @param {Object} target - The target object to merge into
+ * @param {Object} source - The source object to merge from
+ * @returns {Object} A new object with properties from both target and source
+ */
 function deepMerge(target, source) {
 	const output = { ...target }
 
@@ -33,6 +38,11 @@ function deepMerge(target, source) {
 	return output
 }
 
+/**
+ * Check if a value is a plain object (not an array or null)
+ * @param {*} item - The value to check
+ * @returns {boolean} True if the value is a plain object
+ */
 function isObject(item) {
 	return item && typeof item === 'object' && !Array.isArray(item)
 }
@@ -50,6 +60,121 @@ export function initContactFormConfig(userConfig = {}) {
 
 	// Build field mappings
 	currentConfig.categoryToFieldMap = buildCategoryFieldMap(currentConfig)
+
+	/**
+	 * Parse and validate form data for a specific category
+	 * @param {FormData} formData - The form data to parse
+	 * @param {string} category - The form category to validate against
+	 * @returns {Promise<Object>} Object containing validated data and any errors
+	 */
+	currentConfig.formDataParser = async (formData, category) => {
+		try {
+			// Use the appropriate schema for the given category
+			const schema = currentConfig.schemas.categories[category] || currentConfig.schemas.categories.general
+			
+			// Convert FormData to a plain object
+			const formDataObj = {}
+			for (const [key, value] of formData.entries()) {
+				// Skip the CSRF token and other special fields
+				if (key === 'csrf') continue
+				
+				formDataObj[key] = value
+			}
+			
+			// Parse file attachments if present
+			if (formData.getAll('attachments[]')?.length) {
+				// Store the file objects but don't create URL objects on the server
+				// The client-side will handle preview generation
+				formDataObj.attachments = formData.getAll('attachments[]').map(file => ({
+					file,
+					name: file.name,
+					type: file.type,
+					size: file.size
+				}))
+			}
+			
+			// Validate the data against the schema
+			const result = schema.safeParse(formDataObj)
+			
+			if (result.success) {
+				return { data: result.data, errors: {} }
+			} else {
+				// Format zod errors into a more usable structure
+				const errors = {}
+				for (const issue of result.error.issues) {
+					const path = issue.path.join('.')
+					errors[path] = issue.message
+				}
+				return { data: formDataObj, errors }
+			}
+		} catch (error) {
+			logger.error('Form data parsing error:', error)
+			return { data: {}, errors: { _form: 'An error occurred while processing the form data.' } }
+		}
+	}
+
+	/**
+	 * Create a handler for form submissions with appropriate processing
+	 * @param {Object} options - Handler options
+	 * @param {Object} options.locals - SvelteKit locals object with services
+	 * @returns {Promise<Function>} A submission handler function
+	 */
+	currentConfig.createSubmissionHandler = async ({ locals }) => {
+		// Default email subject and recipient based on config
+		const defaultRecipient = currentConfig.defaultRecipient || 'contact@example.com'
+		const defaultSubject = currentConfig.defaultSubject || 'New Contact Form Submission'
+		
+		/**
+		 * Submission handler function
+		 * @param {Object} data - The validated form data
+		 * @param {string} category - The form category
+		 * @returns {Promise<Object>} Result of the submission
+		 */
+		return async (data, category) => {
+			try {
+				// Get category specific configuration
+				const categoryConfig = currentConfig.categories[category] || {}
+				
+				// Determine email recipient and subject based on category
+				const recipient = categoryConfig.recipient || defaultRecipient
+				const subject = categoryConfig.subject || `${defaultSubject}: ${categoryConfig.label || category}`
+				
+				// Process the submission - this is a simple implementation
+				// In a real implementation, you would send an email or store in database
+				logger.info('Form submission handler', { category, recipient, subject })
+				
+				// Use email service if available in locals
+				if (locals && locals.emailService) {
+					await locals.emailService.sendEmail({
+						to: recipient,
+						subject,
+						data: {
+							formData: data,
+							category,
+							timestamp: new Date().toISOString()
+						},
+						template: 'contact-form'
+					})
+				} else {
+					// Log submission if no email service is available
+					logger.info('Form submission data (no email service available)', { 
+						data, 
+						category,
+						recipient,
+						subject
+					})
+				}
+				
+				return {
+					success: true,
+					message: 'Form submitted successfully'
+				}
+			} catch (error) {
+				logger.error('Error in submission handler:', error)
+				throw new Error('Failed to process form submission')
+			}
+		}
+	}
 
 	return currentConfig
 }
@@ -116,7 +241,10 @@ function buildValidationSchemas(config) {
 		file: z.instanceof(File)
 			.refine(file => file.size <= fileSettings.maxFileSize, errorMessages.fileSize)
 			.refine(file => fileSettings.acceptedImageTypes.includes(file.type), errorMessages.fileType),
-		preview: z.string()
+		name: z.string().optional(),
+		type: z.string().optional(),
+		size: z.number().optional(),
+		preview: z.string().optional()
 	})).max(3, errorMessages.maxFiles).optional()
 
 	// Build category schemas
