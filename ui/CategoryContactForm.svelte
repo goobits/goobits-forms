@@ -25,7 +25,12 @@
 	const _submittingButtonText = submittingButtonText || ui.submittingButtonText || 'Sending...'
 	
 	// Generate CSRF token for form security
-	const csrfToken = generateCsrfToken()
+	let csrfToken = ''
+	$: {
+		generateCsrfToken().then(token => {
+			csrfToken = token
+		})
+	}
 	
 	// Track form submission state
 	let isSubmitting = false

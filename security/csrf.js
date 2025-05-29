@@ -5,18 +5,39 @@
  * Uses an in-memory token store with automatic cleanup.
  */
 
-import crypto from 'crypto'
+// Check if we're in a browser or server environment
+const isBrowser = typeof window !== 'undefined'
 
 // Simple in-memory token store (in production, use Redis or database)
-const tokenStore = new Map()
+const tokenStore = isBrowser ? new Map() : new Map()
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
 /**
- * Generate a CSRF token
- * @returns {string} CSRF token
+ * Generate a secure random token
+ * @returns {Promise<string>} A secure random token
  */
-export function generateCsrfToken() {
-	const token = crypto.randomBytes(32).toString('base64url')
+async function generateSecureToken() {
+	if (isBrowser) {
+		// Browser implementation using Web Crypto API
+		const array = new Uint8Array(32)
+		window.crypto.getRandomValues(array)
+		return btoa(String.fromCharCode.apply(null, array))
+			.replace(/\+/g, '-')
+			.replace(/\//g, '_')
+			.replace(/=/g, '')
+	} else {
+		// Server implementation using Node.js crypto module
+		const crypto = await import('crypto')
+		return crypto.randomBytes(32).toString('base64url')
+	}
+}
+
+/**
+ * Generate a CSRF token
+ * @returns {Promise<string>} CSRF token
+ */
+export async function generateCsrfToken() {
+	const token = await generateSecureToken()
 	const expires = Date.now() + TOKEN_EXPIRY_MS
 
 	tokenStore.set(token, expires)

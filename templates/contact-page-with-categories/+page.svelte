@@ -24,7 +24,12 @@
 	const category = contactConfig.categories?.[categorySlug] || contactConfig.categories?.general || { label: 'Contact Us' }
 	
 	// Generate CSRF token for form security
-	const csrfToken = generateCsrfToken()
+	let csrfToken = ''
+	$: {
+		generateCsrfToken().then(token => {
+			csrfToken = token
+		})
+	}
 	
 	// Handle form submission - the CategoryContactForm component will handle this
 	function handleFormSubmit(event) {
