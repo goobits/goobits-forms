@@ -17,6 +17,7 @@
 		"./validation": "./validation/index.js",
 		"./services": "./services/index.js",
 		"./handlers": "./handlers/index.js",
+		"./handlers/contactFormHandler": "./handlers/contactFormHandler.js",
 		"./utils": "./utils/index.js"
 	},
 	"files": [
@@ -40,6 +41,18 @@
 		"sveltekit-superforms": "^2.25.0",
 		"zod": "^3.25.20"
 	},
+	"peerDependencies": {
+		"nodemailer": "^6.9.0",
+		"@aws-sdk/client-ses": "^3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"nodemailer": {
+			"optional": true
+		},
+		"@aws-sdk/client-ses": {
+			"optional": true
+		}
+	},
 	"keywords": [
 		"svelte",
 		"sveltekit",
@@ -51,7 +64,9 @@
 		"i18n",
 		"internationalization",
 		"form-builder",
-		"form-components"
+		"form-components",
+		"email-service",
+		"rate-limiting"
 	],
 	"license": "MIT",
 	"author": "GooBits",

@@ -8,6 +8,9 @@ import { zod } from 'sveltekit-superforms/adapters'
 import { getContactFormConfig } from '../config/index.js'
 import { getValidatorForCategory } from '../validation/index.js'
 
+// Export simplified contact form handler
+export * from './contactFormHandler.js'
+
 /**
  * Create a page load handler for the contact form
  * @param {Object} options - Handler options
