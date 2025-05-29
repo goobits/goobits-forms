@@ -6,10 +6,14 @@
 
 export async function getAwsDependencies() {
   try {
-    const aws = await import('@aws-sdk/client-ses')
-    const nodemailer = await import('nodemailer')
+    // Import the AWS SDK v3 and nodemailer
+    const { SES } = await import('@aws-sdk/client-ses');
+    const nodemailerModule = await import('nodemailer');
     
-    return { aws, nodemailer }
+    return { 
+      aws: { SES },
+      nodemailer: nodemailerModule.default || nodemailerModule
+    };
   } catch (error) {
     console.error('Failed to import AWS dependencies:', error)
     throw new Error(
@@ -20,7 +24,7 @@ export async function getAwsDependencies() {
 
 // Default exports for easier dynamic importing
 export const aws = { SES: null }
-export const nodemailer = { createTransporter: null }
+export const nodemailer = { createTransport: null }
 
 // Initialize async
 getAwsDependencies().then(deps => {

@@ -152,7 +152,15 @@
 
 				return await submitContactForm(formDataToSubmit, apiEndpoint)
 			},
-			onSuccess: () => {
+			onSuccess: (response) => {
+				// Check if the server returned a redirect URL
+				if (response && response.redirectUrl) {
+					// Navigate to the redirect URL
+					window.location.href = response.redirectUrl;
+					return;
+				}
+				
+				// If no redirect URL, show the thank you message in place
 				showThankYou = true
 				window.scrollTo(0, 0)
 
@@ -458,7 +466,7 @@
 		</div>
 	{/if}
 
-	<form class="contact-form" method="POST" use:enhance enctype="multipart/form-data">
+	<form class="contact-form" method="POST" use:enhance enctype="multipart/form-data" data-redirect="true">
 		{#if $errors}
 			<FormErrors errors={$errors} title={getMessage('formErrorsTitle', 'Please check the form for errors')} {messages} />
 		{/if}

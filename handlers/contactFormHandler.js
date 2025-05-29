@@ -178,7 +178,7 @@ IP Address: ${ clientAddress }</small></p>
 				`.trim()
 
 				// Send email to admin/site owner
-				await sendEmail(
+				const emailResult = await sendEmail(
 					adminEmail || 'admin@example.com',
 					subject,
 					bodyHtml,
@@ -189,9 +189,25 @@ IP Address: ${ clientAddress }</small></p>
 					}
 				)
 
-				logger.info('Contact form email sent successfully')
+				if (emailResult && emailResult.success) {
+					logger.info('Contact form email sent successfully')
+				} else {
+					logger.warn('Contact form email may not have been sent properly', {
+						success: emailResult?.success || false,
+						message: emailResult?.message || 'Unknown error',
+						details: emailResult?.details || {}
+					})
+				}
 			} catch (emailError) {
-				logger.error('Failed to send contact form email:', emailError)
+				logger.error('Failed to send contact form email:', {
+					error: emailError.message,
+					stack: emailError.stack,
+					code: emailError.code,
+					details: emailError.details || {},
+					adminEmail,
+					fromEmail,
+					provider: emailServiceConfig?.provider || 'unknown'
+				})
 				// Don't fail the API response if email fails
 			}
 
