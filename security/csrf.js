@@ -42,8 +42,10 @@ export async function generateCsrfToken() {
 
 	tokenStore.set(token, expires)
 
-	// Clean up expired tokens periodically
-	if (Math.random() < 0.1) { // 10% chance
+	// Clean up expired tokens periodically using crypto-secure random
+	const randomBytes = new Uint8Array(1)
+	crypto.getRandomValues(randomBytes)
+	if (randomBytes[0] < 25) { // ~10% chance (25/256)
 		cleanupExpiredTokens()
 	}
 
