@@ -1,8 +1,8 @@
 <script lang="ts">
   import { ChevronDown, type Icon } from '@lucide/svelte';
   import { onMount } from 'svelte';
-  import Menu from './menu/Menu.svelte';
-  import type { MenuItem } from './menu/types';
+  import Menu from '$lib/components/ui/menu/Menu.svelte';
+  import type { MenuItem } from '$lib/components/ui/menu/types';
   import { cn } from '$lib/utils/cn';
 
   interface SelectOption {
