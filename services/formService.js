@@ -7,7 +7,7 @@
 
 // External Imports
 import { superForm } from 'sveltekit-superforms'
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 } from 'sveltekit-superforms/adapters'
 
 // Import logger utility
 import { createLogger } from '../utils/logger.js'
@@ -35,24 +35,36 @@ import * as screenReaderService from './screenReaderService.js'
 export function initializeForm({ initialData, schema, onSubmitHandler, extraOptions = {} }) {
 	// Validate schema before passing to zod adapter
 	if (!schema || typeof schema !== 'object' || !schema._def) {
-		throw new Error('Invalid schema provided to initializeForm. Schema must be a valid Zod schema object.');
+		const errorMsg = `Invalid schema provided to initializeForm. Schema details: type=${typeof schema}, hasDefProperty=${!!schema?._def}, schema=${JSON.stringify(schema, null, 2)}`;
+		logger.error(errorMsg);
+		throw new Error(errorMsg);
 	}
 
-	logger.debug('Initializing form with schema', { schemaType: typeof schema, hasDefProperty: !!schema._def });
+	logger.debug('Initializing form with schema', { 
+		schemaType: typeof schema, 
+		hasDefProperty: !!schema._def,
+		schemaKeys: schema ? Object.keys(schema) : [],
+		initialDataKeys: initialData ? Object.keys(initialData) : []
+	});
 
-	return superForm(initialData, {
-		dataType: 'json',
-		validators: zod(schema),
-		resetForm: false,
-		taintedMessage: false,
-		multipleSubmits: 'prevent',
-		SPA: true,
-		onSubmit: onSubmitHandler,
-		onUpdate() {
-			// Handle form updates
-		},
-		...extraOptions
-	})
+	try {
+		return superForm(initialData, {
+			dataType: 'json',
+			validators: zod4(schema),
+			resetForm: false,
+			taintedMessage: false,
+			multipleSubmits: 'prevent',
+			SPA: true,
+			onSubmit: onSubmitHandler,
+			onUpdate() {
+				// Handle form updates
+			},
+			...extraOptions
+		});
+	} catch (error) {
+		logger.error('Failed to initialize superForm', { error: error.message, schema, initialData });
+		throw error;
+	}
 }
 
 /**
