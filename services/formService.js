@@ -203,40 +203,6 @@ export function resetForm(setFormData, defaultProps, state) {
 	}
 }
 
-/**
- * Creates an accessible status region for screen readers
- *
- * @deprecated Use the announce function from screenReaderService instead
- *
- * @param {string} message - The message to announce
- * @param {string} type - The type of message (info, success, error, warning)
- * @returns {Function} Cleanup function
- */
-export function createStatusRegion(message, type = 'info') {
-	// Map the type to the corresponding announcement type
-	let announcementType
-	switch (type) {
-	case 'error':
-	case 'warning':
-		announcementType = 'alert'
-		break
-	case 'success':
-		announcementType = 'form'
-		break
-	case 'info':
-	default:
-		announcementType = 'form'
-	}
+// Deprecated createStatusRegion removed - use screenReaderService.announce() instead
 
-	// Use the new announce function from the screenReaderService
-	return screenReaderService.announce(message, { type: announcementType })
-}
-
-/**
- * Clean up all status regions
- *
- * @deprecated Use cleanupAllAnnouncements from screenReaderService instead
- */
-export function cleanupStatusRegions() {
-	screenReaderService.cleanupAllAnnouncements()
-}
+// Deprecated cleanupStatusRegions removed - use screenReaderService.cleanupAllAnnouncements() instead
