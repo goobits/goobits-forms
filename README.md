@@ -171,8 +171,8 @@ const getMessage = createMessageGetter({
 ## 🎨 Styling
 
 ```js
-// Import SCSS directly
-import '@goobits/forms/ui/ContactForm.scss'
+// Import CSS directly
+import '@goobits/forms/ui/ContactForm.css'
 
 // Or customize with CSS variables
 :root {

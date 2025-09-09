@@ -1,0 +1,108 @@
+/**
+ * Design System Variables - CSS Custom Properties
+ * 
+ * Converted from SCSS to modern CSS custom properties.
+ * All color adjustments have been manually calculated.
+ */
+
+:root {
+  /* Brand colors - honey themed */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+
+  /* Secondary accents - green for nature/sustainability */
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  /* Accent colors */
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+
+  /* Purple colors */
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-300: #d8b4fe;
+  --purple-700: #7e22ce;
+
+  /* Red color */
+  --red-500: #ef4444;
+
+  /* Gray scale */
+  --white: #ffffff;
+  --black: #000000;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #1f2937; /* Use gray-800 for both */
+  
+  /* Semantic colors - manually calculated color adjustments */
+  --color-primary: var(--amber-600);
+  --color-primary-dark: var(--amber-800);
+  --color-primary-light: var(--amber-500);
+  --color-accent: var(--green-600);
+  --color-accent-dark: #128a3a; /* green-600 with -10% lightness */
+  --color-secondary: var(--purple-700);
+  --color-secondary-light: #c084fc; /* purple-700 with +30% lightness */
+  --color-info: var(--blue-600);
+  --color-success: var(--green-600);
+  --color-danger: var(--red-500);
+  --color-danger-light: #fca5a5; /* red-500 with +30% lightness */
+  --color-border-light: #f0f1f2; /* gray-200 with +5% lightness */
+  --color-text-primary: var(--gray-800);
+  --color-text-secondary: var(--gray-500);
+  --color-text-light: var(--white);
+  --color-background-light: var(--white);
+  --color-background-alt: var(--gray-100);
+  --color-border: var(--gray-200);
+  
+  /* Spacing */
+  --spacing-xsmall: 0.25rem; /* 4px */
+  --spacing-small: 0.5rem;   /* 8px */
+  --spacing-medium: 1rem;    /* 16px */
+  --spacing-large: 1.5rem;   /* 24px */
+  --spacing-xlarge: 2.5rem;  /* 40px */
+  --spacing-xxlarge: 4rem;   /* 64px */
+  
+  /* Typography */
+  --font-family-base: 'Arial', sans-serif;
+  --font-family-heading: 'Georgia', serif;
+  --font-size-small: 0.875rem; /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-medium: 1.125rem; /* 18px */
+  --font-size-large: 1.25rem;  /* 20px */
+  --font-size-xlarge: 1.5rem;  /* 24px */
+  --font-size-h3: 1.5rem;      /* 24px */
+  --font-size-h2: 1.875rem;    /* 30px */
+  --font-size-h1: 2.25rem;     /* 36px */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Borders */
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 16px;
+  --border-radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-base: all 0.3s ease;
+}

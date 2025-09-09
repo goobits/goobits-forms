@@ -1,4 +1,5 @@
 <script>
+	import './ThankYou.css'
 	import { onMount } from 'svelte'
 	// browser check can be done inline
 	const browser = typeof window !== 'undefined'

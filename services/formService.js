@@ -33,6 +33,13 @@ import * as screenReaderService from './screenReaderService.js'
  * @returns {Object} The initialized form object and related utilities
  */
 export function initializeForm({ initialData, schema, onSubmitHandler, extraOptions = {} }) {
+	// Validate schema before passing to zod adapter
+	if (!schema || typeof schema !== 'object' || !schema._def) {
+		throw new Error('Invalid schema provided to initializeForm. Schema must be a valid Zod schema object.');
+	}
+
+	logger.debug('Initializing form with schema', { schemaType: typeof schema, hasDefProperty: !!schema._def });
+
 	return superForm(initialData, {
 		dataType: 'json',
 		validators: zod(schema),
