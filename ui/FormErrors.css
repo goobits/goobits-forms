@@ -1,0 +1,40 @@
+/* FormErrors component styles */
+.form-error {
+	background-color: var(--color-error-50);
+	border: 1px solid var(--color-error-500);
+	color: var(--color-error-600);
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--border-radius-small);
+	position: relative;
+}
+
+:global(.theme-dark) .form-error,
+:global(.theme-system-dark) .form-error {
+	background-color: rgba(239, 68, 68, 0.1);
+	border-color: var(--color-error-400);
+	color: var(--color-error-400);
+
+	.form-error__icon-wrapper {
+		display: inline-block;
+		margin-right: var(--space-2);
+
+		:global(svg) {
+			height: var(--font-size-base);
+			width: var(--font-size-base);
+		}
+	}
+
+	.form-error__title {
+		font-weight: var(--font-weight-bold);
+	}
+
+	.form-error__list {
+		margin-top: var(--space-1);
+		list-style-type: disc;
+		list-style-position: inside;
+	}
+
+	.form-error__item {
+		margin-top: var(--space-1);
+	}
+}

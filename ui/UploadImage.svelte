@@ -186,5 +186,5 @@
 </div>
 
 <style lang="scss">
-	@use './UploadImage.scss';
+	@use './UploadImage.css';
 </style>

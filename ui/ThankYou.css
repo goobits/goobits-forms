@@ -1,0 +1,51 @@
+/* ThankYou component styles */
+.thank-you {
+	background: var(--color-primary-500);
+	border-radius: var(--border-radius-large);
+	padding: var(--space-4) 0;
+	text-align: center;
+
+	.thank-you__heading {
+		display: flex;
+		justify-content: center;
+	}
+
+	.thank-you__image {
+		max-height: min(400px, calc(100vh - 260px));
+		border: 0;
+		box-shadow: none;
+	}
+
+	.thank-you__message {
+		font-family: 'Source Serif 4', serif;
+		font-variation-settings: 'wght' 100;
+		color: var(--color-text-on-primary);
+		line-height: 1.5;
+	}
+
+	.thank-you__sub-message {
+		display: block;
+	}
+
+	.thank-you__button {
+		display: inline-block;
+		background-color: var(--color-surface);
+		color: var(--color-primary-500);
+		padding: var(--space-2) var(--space-5);
+		border-radius: var(--border-radius-medium);
+		text-decoration: none;
+		font-weight: var(--font-weight-medium);
+		margin-top: var(--space-4);
+		transition: var(--transition-base);
+	}
+
+	:global(.theme-dark) .thank-you__button,
+	:global(.theme-system-dark) .thank-you__button {
+		background-color: var(--color-surface-elevated);
+	}
+
+	.thank-you__button:hover {
+		background-color: var(--color-surface-hover);
+		transform: translateY(-2px);
+	}
+}

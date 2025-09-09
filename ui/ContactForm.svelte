@@ -1,9 +1,13 @@
 <script>
-	import './ContactForm.scss'
+	import './ContactForm.css'
 	import FormErrors from './FormErrors.svelte'
 	import ThankYou from './ThankYou.svelte'
 	import UploadImage from './UploadImage.svelte'
+	import SelectMenu from './SelectMenu.svelte'
+	import Input from './Input.svelte'
+	import Textarea from './Textarea.svelte'
 	import { createEventDispatcher, onDestroy, onMount, untrack } from 'svelte'
+	import { z } from 'zod'
 
 	const dispatch = createEventDispatcher()
 
@@ -47,17 +51,20 @@
 	// Get configuration
 	const config = getContactFormConfig()
 	const { categories: contactCategories, fieldConfigs, categoryToFieldMap, schemas } = config
+	
+	// Log for debugging
+	if (!schemas || !schemas.categories) {
+		logger.error('ContactForm: schemas not properly initialized', { 
+			config, 
+			schemas, 
+			hasCategories: schemas?.categories 
+		})
+	}
 
 	// Props
 	let {
 		apiEndpoint = '/api/contact',
-		initialData = {
-			category: 'product-feedback',
-			name: '',
-			email: '',
-			message: '',
-			coppa: false
-		},
+		initialData: providedInitialData = {},
 		messages = {},
 		// Functions that need to be provided by the app
 		submitContactForm = async (data, endpoint) => {
@@ -80,11 +87,51 @@
 		homeUrl = '/'
 	} = $props()
 
+	// Initialize all possible form fields to ensure they're never undefined
+	const initializeAllFormFields = (data = {}) => {
+		const baseFields = {
+			category: data.category || 'product-feedback',
+			name: data.name || '',
+			email: data.email || '',
+			message: data.message || '',
+			coppa: data.coppa || false
+		};
+		
+		// Add all possible fields from all categories with empty string defaults
+		Object.keys(fieldConfigs).forEach(fieldName => {
+			if (!(fieldName in baseFields)) {
+				baseFields[fieldName] = data[fieldName] || '';
+			}
+		});
+		
+		return baseFields;
+	};
+
+	// Ensure all fields are initialized
+	const initialData = initializeAllFormFields(providedInitialData);
+
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages })
-
-	// Get the schema for the current category
-	const contactSchema = schemas.categories[initialData.category] || schemas.categories.general
+	
+	// Create a fallback schema if none exists (Zod 4 compatible)
+	const fallbackSchema = z.object({
+		name: z.string().min(1, { message: 'Name is required' }),
+		email: z.string().email({ message: 'Invalid email' }),
+		message: z.string().min(1, { message: 'Message is required' }),
+		category: z.string().optional(),
+		attachments: z.array(z.any()).optional()
+	})
+	
+	// For now, always use the fallback schema to avoid compatibility issues
+	// TODO: Fix the schema generation to be compatible with sveltekit-superforms
+	const contactSchema = fallbackSchema
+	
+	// Debug logging - using fallback schema
+	console.log('ContactForm: Using fallback schema', {
+		category: initialData.category,
+		schemaType: typeof contactSchema,
+		isZodSchema: contactSchema?._def ? true : false
+	})
 
 	// Initialize form state using shared service
 	const formState = initializeFormState({
@@ -226,6 +273,16 @@
 	// Handle form errors only - no complex reactive dependencies
 	$effect(() => {
 		formErrors = errors || {}
+	})
+	
+	// Ensure formData always has all required fields
+	$effect(() => {
+		// Initialize any undefined fields immediately
+		Object.keys(fieldConfigs).forEach(fieldName => {
+			if ($formData[fieldName] === undefined) {
+				$formData[fieldName] = '';
+			}
+		});
 	})
 
 	// Note: Other reactive features (attachments, auto-save, category effects) 
@@ -473,18 +530,18 @@
 
 		<div class="contact-form__fields">
 			<!-- Category Selector -->
-			<label class="contact-form__label">
-				{getMessage('howCanWeHelp', 'How can we help?')}
-				<select
-						class="contact-form__select contact-form__category-select"
-						bind:value={selectedCategory}
-						onchange={(e) => handleCategorySelect(e.target.value)}
-				>
-					{#each Object.entries(contactCategories) as [ value, { label } ]}
-						<option value={value}>{label}</option>
-					{/each}
-				</select>
-			</label>
+			<div class="contact-form__field-group">
+				<div class="contact-form__label">
+					{getMessage('howCanWeHelp', 'How can we help?')}
+				</div>
+				<SelectMenu
+					bind:value={selectedCategory}
+					options={Object.entries(contactCategories).map(([value, { label }]) => ({ value, label }))}
+					placeholder="Select a category"
+					onchange={(value) => handleCategorySelect(value)}
+					class="contact-form__select contact-form__category-select"
+				/>
+			</div>
 
 			{#each categoryToFieldMap[selectedCategory] || [] as fieldName}
 				{#if fieldConfigs[fieldName] && fieldName !== 'category'}
@@ -506,25 +563,18 @@
 											/>
 										{:else if fieldConfigs[fieldName].type === 'select'}
 											<div class="contact-form__validation-container">
-												<select
-														{...props}
-														bind:value={$formData[fieldName]}
-														class:contact-form__field--error={touched[fieldName] && errors?.[fieldName]}
-														class:contact-form__field--valid={!errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														class="contact-form__select {getFieldClasses(fieldName)}"
-														onblur={() => handleBlur(fieldName)}
-														oninput={() => handleInput(fieldName)}
-												>
-													<option value="">
-														Select {fieldConfigs[fieldName].label.replace('(optional)', '')}</option>
-													{#each fieldConfigs[fieldName].options as option}
-														{#if typeof option === 'object'}
-															<option value={option.value}>{option.label}</option>
-														{:else}
-															<option value={option}>{option}</option>
-														{/if}
-													{/each}
-												</select>
+												<SelectMenu
+													bind:value={$formData[fieldName]}
+													options={fieldConfigs[fieldName].options.map(option => 
+														typeof option === 'object' ? option : { value: option, label: option }
+													)}
+													placeholder="Select {fieldConfigs[fieldName].label.replace('(optional)', '')}"
+													onchange={(value) => {
+														handleInput(fieldName);
+														handleBlur(fieldName);
+													}}
+													class="contact-form__select {getFieldClasses(fieldName)}"
+												/>
 
 												<!-- Validation icon -->
 												<span class="contact-form__validation-icon" aria-hidden="true">
@@ -537,17 +587,14 @@
 											</div>
 										{:else if fieldConfigs[fieldName].type === 'textarea'}
 											<div class="contact-form__validation-container">
-												<textarea
-														{...props}
-														bind:value={$formData[fieldName]}
-														class:contact-form__field--error={touched[fieldName] && errors?.[fieldName]}
-														class:contact-form__field--valid={!errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														class="contact-form__textarea {getFieldClasses(fieldName)}"
-														onblur={() => handleBlur(fieldName)}
-														oninput={() => handleInput(fieldName)}
-														placeholder={fieldConfigs[fieldName].placeholder}
-														rows="4"
-												></textarea>
+												<Textarea
+													bind:value={$formData[fieldName]}
+													variant={touched[fieldName] && errors?.[fieldName] ? 'error' : (!errors?.[fieldName] && touched[fieldName] && $formData[fieldName] ? 'success' : 'default')}
+													class="contact-form__textarea {getFieldClasses(fieldName)}"
+													placeholder={fieldConfigs[fieldName].placeholder}
+													rows={4}
+													autoResize={true}
+												/>
 
 												<!-- Validation icon -->
 												<span class="contact-form__validation-icon" aria-hidden="true">
@@ -570,16 +617,12 @@
 											/>
 										{:else}
 											<div class="contact-form__validation-container">
-												<input
-														{...props}
-														bind:value={$formData[fieldName]}
-														class:contact-form__field--error={touched[fieldName] && errors?.[fieldName]}
-														class:contact-form__field--valid={!errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														class="contact-form__input {getFieldClasses(fieldName)}"
-														onblur={() => handleBlur(fieldName)}
-														oninput={() => handleInput(fieldName)}
-														placeholder={fieldConfigs[fieldName].placeholder}
-														type={fieldConfigs[fieldName].type}
+												<Input
+													bind:value={$formData[fieldName]}
+													variant={touched[fieldName] && errors?.[fieldName] ? 'error' : (!errors?.[fieldName] && touched[fieldName] && $formData[fieldName] ? 'success' : 'default')}
+													class="contact-form__input {getFieldClasses(fieldName)}"
+													placeholder={fieldConfigs[fieldName].placeholder}
+													type={fieldConfigs[fieldName].type}
 												/>
 
 												<!-- Validation icon -->
@@ -643,6 +686,15 @@
 
 	:global(.grecaptcha-badge) {
 		display: none !important;
+	}
+
+	.contact-form__field-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.contact-form__field-group .contact-form__label {
+		display: block;
+		margin-bottom: 0.5rem;
 	}
 
 	:global(.animate-spin) {

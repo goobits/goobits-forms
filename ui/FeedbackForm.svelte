@@ -1,5 +1,6 @@
 <script>
 	import { browser } from '$app/environment'
+	import { page } from '$app/stores'
 	import { Loader2 } from '@lucide/svelte'
 	import { onMount } from 'svelte'
 	import { z } from 'zod'
@@ -70,7 +71,7 @@
 			validateForm: () => !Object.values($errors).some(v => v),
 			recaptcha,
 			prepareFormData: async(formData, recaptchaToken) => {
-				const currentPage = page?.url?.pathname || 'Unknown page'
+				const currentPage = $page?.url?.pathname || 'Unknown page'
 
 				return {
 					name: formData.get('userName') || 'Page Visitor',
@@ -127,8 +128,8 @@
 
 	// Effect to reset form on page change
 	$effect(() => {
-		if (page && page.url && page.url.pathname !== currentPagePath) {
-			currentPagePath = page.url.pathname
+		if ($page && $page.url && $page.url.pathname !== currentPagePath) {
+			currentPagePath = $page.url.pathname
 			resetForm()
 
 		}
@@ -138,8 +139,8 @@
 	onMount(async() => {
 		resetForm()
 
-		if (page && page.url) {
-			currentPagePath = page.url.pathname
+		if ($page && $page.url) {
+			currentPagePath = $page.url.pathname
 		}
 
 		// ReCAPTCHA setup would go here if needed
@@ -319,5 +320,5 @@
 </div>
 
 <style>
-	@import './FeedbackForm.scss';
+	@import './FeedbackForm.css';
 </style>

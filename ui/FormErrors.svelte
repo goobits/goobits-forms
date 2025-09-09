@@ -39,5 +39,5 @@
 {/if}
 
 <style>
-	@import './FormErrors.scss';
+	@import './FormErrors.css';
 </style>

@@ -55,5 +55,5 @@
 </div>
 
 <style lang="scss">
-	@use './ThankYou.scss';
+	@use './ThankYou.css';
 </style>

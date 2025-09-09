@@ -1,0 +1,306 @@
+<script lang="ts">
+	import { tick } from 'svelte';
+
+	interface Props {
+		/**
+		 * The size of the textarea
+		 */
+		size?: 'sm' | 'md' | 'lg';
+
+		/**
+		 * The validation state of the textarea
+		 */
+		variant?: 'default' | 'error' | 'success';
+
+		/**
+		 * Whether the textarea should auto-resize based on content
+		 */
+		autoResize?: boolean;
+
+		/**
+		 * Maximum number of characters allowed
+		 */
+		maxLength?: number;
+
+		/**
+		 * Whether to show character counter
+		 */
+		showCharCount?: boolean;
+
+		/**
+		 * Additional CSS class names
+		 */
+		class?: string;
+
+		/**
+		 * The textarea value (for two-way binding)
+		 */
+		value?: string;
+
+		/**
+		 * Placeholder text
+		 */
+		placeholder?: string;
+
+		/**
+		 * Whether the textarea is disabled
+		 */
+		disabled?: boolean;
+
+		/**
+		 * Whether the textarea is readonly
+		 */
+		readonly?: boolean;
+
+		/**
+		 * Textarea ID
+		 */
+		id?: string;
+
+		/**
+		 * Textarea name
+		 */
+		name?: string;
+
+		/**
+		 * Whether the textarea is required
+		 */
+		required?: boolean;
+
+		/**
+		 * Number of rows
+		 */
+		rows?: number;
+
+		/**
+		 * Number of columns
+		 */
+		cols?: number;
+
+		/**
+		 * Wrap attribute
+		 */
+		wrap?: 'hard' | 'soft' | 'off';
+	}
+
+	let {
+		size = 'md',
+		variant = 'default',
+		autoResize = false,
+		maxLength,
+		showCharCount = false,
+		class: className = '',
+		value = $bindable(),
+		placeholder,
+		disabled = false,
+		readonly = false,
+		id,
+		name,
+		required = false,
+		rows = 4,
+		cols,
+		wrap,
+		...restProps
+	}: Props = $props();
+
+	// Textarea element reference
+	let textareaElement: HTMLTextAreaElement;
+	
+	// Ensure value is never undefined for binding
+	let internalValue = $state(value ?? '');
+	
+	// Keep internal value in sync with prop
+	$effect(() => {
+		if (value !== undefined && value !== internalValue) {
+			internalValue = value;
+		}
+	});
+	
+	// Update external value when internal value changes
+	$effect(() => {
+		if (value !== internalValue) {
+			value = internalValue;
+		}
+	});
+
+	// Auto-resize functionality
+	async function adjustHeight() {
+		if (autoResize && textareaElement) {
+			await tick();
+			textareaElement.style.height = 'auto';
+			textareaElement.style.height = `${textareaElement.scrollHeight}px`;
+		}
+	}
+
+	// Handle input changes
+	async function handleInput(e: Event) {
+		const target = e.target as HTMLTextAreaElement;
+		internalValue = target.value;
+
+		if (autoResize) {
+			await adjustHeight();
+		}
+	}
+
+	// Adjust height when value changes externally
+	$effect(() => {
+		if (internalValue !== undefined) {
+			adjustHeight();
+		}
+	});
+
+	// Combine CSS classes
+	const textareaClasses = $derived([
+		'textarea',
+		'input',
+		`input-${size}`,
+		variant === 'error' && 'input-error',
+		variant === 'success' && 'input-success',
+		autoResize && 'textarea-auto-resize',
+		className
+	].filter(Boolean).join(' '));
+
+	// Character count
+	const currentLength = $derived(internalValue?.toString().length || 0);
+	const isOverLimit = $derived(maxLength ? currentLength > maxLength : false);
+
+	// Expose the textarea element for binding
+	export { textareaElement as element };
+</script>
+
+<div>
+	<textarea
+		bind:this={textareaElement}
+		bind:value={internalValue}
+		oninput={handleInput}
+		class={textareaClasses}
+		{placeholder}
+		{disabled}
+		{readonly}
+		{id}
+		{name}
+		{required}
+		{rows}
+		{cols}
+		{wrap}
+		maxlength={maxLength}
+		{...restProps}
+	></textarea>
+	{#if showCharCount && maxLength}
+		<div class="char-counter {isOverLimit ? 'char-counter-error' : ''}">
+			{currentLength}/{maxLength}
+		</div>
+	{/if}
+</div>
+
+<style>
+	/* Input base styles (shared with Input component) */
+	.input {
+		display: block;
+		width: 100%;
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--font-size-base, 16px);
+		font-family: var(--font-family-sans, system-ui, sans-serif);
+		line-height: var(--line-height-normal, 1.5);
+		color: var(--color-text-primary);
+		background-color: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md, 8px);
+		transition: var(--transition-base, all 0.15s ease);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.input::placeholder {
+		color: var(--color-text-tertiary);
+	}
+
+	.input:focus {
+		outline: none;
+		border-color: var(--color-primary-500);
+		box-shadow: 0 0 0 3px var(--color-primary-100);
+	}
+
+	.input:disabled {
+		background-color: var(--color-background-secondary);
+		color: var(--color-text-disabled);
+		cursor: not-allowed;
+	}
+
+	/* Input size variants */
+	.input-sm {
+		padding: var(--space-1) var(--space-2);
+		font-size: var(--font-size-sm, 14px);
+	}
+
+	.input-lg {
+		padding: var(--space-3) var(--space-4);
+		font-size: var(--font-size-lg, 18px);
+	}
+
+	/* Input state variants */
+	.input-error {
+		border-color: var(--color-error-500);
+		box-shadow: 0 0 0 3px var(--color-error-100);
+	}
+
+	.input-error:focus {
+		border-color: var(--color-error-600);
+		box-shadow: 0 0 0 3px var(--color-error-200);
+	}
+
+	.input-success {
+		border-color: var(--color-success-500);
+		box-shadow: 0 0 0 3px var(--color-success-100);
+	}
+
+	.input-success:focus {
+		border-color: var(--color-success-600);
+		box-shadow: 0 0 0 3px var(--color-success-200);
+	}
+
+	/* Textarea specific styles */
+	.textarea {
+		resize: vertical;
+		min-height: 80px;
+	}
+
+	.textarea-auto-resize {
+		resize: none;
+		overflow: hidden;
+	}
+
+	/* Character counter */
+	.char-counter {
+		font-size: var(--font-size-xs, 12px);
+		color: var(--color-text-tertiary);
+		text-align: right;
+		margin-top: var(--space-1);
+	}
+
+	.char-counter-error {
+		color: var(--color-error-600);
+	}
+
+	/* High contrast mode adjustments */
+	@media (prefers-contrast: high) {
+		.input {
+			border-width: 2px;
+		}
+
+		.input:focus {
+			box-shadow: 0 0 0 3px var(--color-text-primary);
+		}
+
+		.input-error:focus {
+			box-shadow: 0 0 0 3px var(--color-error-800);
+		}
+
+		.input-success:focus {
+			box-shadow: 0 0 0 3px var(--color-success-800);
+		}
+
+		.char-counter-error {
+			color: var(--color-error-800);
+		}
+	}
+</style>
