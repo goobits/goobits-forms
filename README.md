@@ -1,50 +1,47 @@
-# @goobits/forms
+# 📝 @goobits/forms
+Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
 
 ⚠️ **EXPERIMENTAL PACKAGE - v0.0.1-alpha**
 
-A configurable, accessible form library for SvelteKit with contact forms, validation, optional reCAPTCHA support, and file uploads.
+## ✨ Key Features
+- **🎨 Form Types** - Contact, support, feedback, booking, and business forms
+- **✅ Schema Validation** - Built-in Zod validation with type safety
+- **🔐 Bot Protection** - Optional reCAPTCHA v3 integration
+- **📎 File Uploads** - Image uploads with preview and validation
+- **🌍 Internationalization** - Built-in i18n support with Paraglide integration
+- **♿ Accessibility** - WCAG 2.1 compliant with ARIA support
 
 ## 🔒 Security Notice
-
 This package handles user input. Always validate and sanitize data server-side. Never trust client-side validation alone. The included sanitization is basic and should be supplemented with server-side security measures.
 
-## ✨ Features
-
-- 🎨 Multiple form types (general, support, feedback, booking, business)
-- ✅ Built-in validation with Zod
-- 🔐 Optional reCAPTCHA v3 integration
-- 📎 File upload support with preview
-- 💾 Form state persistence
-- ♿ Accessibility features
-- 🎯 JSDoc type annotations
-- 🔧 Highly configurable
-- 🚀 Easy to integrate
-- 🌍 Internationalization (i18n) support
-
-## 📦 Installation
-
+## 🚀 Quick Start
 ```bash
-npm install @goobits/forms
+# Install package and peer dependencies
+npm install @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
 
-# Required peer dependencies
-npm install @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
+# Alternative with bun
+bun add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
 ```
 
-## 🚀 Quick Start
-
 ```js
-// src/lib/contact-config.js
+// src/lib/contact-config.js - Configure form categories
 export const contactConfig = {
   appName: 'My App',
   categories: {
     'general': {
       label: 'General Inquiry',
       fields: ['name', 'email', 'message', 'coppa']
+    },
+    'support': {
+      label: 'Technical Support',  
+      fields: ['name', 'email', 'urgency', 'message', 'attachment']
     }
   }
 }
+```
 
-// src/app.js
+```js
+// src/app.js - Initialize configuration
 import { initContactFormConfig } from '@goobits/forms/config'
 import { contactConfig } from '$lib/contact-config.js'
 
@@ -52,105 +49,95 @@ initContactFormConfig(contactConfig)
 ```
 
 ```svelte
-<!-- src/routes/contact/+page.svelte -->
+<!-- src/routes/contact/+page.svelte - Basic usage -->
 <script>
   import { ContactForm } from '@goobits/forms'
   export let data
 </script>
 
 <h1>Contact Us</h1>
-<ContactForm 
-  apiEndpoint="/api/contact"
-/>
+<ContactForm apiEndpoint="/api/contact" />
 ```
 
-## 🔧 Configuration
+## ⚙️ Configuration
 
 ```js
+// Complete configuration options
 const contactConfig = {
   appName: 'My App',
   
-  // Form UI settings
+  // UI customization
   ui: {
     submitButtonText: 'Send Message',
     submittingButtonText: 'Sending...',
-    resetAfterSubmit: true
+    resetAfterSubmit: true,
+    showSuccessMessage: true
   },
   
-  // reCAPTCHA settings
+  // reCAPTCHA integration
   recaptcha: {
-    enabled: false,
+    enabled: true,
     provider: 'google-v3',
-    siteKey: 'YOUR_SITE_KEY'
+    siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
+    threshold: 0.5
+  },
+  
+  // File upload settings
+  uploads: {
+    enabled: true,
+    maxSize: '5MB',
+    allowedTypes: ['image/jpeg', 'image/png', 'application/pdf']
   }
 }
 ```
 
-## 🌐 Internationalization (i18n)
+## 🌐 Internationalization
 
-The contactform package supports full internationalization through multiple integration methods:
-
-### 1. Component-level Translation
-
-All components accept a `messages` prop for direct translation override:
-
+### Component-Level Translation
 ```svelte
+<!-- Direct message prop override -->
 <script>
   import { ContactForm } from '@goobits/forms'
   
-  // Custom translations
   const messages = {
-    howCanWeHelp: 'How can we help you?',
-    sendMessage: 'Send Message',
-    sending: 'Sending...'
+    howCanWeHelp: 'Comment pouvons-nous vous aider?',
+    sendMessage: 'Envoyer le message',
+    sending: 'Envoi en cours...'
   }
 </script>
 
 <ContactForm {messages} />
 ```
 
-### 2. Server Integration
-
-For full i18n with automatic language detection and routing:
-
+### Server Integration
 ```js
-// hooks.server.js
+// hooks.server.js - Automatic language detection
 import { handleFormI18n } from '@goobits/forms/i18n'
 
 export async function handle({ event, resolve }) {
-  // Add language info to event.locals
-  await handleFormI18n(event)
-  
-  // Continue with request handling
+  await handleFormI18n(event) # Adds language info to event.locals
   return await resolve(event)
 }
 ```
 
-### 3. Page Integration
-
-Enhance contact form pages with i18n data:
-
+### Page Integration
 ```js
-// contact/+page.server.js
+// contact/+page.server.js - Enhanced page loading
 import { loadWithFormI18n } from '@goobits/forms/i18n'
 
 export const load = async (event) => {
   return await loadWithFormI18n(event, async () => {
-    // Your original contact form data loading
-    return { formData, categories }
+    return { formData, categories } # Your existing data
   })
 }
 ```
 
-### 4. Paraglide Integration
-
-For seamless integration with Paraglide (recommended):
-
+### Paraglide Integration
 ```js
+// Seamless Paraglide integration
 import { createMessageGetter } from '@goobits/forms/i18n'
 import * as m from '$paraglide/messages'
 
-// Map form messages to Paraglide translations
 const getMessage = createMessageGetter({
   howCanWeHelp: m.howCanWeHelp,
   sendMessage: m.sendMessage,
@@ -160,38 +147,57 @@ const getMessage = createMessageGetter({
 
 ## 🧩 Components
 
-- `ContactForm` - Main form component with validation
-- `ContactFormPage` - Complete page with form and layout
-- `FormField` - Reusable form field with validation
-- `FormErrors` - Form error display component
-- `FeedbackForm` - Quick feedback form widget
-- `ThankYou` - Success message component
-- `UploadImage` - File upload component
+```svelte
+<!-- Core components -->
+<script>
+  import { 
+    ContactForm,        // Main form with validation
+    ContactFormPage,    // Complete page layout
+    FormField,          // Reusable field component
+    FormErrors,         // Error display
+    FeedbackForm,       // Quick feedback widget
+    ThankYou,           // Success message
+    UploadImage         // File upload with preview
+  } from '@goobits/forms'
+</script>
+```
 
 ## 🎨 Styling
 
 ```js
-// Import CSS directly
+// Import default styles
 import '@goobits/forms/ui/ContactForm.css'
 
-// Or customize with CSS variables
+// Customize with CSS variables
 :root {
   --contact-form-primary: #007bff;
   --contact-form-error: #dc3545;
   --contact-form-success: #28a745;
+  --contact-form-border-radius: 8px;
+}
+```
+
+```css
+/* Override component styles */
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-field {
+  margin-bottom: 1rem;
 }
 ```
 
 ## ♿ Accessibility
 
-The component follows WCAG 2.1 guidelines:
-- Semantic HTML structure
-- ARIA labels and descriptions
-- Keyboard navigation support
-- Focus management
-- Error announcements
-- Color contrast compliance
+WCAG 2.1 AA compliant with:
+- Semantic HTML structure and proper heading hierarchy
+- ARIA labels, descriptions, and live regions
+- Full keyboard navigation and focus management
+- Screen reader announcements for errors and state changes
+- High contrast mode support and color contrast compliance
 
-## 📄 License
+## 📝 License
 
-MIT
+MIT - see [LICENSE](LICENSE) for details
