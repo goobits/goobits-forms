@@ -1,8 +1,6 @@
 # 📝 @goobits/forms
 Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
 
-⚠️ **EXPERIMENTAL PACKAGE - v0.0.1-alpha**
-
 ## ✨ Key Features
 - **🎨 Form Types** - Contact, support, feedback, booking, and business forms
 - **✅ Schema Validation** - Built-in Zod validation with type safety
