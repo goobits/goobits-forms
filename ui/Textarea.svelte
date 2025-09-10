@@ -200,7 +200,7 @@
 		width: 100%;
 		padding: var(--space-2) var(--space-3);
 		font-size: var(--font-size-base, 16px);
-		font-family: var(--font-family-sans, system-ui, sans-serif);
+		font-family: var(--font-family-base, system-ui, sans-serif);
 		line-height: var(--line-height-normal, 1.5);
 		color: var(--color-text-primary);
 		background-color: var(--color-surface);
