@@ -28,7 +28,7 @@
 		"services",
 		"utils",
 		"handlers",
-		"templates",
+		"examples",
 		"README.md",
 		"LICENSE",
 		"CHANGELOG.md"

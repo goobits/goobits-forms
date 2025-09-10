@@ -1,6 +1,6 @@
-# Contact Form API Template
+# Contact Form API Example
 
-This template demonstrates how to create a contact form API endpoint using the `@goobits/forms` package.
+This example demonstrates how to create a contact form API endpoint using the `@goobits/forms` package.
 
 ## Usage
 

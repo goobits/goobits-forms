@@ -1,6 +1,6 @@
-# Category-based Contact Form Template
+# Category-based Contact Form Example
 
-This template provides a complete implementation of a contact form system with multiple categories. It allows users to select different categories of contact (e.g., general inquiries, technical support, feedback) with category-specific form fields.
+This example provides a complete implementation of a contact form system with multiple categories. It allows users to select different categories of contact (e.g., general inquiries, technical support, feedback) with category-specific form fields.
 
 ## Features
 
@@ -13,7 +13,7 @@ This template provides a complete implementation of a contact form system with m
 
 ## Installation
 
-1. Copy these template files to your SvelteKit routes directory:
+1. Copy these example files to your SvelteKit routes directory:
    - `+page.svelte` → your-routes/contact/[...slug]/+page.svelte
    - `+page.server.js` → your-routes/contact/[...slug]/+page.server.js
 
@@ -95,7 +95,7 @@ getValidatorForCategory: (categorySlug) => {
 
 ### Styling
 
-The template includes basic styling that you can customize by editing the `<style>` section in `+page.svelte`. You can also integrate your own CSS framework or design system.
+The example includes basic styling that you can customize by editing the `<style>` section in `+page.svelte`. You can also integrate your own CSS framework or design system.
 
 ## Usage
 
@@ -108,4 +108,4 @@ This contact form system uses SvelteKit's form actions for processing. When a us
 
 ## API
 
-See the `@goobits/forms` documentation for the full API reference for the components and functions used in this template.
+See the `@goobits/forms` documentation for the full API reference for the components and functions used in this example.

@@ -2,11 +2,11 @@ import { createContactRouteHandlers } from '../../handlers/categoryRouter.js'
 import { validateCsrfToken } from '../../security/csrf.js'
 
 // Import your configuration here
-// This is a template file, so you'd typically customize this for your specific app
+// This is an example file, so you'd typically customize this for your specific app
 // import { contactConfig } from '$lib/config/contact.js'
 // import { initContactFormConfig } from '@goobits/forms/config/contactSchemas.js'
 
-// Example contact configuration for template purposes
+// Example contact configuration for demonstration purposes
 const exampleContactConfig = {
 	appName: 'Example App',
 	categories: {
@@ -79,7 +79,7 @@ const exampleContactConfig = {
 // In a real implementation, you'd use your app's actual configuration:
 // const formConfig = initContactFormConfig(contactConfig)
 
-// For this template, we'll create an example config
+// For this example, we'll create a sample config
 const formConfig = {
 	...exampleContactConfig,
 	getValidatorForCategory: (categorySlug) => {
@@ -125,7 +125,7 @@ const formConfig = {
 			// In a real implementation, you'd do something with the data
 			// like sending an email or storing in a database
 			
-			// For this template, we'll just return success
+			// For this example, we'll just return success
 			return { success: true }
 		}
 	}

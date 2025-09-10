@@ -7,7 +7,7 @@
 	// You would typically import from your app's config
 	// import { contactConfig } from '$lib/config/contact.js'
 	
-	// For the template, we'll use a prop
+	// For the example, we'll use a prop
 	export let contactConfig = {}
 	export let messages = {}
 	
