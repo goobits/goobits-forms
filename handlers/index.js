@@ -4,7 +4,7 @@
 
 import { json } from '@sveltejs/kit'
 import { superValidate } from 'sveltekit-superforms/server'
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 } from 'sveltekit-superforms/adapters'
 import { getContactFormConfig } from '../config/index.js'
 import { getValidatorForCategory } from '../validation/index.js'
 
@@ -29,7 +29,7 @@ export function createContactPageHandler(options = {}) {
 		// Validate category exists
 		if (!finalConfig.categories[category]) {
 			return {
-				form: await superValidate({}, zod(finalConfig.schemas.categories.general)),
+				form: await superValidate({}, zod4(finalConfig.schemas.categories.general)),
 				category: 'general'
 			}
 		}
@@ -60,7 +60,7 @@ export function createContactGetHandler(options = {}) {
 		const finalConfig = config || getContactFormConfig()
 		const form = await superValidate(
 			{ category: defaultCategory },
-			zod(finalConfig.schemas.categories[defaultCategory])
+			zod4(finalConfig.schemas.categories[defaultCategory])
 		)
 
 		return json({

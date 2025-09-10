@@ -2,7 +2,7 @@
  * Validation utilities for contact forms
  */
 
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 } from 'sveltekit-superforms/adapters'
 import { debounce } from '../utils/debounce.js'
 
 /**
@@ -42,7 +42,7 @@ export function createValidationSchemaForCategory(config, category) {
  * @returns {Function} A superForm validator for the category
  */
 export function getValidatorForCategory(config, category) {
-	return zod(createValidationSchemaForCategory(config, category))
+	return zod4(createValidationSchemaForCategory(config, category))
 }
 
 /**

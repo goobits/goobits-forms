@@ -38,8 +38,8 @@
 		"@sveltejs/kit": "^2.38.0",
 		"formsnap": "^2.0.1",
 		"svelte": "^5.38.8",
-		"sveltekit-superforms": "^2.25.0",
-		"zod": "^3.25.20"
+		"sveltekit-superforms": "^2.27.1",
+		"zod": "^4.1.5"
 	},
 	"peerDependencies": {
 		"nodemailer": "^6.9.0",
