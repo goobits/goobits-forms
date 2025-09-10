@@ -107,9 +107,3 @@ export async function layoutLoadWithFormI18n(event, originalLoad) {
 	// This is similar to loadWithFormI18n but typically used in +layout.server.js
 	return await loadWithFormI18n(event, originalLoad)
 }
-
-export default {
-	handleFormI18n,
-	loadWithFormI18n,
-	layoutLoadWithFormI18n
-}

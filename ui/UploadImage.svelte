@@ -1,8 +1,6 @@
 <script>
 	import './UploadImage.css'
 	import { ImagePlus, X } from '@lucide/svelte'
-	// OptimizedImage would need to be provided by the app or simplified
-	// import OptimizedImage from '@components/OptimizedImage/OptimizedImage.svelte'
 
 	let {
 		accept = 'image/jpeg,image/jpg,image/png,image/webp,image/gif',

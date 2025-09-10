@@ -60,5 +60,3 @@ export function secureDeepMerge(target, source) {
 
 	return result
 }
-
-export default secureDeepMerge
