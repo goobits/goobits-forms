@@ -18,16 +18,17 @@ This example provides a complete implementation of a contact form system with mu
    - `+page.server.js` → your-routes/contact/[...slug]/+page.server.js
 
 2. Update the imports in the files to point to your configuration:
+
    ```javascript
-   import { contactConfig } from '$lib/config/contact.js'
-   import { initContactFormConfig } from '@goobits/forms/config/contactSchemas.js'
+   import { contactConfig } from "$lib/config/contact.js";
+   import { initContactFormConfig } from "@goobits/forms/config/contactSchemas.js";
    ```
 
 3. Create your contact configuration file based on the example:
    ```javascript
    // $lib/config/contact.js
    export const contactConfig = {
-     appName: 'Your App',
+     appName: "Your App",
      categories: {
        // Your categories here
      },
@@ -35,7 +36,7 @@ This example provides a complete implementation of a contact form system with mu
        // Your field configurations here
      },
      // ...other configuration
-   }
+   };
    ```
 
 ## Customization
@@ -72,25 +73,25 @@ Extend the validation logic in your configuration:
 ```javascript
 getValidatorForCategory: (categorySlug) => {
   return (data) => {
-    const errors = {}
-    
+    const errors = {};
+
     // Basic required field validation
     // ...
-    
+
     // Custom validation logic
-    if (data.email && !data.email.includes('@')) {
-      errors.email = 'Please enter a valid email address'
+    if (data.email && !data.email.includes("@")) {
+      errors.email = "Please enter a valid email address";
     }
-    
-    if (categorySlug === 'support' && data.browser) {
-      if (data.browser.toLowerCase().includes('internet explorer')) {
-        errors.browser = 'We no longer support Internet Explorer'
+
+    if (categorySlug === "support" && data.browser) {
+      if (data.browser.toLowerCase().includes("internet explorer")) {
+        errors.browser = "We no longer support Internet Explorer";
       }
     }
-    
-    return errors
-  }
-}
+
+    return errors;
+  };
+};
 ```
 
 ### Styling

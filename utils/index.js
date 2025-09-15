@@ -2,11 +2,11 @@
  * Utilities for @goobits/contactform
  */
 
-export * from './sanitizeInput.js'
-export * from './constants.js'
-export * from './debounce.js'
-export * from './errorHandler.js'
-export * from './messages.js'
+export * from "./sanitizeInput.js";
+export * from "./constants.js";
+export * from "./debounce.js";
+export * from "./errorHandler.js";
+export * from "./messages.js";
 
 /**
  * Get field configuration for a specific field
@@ -15,7 +15,7 @@ export * from './messages.js'
  * @returns {Object} Field configuration
  */
 export function getFieldConfig(config, fieldName) {
-	return config.fieldConfigs[fieldName] || {}
+  return config.fieldConfigs[fieldName] || {};
 }
 
 /**
@@ -25,7 +25,7 @@ export function getFieldConfig(config, fieldName) {
  * @returns {Object} Category configuration
  */
 export function getCategoryConfig(config, category) {
-	return config.categories[category] || config.categories.general
+  return config.categories[category] || config.categories.general;
 }
 
 /**
@@ -36,8 +36,8 @@ export function getCategoryConfig(config, category) {
  * @returns {boolean} Whether field is required
  */
 export function isFieldRequired(config, category, fieldName) {
-	const categoryConfig = getCategoryConfig(config, category)
-	const fieldConfig = getFieldConfig(config, fieldName)
+  const categoryConfig = getCategoryConfig(config, category);
+  const fieldConfig = getFieldConfig(config, fieldName);
 
-	return categoryConfig.fields.includes(fieldName) && fieldConfig.required
+  return categoryConfig.fields.includes(fieldName) && fieldConfig.required;
 }

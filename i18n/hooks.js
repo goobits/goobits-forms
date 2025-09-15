@@ -4,10 +4,10 @@
  * Utilities for integrating contactform with your i18n solution
  */
 
-import { getContactFormConfig } from '../config/index.js'
+import { getContactFormConfig } from "../config/index.js";
 
 // Get the contact form configuration
-const formConfig = getContactFormConfig()
+const formConfig = getContactFormConfig();
 
 /**
  * Server hook for handling i18n in incoming requests
@@ -32,26 +32,27 @@ const formConfig = getContactFormConfig()
  * }
  */
 export async function handleFormI18n(event, handler) {
-	// Only run if i18n is enabled and the URL is related to the contact form
-	// Using startsWith for path-based check instead of includes for better security
-	if (formConfig.i18n?.enabled &&
-		event.url.pathname &&
-		(event.url.pathname === formConfig.formUri ||
-		 event.url.pathname.startsWith(formConfig.formUri + '/'))) {
-
-		// Only call handler if it's actually a function
-		if (typeof handler === 'function') {
-			try {
-				await handler(event)
-			} catch (error) {
-				// Import logger inline to avoid circular dependencies
-				const { createLogger } = await import('../utils/logger.js')
-				const logger = createLogger('ContactFormI18n')
-				logger.error('Error in contactform i18n handler:', error.message)
-				// Don't rethrow to avoid breaking the request flow
-			}
-		}
-	}
+  // Only run if i18n is enabled and the URL is related to the contact form
+  // Using startsWith for path-based check instead of includes for better security
+  if (
+    formConfig.i18n?.enabled &&
+    event.url.pathname &&
+    (event.url.pathname === formConfig.formUri ||
+      event.url.pathname.startsWith(formConfig.formUri + "/"))
+  ) {
+    // Only call handler if it's actually a function
+    if (typeof handler === "function") {
+      try {
+        await handler(event);
+      } catch (error) {
+        // Import logger inline to avoid circular dependencies
+        const { createLogger } = await import("../utils/logger.js");
+        const logger = createLogger("ContactFormI18n");
+        logger.error("Error in contactform i18n handler:", error.message);
+        // Don't rethrow to avoid breaking the request flow
+      }
+    }
+  }
 }
 
 /**
@@ -75,26 +76,26 @@ export async function handleFormI18n(event, handler) {
  * }
  */
 export async function loadWithFormI18n(event, originalLoad) {
-	// Call the original load function if provided and it's a function
-	const originalData = (typeof originalLoad === 'function') ?
-		await originalLoad(event) : {}
+  // Call the original load function if provided and it's a function
+  const originalData =
+    typeof originalLoad === "function" ? await originalLoad(event) : {};
 
-	// Skip if i18n is not enabled
-	if (!formConfig.i18n?.enabled) {
-		return originalData
-	}
+  // Skip if i18n is not enabled
+  if (!formConfig.i18n?.enabled) {
+    return originalData;
+  }
 
-	// Get the language from locals or url
-	const lang = event.locals?.lang || formConfig.i18n.defaultLanguage
+  // Get the language from locals or url
+  const lang = event.locals?.lang || formConfig.i18n.defaultLanguage;
 
-	// Return the data with i18n information
-	return {
-		...originalData,
-		i18n: {
-			lang,
-			supportedLanguages: formConfig.i18n.supportedLanguages
-		}
-	}
+  // Return the data with i18n information
+  return {
+    ...originalData,
+    i18n: {
+      lang,
+      supportedLanguages: formConfig.i18n.supportedLanguages,
+    },
+  };
 }
 
 /**
@@ -104,6 +105,6 @@ export async function loadWithFormI18n(event, originalLoad) {
  * @returns {Promise<Object>} The load function result with i18n data
  */
 export async function layoutLoadWithFormI18n(event, originalLoad) {
-	// This is similar to loadWithFormI18n but typically used in +layout.server.js
-	return await loadWithFormI18n(event, originalLoad)
+  // This is similar to loadWithFormI18n but typically used in +layout.server.js
+  return await loadWithFormI18n(event, originalLoad);
 }

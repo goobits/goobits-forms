@@ -6,16 +6,16 @@
  */
 
 // Import logger utility and constants
-import { createLogger } from '../utils/logger.js'
+import { createLogger } from "../utils/logger.js";
 import {
-	IS_BROWSER,
-	STORAGE_KEY,
-	STORAGE_EXPIRY_KEY,
-	DEFAULT_EXPIRY_HOURS
-} from '../utils/constants.js'
+  IS_BROWSER,
+  STORAGE_KEY,
+  STORAGE_EXPIRY_KEY,
+  DEFAULT_EXPIRY_HOURS,
+} from "../utils/constants.js";
 // import { handleError } from '../utils/errorHandler.js'
 
-const logger = createLogger('FormStorage')
+const logger = createLogger("FormStorage");
 
 /**
  * Save form data to localStorage
@@ -24,50 +24,50 @@ const logger = createLogger('FormStorage')
  * @returns {boolean} - Success status
  */
 export function saveFormData(formData, category) {
-	if (!IS_BROWSER) return false
+  if (!IS_BROWSER) return false;
 
-	try {
-		// Only save if there's actual user data (at least one field with content)
-		const hasUserData = Object.keys(formData).some(key => {
-			// Skip system fields and empty values
-			if (key === 'category' || key === 'attachments') return false
-			return !!formData[key]
-		})
+  try {
+    // Only save if there's actual user data (at least one field with content)
+    const hasUserData = Object.keys(formData).some((key) => {
+      // Skip system fields and empty values
+      if (key === "category" || key === "attachments") return false;
+      return !!formData[key];
+    });
 
-		if (!hasUserData) {
-			logger.debug('No user data to save')
-			return false
-		}
+    if (!hasUserData) {
+      logger.debug("No user data to save");
+      return false;
+    }
 
-		// Store form data by category
-		const existingData = loadAllFormData() || {}
+    // Store form data by category
+    const existingData = loadAllFormData() || {};
 
-		// Filter out fields that shouldn't be stored (like attachments)
-		const filteredData = {}
-		for (const key in formData) {
-			// Skip attachments and empty fields
-			if (key === 'attachments' || !formData[key]) continue
+    // Filter out fields that shouldn't be stored (like attachments)
+    const filteredData = {};
+    for (const key in formData) {
+      // Skip attachments and empty fields
+      if (key === "attachments" || !formData[key]) continue;
 
-			// Store other fields
-			filteredData[key] = formData[key]
-		}
+      // Store other fields
+      filteredData[key] = formData[key];
+    }
 
-		// Update data for this category
-		existingData[category] = filteredData
+    // Update data for this category
+    existingData[category] = filteredData;
 
-		// Save to localStorage
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(existingData))
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(existingData));
 
-		// Set expiry timestamp
-		const expiryTime = Date.now() + (DEFAULT_EXPIRY_HOURS * 60 * 60 * 1000)
-		localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString())
+    // Set expiry timestamp
+    const expiryTime = Date.now() + DEFAULT_EXPIRY_HOURS * 60 * 60 * 1000;
+    localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
 
-		logger.debug(`Saved form data for category: ${ category }`)
-		return true
-	} catch (error) {
-		logger.error('Error saving form data to localStorage', error)
-		return false
-	}
+    logger.debug(`Saved form data for category: ${category}`);
+    return true;
+  } catch (error) {
+    logger.error("Error saving form data to localStorage", error);
+    return false;
+  }
 }
 
 /**
@@ -76,27 +76,27 @@ export function saveFormData(formData, category) {
  * @returns {Object|null} - Loaded form data or null if not found
  */
 export function loadFormData(category) {
-	if (!IS_BROWSER) return null
+  if (!IS_BROWSER) return null;
 
-	try {
-		// Check if data is expired
-		if (isDataExpired()) {
-			clearAllFormData()
-			return null
-		}
+  try {
+    // Check if data is expired
+    if (isDataExpired()) {
+      clearAllFormData();
+      return null;
+    }
 
-		// Load all saved data
-		const allData = loadAllFormData()
-		if (!allData || !allData[category]) {
-			return null
-		}
+    // Load all saved data
+    const allData = loadAllFormData();
+    if (!allData || !allData[category]) {
+      return null;
+    }
 
-		logger.debug(`Loaded saved form data for category: ${ category }`)
-		return allData[category]
-	} catch (error) {
-		logger.error('Error loading form data from localStorage', error)
-		return null
-	}
+    logger.debug(`Loaded saved form data for category: ${category}`);
+    return allData[category];
+  } catch (error) {
+    logger.error("Error loading form data from localStorage", error);
+    return null;
+  }
 }
 
 /**
@@ -104,15 +104,15 @@ export function loadFormData(category) {
  * @returns {Object|null} - All saved form data or null if not found
  */
 function loadAllFormData() {
-	if (!IS_BROWSER) return null
+  if (!IS_BROWSER) return null;
 
-	try {
-		const savedData = localStorage.getItem(STORAGE_KEY)
-		return savedData ? JSON.parse(savedData) : null
-	} catch (error) {
-		logger.error('Error parsing saved form data', error)
-		return null
-	}
+  try {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    return savedData ? JSON.parse(savedData) : null;
+  } catch (error) {
+    logger.error("Error parsing saved form data", error);
+    return null;
+  }
 }
 
 /**
@@ -121,20 +121,20 @@ function loadAllFormData() {
  * @returns {boolean} - Success status
  */
 export function clearFormData(category) {
-	if (!IS_BROWSER) return false
+  if (!IS_BROWSER) return false;
 
-	try {
-		const allData = loadAllFormData()
-		if (allData && allData[category]) {
-			delete allData[category]
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(allData))
-			logger.debug(`Cleared form data for category: ${ category }`)
-		}
-		return true
-	} catch (error) {
-		logger.error('Error clearing form data', error)
-		return false
-	}
+  try {
+    const allData = loadAllFormData();
+    if (allData && allData[category]) {
+      delete allData[category];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+      logger.debug(`Cleared form data for category: ${category}`);
+    }
+    return true;
+  } catch (error) {
+    logger.error("Error clearing form data", error);
+    return false;
+  }
 }
 
 /**
@@ -142,17 +142,17 @@ export function clearFormData(category) {
  * @returns {boolean} - Success status
  */
 export function clearAllFormData() {
-	if (!IS_BROWSER) return false
+  if (!IS_BROWSER) return false;
 
-	try {
-		localStorage.removeItem(STORAGE_KEY)
-		localStorage.removeItem(STORAGE_EXPIRY_KEY)
-		logger.debug('Cleared all saved form data')
-		return true
-	} catch (error) {
-		logger.error('Error clearing all form data', error)
-		return false
-	}
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_EXPIRY_KEY);
+    logger.debug("Cleared all saved form data");
+    return true;
+  } catch (error) {
+    logger.error("Error clearing all form data", error);
+    return false;
+  }
 }
 
 /**
@@ -160,13 +160,13 @@ export function clearAllFormData() {
  * @returns {boolean} - True if data is expired or expiry time is not set
  */
 function isDataExpired() {
-	try {
-		const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY)
-		if (!expiryTime) return true
+  try {
+    const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
+    if (!expiryTime) return true;
 
-		const expiryTimestamp = parseInt(expiryTime, 10)
-		return Date.now() > expiryTimestamp
-	} catch (error) {
-		return true
-	}
+    const expiryTimestamp = parseInt(expiryTime, 10);
+    return Date.now() > expiryTimestamp;
+  } catch (error) {
+    return true;
+  }
 }

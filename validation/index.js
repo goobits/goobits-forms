@@ -2,8 +2,8 @@
  * Validation utilities for contact forms
  */
 
-import { zod4 } from 'sveltekit-superforms/adapters'
-import { debounce } from '../utils/debounce.js'
+import { zod4 } from "sveltekit-superforms/adapters";
+import { debounce } from "../utils/debounce.js";
 
 /**
  * Creates a validation schema for a specific contact category
@@ -12,27 +12,27 @@ import { debounce } from '../utils/debounce.js'
  * @returns {import('zod').ZodObject} A Zod validation schema for the category
  */
 export function createValidationSchemaForCategory(config, category) {
-	const { categories, schemas, categoryToFieldMap } = config
+  const { categories, schemas, categoryToFieldMap } = config;
 
-	if (!categories[category]) {
-		throw new Error(`Invalid category: ${ category }`)
-	}
+  if (!categories[category]) {
+    throw new Error(`Invalid category: ${category}`);
+  }
 
-	// Use the pre-built category schema
-	if (schemas && schemas.categories && schemas.categories[category]) {
-		return schemas.categories[category]
-	}
+  // Use the pre-built category schema
+  if (schemas && schemas.categories && schemas.categories[category]) {
+    return schemas.categories[category];
+  }
 
-	// Fallback to creating from field map if schema not available
-	if (categoryToFieldMap[category] && schemas.complete) {
-		return schemas.complete.pick(
-			Object.fromEntries(
-				categoryToFieldMap[category].map(field => [ field, true ])
-			)
-		)
-	}
+  // Fallback to creating from field map if schema not available
+  if (categoryToFieldMap[category] && schemas.complete) {
+    return schemas.complete.pick(
+      Object.fromEntries(
+        categoryToFieldMap[category].map((field) => [field, true]),
+      ),
+    );
+  }
 
-	throw new Error(`No schema found for category: ${ category }`)
+  throw new Error(`No schema found for category: ${category}`);
 }
 
 /**
@@ -42,7 +42,7 @@ export function createValidationSchemaForCategory(config, category) {
  * @returns {Function} A superForm validator for the category
  */
 export function getValidatorForCategory(config, category) {
-	return zod4(createValidationSchemaForCategory(config, category))
+  return zod4(createValidationSchemaForCategory(config, category));
 }
 
 /**
@@ -53,9 +53,9 @@ export function getValidatorForCategory(config, category) {
  * @returns {string} Space-separated CSS class names
  */
 export function getValidationClasses(hasError, isTouched, value) {
-	if (!isTouched) return ''
-	// Only show valid state if there's an actual value
-	return hasError ? 'is-invalid has-error' : (value ? 'is-valid' : '')
+  if (!isTouched) return "";
+  // Only show valid state if there's an actual value
+  return hasError ? "is-invalid has-error" : value ? "is-valid" : "";
 }
 
 /**
@@ -65,13 +65,13 @@ export function getValidationClasses(hasError, isTouched, value) {
  * @returns {Function} Debounced validation function
  */
 export function createDebouncedValidator(validateFn, delay = 300) {
-	return debounce(validateFn, delay)
+  return debounce(validateFn, delay);
 }
 
 /**
  * Export the debounce function for backward compatibility
  */
-export { debounce }
+export { debounce };
 
 /**
  * Check if a form has any validation errors
@@ -79,7 +79,7 @@ export { debounce }
  * @returns {boolean} True if there are any errors
  */
 export function hasValidationErrors(errors) {
-	return Object.values(errors).some(value => value && value.length > 0)
+  return Object.values(errors).some((value) => value && value.length > 0);
 }
 
 /**
@@ -89,7 +89,7 @@ export function hasValidationErrors(errors) {
  * @returns {Object} Updated errors object
  */
 export function clearFieldError(errors, field) {
-	const updatedErrors = { ...errors }
-	delete updatedErrors[field]
-	return updatedErrors
+  const updatedErrors = { ...errors };
+  delete updatedErrors[field];
+  return updatedErrors;
 }

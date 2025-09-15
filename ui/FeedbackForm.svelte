@@ -22,7 +22,7 @@
 	import { createMessageGetter } from '../utils/messages.js'
 	import { defaultMessages } from '../config/defaultMessages.js'
 	
-	const logger = createLogger('FeedbackForm')
+	const _logger = createLogger('FeedbackForm')
 	
 
 	// Props
@@ -37,7 +37,7 @@
 	}
 	
 	// Create message getter
-	const getMessage = createMessageGetter({ ...defaultMessages, ...props.messages })
+	const _getMessage = createMessageGetter({ ...defaultMessages, ...props.messages })
 
 	// Define validation schema using zod
 	const feedbackSchema = z.object({

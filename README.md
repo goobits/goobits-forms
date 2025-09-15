@@ -1,7 +1,9 @@
 # 📝 @goobits/forms
+
 Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
 
 ## ✨ Key Features
+
 - **🎨 Form Types** - Contact, support, feedback, booking, and business forms
 - **✅ Schema Validation** - Built-in Zod validation with type safety
 - **🔐 Bot Protection** - Optional reCAPTCHA v3 integration
@@ -10,9 +12,11 @@ Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
 - **♿ Accessibility** - WCAG 2.1 compliant with ARIA support
 
 ## 🔒 Security Notice
+
 This package handles user input. Always validate and sanitize data server-side. Never trust client-side validation alone. The included sanitization is basic and should be supplemented with server-side security measures.
 
 ## 🚀 Quick Start
+
 ```bash
 # Install package and peer dependencies
 npm install @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
@@ -24,26 +28,26 @@ bun add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-sup
 ```js
 // src/lib/contact-config.js - Configure form categories
 export const contactConfig = {
-  appName: 'My App',
+  appName: "My App",
   categories: {
-    'general': {
-      label: 'General Inquiry',
-      fields: ['name', 'email', 'message', 'coppa']
+    general: {
+      label: "General Inquiry",
+      fields: ["name", "email", "message", "coppa"],
     },
-    'support': {
-      label: 'Technical Support',  
-      fields: ['name', 'email', 'urgency', 'message', 'attachment']
-    }
-  }
-}
+    support: {
+      label: "Technical Support",
+      fields: ["name", "email", "urgency", "message", "attachment"],
+    },
+  },
+};
 ```
 
 ```js
 // src/app.js - Initialize configuration
-import { initContactFormConfig } from '@goobits/forms/config'
-import { contactConfig } from '$lib/contact-config.js'
+import { initContactFormConfig } from "@goobits/forms/config";
+import { contactConfig } from "$lib/contact-config.js";
 
-initContactFormConfig(contactConfig)
+initContactFormConfig(contactConfig);
 ```
 
 ```svelte
@@ -62,41 +66,42 @@ initContactFormConfig(contactConfig)
 ```js
 // Complete configuration options
 const contactConfig = {
-  appName: 'My App',
-  
+  appName: "My App",
+
   // UI customization
   ui: {
-    submitButtonText: 'Send Message',
-    submittingButtonText: 'Sending...',
+    submitButtonText: "Send Message",
+    submittingButtonText: "Sending...",
     resetAfterSubmit: true,
-    showSuccessMessage: true
+    showSuccessMessage: true,
   },
-  
+
   // reCAPTCHA integration
   recaptcha: {
     enabled: true,
-    provider: 'google-v3',
-    siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
-    threshold: 0.5
+    provider: "google-v3",
+    siteKey: "YOUR_RECAPTCHA_SITE_KEY",
+    threshold: 0.5,
   },
-  
+
   // File upload settings
   uploads: {
     enabled: true,
-    maxSize: '5MB',
-    allowedTypes: ['image/jpeg', 'image/png', 'application/pdf']
-  }
-}
+    maxSize: "5MB",
+    allowedTypes: ["image/jpeg", "image/png", "application/pdf"],
+  },
+};
 ```
 
 ## 🌐 Internationalization
 
 ### Component-Level Translation
+
 ```svelte
 <!-- Direct message prop override -->
 <script>
   import { ContactForm } from '@goobits/forms'
-  
+
   const messages = {
     howCanWeHelp: 'Comment pouvons-nous vous aider?',
     sendMessage: 'Envoyer le message',
@@ -108,6 +113,7 @@ const contactConfig = {
 ```
 
 ### Server Integration
+
 ```js
 // hooks.server.js - Automatic language detection
 import { handleFormI18n } from '@goobits/forms/i18n'
@@ -119,6 +125,7 @@ export async function handle({ event, resolve }) {
 ```
 
 ### Page Integration
+
 ```js
 // contact/+page.server.js - Enhanced page loading
 import { loadWithFormI18n } from '@goobits/forms/i18n'
@@ -131,16 +138,17 @@ export const load = async (event) => {
 ```
 
 ### Paraglide Integration
+
 ```js
 // Seamless Paraglide integration
-import { createMessageGetter } from '@goobits/forms/i18n'
-import * as m from '$paraglide/messages'
+import { createMessageGetter } from "@goobits/forms/i18n";
+import * as m from "$paraglide/messages";
 
 const getMessage = createMessageGetter({
   howCanWeHelp: m.howCanWeHelp,
   sendMessage: m.sendMessage,
-  sending: m.sending
-})
+  sending: m.sending,
+});
 ```
 
 ## 🧩 Components
@@ -148,7 +156,7 @@ const getMessage = createMessageGetter({
 ```svelte
 <!-- Core components -->
 <script>
-  import { 
+  import {
     ContactForm,        // Main form with validation
     ContactFormPage,    // Complete page layout
     FormField,          // Reusable field component
@@ -190,6 +198,7 @@ import '@goobits/forms/ui/ContactForm.css'
 ## ♿ Accessibility
 
 WCAG 2.1 AA compliant with:
+
 - Semantic HTML structure and proper heading hierarchy
 - ARIA labels, descriptions, and live regions
 - Full keyboard navigation and focus management

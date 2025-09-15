@@ -1,6 +1,5 @@
 <script>
 	import { CheckCircle, AlertCircle } from '@lucide/svelte'
-	import { onMount } from 'svelte'
 	
 	let {
 		fieldName,

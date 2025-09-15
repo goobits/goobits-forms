@@ -4,18 +4,18 @@
 
 // Log levels
 export const LogLevels = {
-	ERROR: 0,
-	WARN: 1,
-	INFO: 2,
-	DEBUG: 3
-}
+  ERROR: 0,
+  WARN: 1,
+  INFO: 2,
+  DEBUG: 3,
+};
 
 // Global logger configuration
 let globalConfig = {
-	enabled: true,
-	level: LogLevels.INFO,
-	prefix: '@goobits/contactform'
-}
+  enabled: true,
+  level: LogLevels.INFO,
+  prefix: "@goobits/contactform",
+};
 
 /**
  * Configure the global logger
@@ -25,7 +25,7 @@ let globalConfig = {
  * @param {string} config.prefix - Global prefix for all logs
  */
 export function configureLogger(config) {
-	globalConfig = { ...globalConfig, ...config }
+  globalConfig = { ...globalConfig, ...config };
 }
 
 /**
@@ -34,24 +34,26 @@ export function configureLogger(config) {
  * @returns {Object} Logger instance
  */
 export function createLogger(module) {
-	const prefix = `[${ globalConfig.prefix }:${ module }]`
+  const prefix = `[${globalConfig.prefix}:${module}]`;
 
-	const shouldLog = (level) => {
-		return globalConfig.enabled && level <= globalConfig.level
-	}
+  const shouldLog = (level) => {
+    return globalConfig.enabled && level <= globalConfig.level;
+  };
 
-	const log = (level, method, message, ...args) => {
-		if (!shouldLog(level)) return
+  const log = (level, method, message, ...args) => {
+    if (!shouldLog(level)) return;
 
-		const timestamp = new Date().toISOString()
-		const logMethod = console[method] || console.log
-		logMethod(`${ timestamp } ${ prefix } ${ message }`, ...args)
-	}
+    const timestamp = new Date().toISOString();
+    const logMethod = console[method] || console.log;
+    logMethod(`${timestamp} ${prefix} ${message}`, ...args);
+  };
 
-	return {
-		error: (message, ...args) => log(LogLevels.ERROR, 'error', message, ...args),
-		warn: (message, ...args) => log(LogLevels.WARN, 'warn', message, ...args),
-		info: (message, ...args) => log(LogLevels.INFO, 'info', message, ...args),
-		debug: (message, ...args) => log(LogLevels.DEBUG, 'debug', message, ...args)
-	}
+  return {
+    error: (message, ...args) =>
+      log(LogLevels.ERROR, "error", message, ...args),
+    warn: (message, ...args) => log(LogLevels.WARN, "warn", message, ...args),
+    info: (message, ...args) => log(LogLevels.INFO, "info", message, ...args),
+    debug: (message, ...args) =>
+      log(LogLevels.DEBUG, "debug", message, ...args),
+  };
 }

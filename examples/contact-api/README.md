@@ -13,44 +13,44 @@ This example demonstrates how to create a contact form API endpoint using the `@
 
 ```javascript
 // /api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler'
+import { createContactApiHandler } from "@goobits/forms/handlers/contactFormHandler";
 
 export const POST = createContactApiHandler({
   // Email configuration
   adminEmail: process.env.ADMIN_EMAIL,
   fromEmail: process.env.FROM_EMAIL,
-  
+
   // Security configuration
   recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
-  
+
   // Custom handlers
   customSuccessHandler: async (data) => {
     // Store in database, send notifications, etc.
     return {
-      message: 'Thank you for your message!',
-      reference: `REF-${Date.now().toString(36)}`
-    }
-  }
-})
+      message: "Thank you for your message!",
+      reference: `REF-${Date.now().toString(36)}`,
+    };
+  },
+});
 ```
 
 ## Configuration Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `adminEmail` | string | Email address to send notifications to |
-| `fromEmail` | string | From email address for notifications |
-| `emailServiceConfig` | object | Configuration for the email service |
-| `successMessage` | string | Default success message |
-| `errorMessage` | string | Default error message |
-| `rateLimitMessage` | string | Message shown when rate limited |
-| `recaptchaSecretKey` | string | reCAPTCHA secret key |
-| `recaptchaMinScore` | number | Minimum score for reCAPTCHA v3 (0.0-1.0) |
-| `rateLimitMaxRequests` | number | Maximum requests in the time window |
-| `rateLimitWindowMs` | number | Time window for rate limiting in milliseconds |
-| `logSubmissions` | boolean | Whether to log submissions |
-| `customValidation` | function | Custom validation function |
-| `customSuccessHandler` | function | Custom success handler function |
+| Option                 | Type     | Description                                   |
+| ---------------------- | -------- | --------------------------------------------- |
+| `adminEmail`           | string   | Email address to send notifications to        |
+| `fromEmail`            | string   | From email address for notifications          |
+| `emailServiceConfig`   | object   | Configuration for the email service           |
+| `successMessage`       | string   | Default success message                       |
+| `errorMessage`         | string   | Default error message                         |
+| `rateLimitMessage`     | string   | Message shown when rate limited               |
+| `recaptchaSecretKey`   | string   | reCAPTCHA secret key                          |
+| `recaptchaMinScore`    | number   | Minimum score for reCAPTCHA v3 (0.0-1.0)      |
+| `rateLimitMaxRequests` | number   | Maximum requests in the time window           |
+| `rateLimitWindowMs`    | number   | Time window for rate limiting in milliseconds |
+| `logSubmissions`       | boolean  | Whether to log submissions                    |
+| `customValidation`     | function | Custom validation function                    |
+| `customSuccessHandler` | function | Custom success handler function               |
 
 ## Email Service Configuration
 
@@ -72,7 +72,7 @@ emailServiceConfig: {
 
 ```javascript
 emailServiceConfig: {
-  provider: 'mock'
+  provider: "mock";
 }
 ```
 
@@ -81,15 +81,15 @@ emailServiceConfig: {
 ### Custom Validation
 
 ```javascript
-customValidation: data => {
-  const errors = {}
-  
+customValidation: (data) => {
+  const errors = {};
+
   if (data.phone && !/^\+?[\d\s()-]{7,}$/.test(data.phone)) {
-    errors.phone = 'Please enter a valid phone number'
+    errors.phone = "Please enter a valid phone number";
   }
-  
-  return errors
-}
+
+  return errors;
+};
 ```
 
 ### Custom Success Handler
@@ -100,13 +100,13 @@ customSuccessHandler: async (data, clientAddress) => {
   const id = await db.insertContactSubmission({
     ...data,
     ip: clientAddress,
-    timestamp: new Date()
-  })
-  
+    timestamp: new Date(),
+  });
+
   // Return custom response
   return {
-    message: 'Thank you for your message!',
-    reference: `REF-${id}`
-  }
-}
+    message: "Thank you for your message!",
+    reference: `REF-${id}`,
+  };
+};
 ```
