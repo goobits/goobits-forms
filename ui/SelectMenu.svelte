@@ -7,6 +7,7 @@
   interface SelectOption {
     value: string;
     label: string;
+    icon?: typeof Icon;
   }
 
   interface Props {
@@ -63,6 +64,7 @@
     options.map(option => ({
       type: 'action' as const,
       label: option.label,
+      icon: option.icon ? (option.icon as any) : undefined,
       onClick: () => {
         selectedValue = option.value;
         value = option.value;  // Update the bindable prop
@@ -79,6 +81,11 @@
 
   const displayText = $derived(
     selectedOption?.label || placeholder
+  );
+
+  // Get the icon to display - selected option's icon or the default icon
+  const displayIcon = $derived(
+    selectedOption?.icon || IconComponent
   );
 
   function toggleMenu() {
@@ -174,9 +181,9 @@
   onkeydown={handleKeydown}
   {...ariaAttributes}
 >
-  {#if IconComponent}
+  {#if displayIcon}
     <div class="select-menu-trigger__icon">
-      <IconComponent size="16" />
+      <svelte:component this={displayIcon} size="16" />
     </div>
   {/if}
   
@@ -197,7 +204,7 @@
   onClose={closeMenu}
   anchorEl={triggerRef}
   autoFocus={true}
-  showIcons={false}
+  showIcons={true}
   showShortcuts={false}
   minWidth={triggerWidth}
   className="select-menu-dropdown__menu"
