@@ -6,22 +6,22 @@
  */
 
 // External Imports
-import { superForm } from 'sveltekit-superforms'
-import { zod4 } from 'sveltekit-superforms/adapters'
+import { superForm } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 // Import logger utility
-import { createLogger } from '../utils/logger.js'
+import { createLogger } from "../utils/logger.js";
 
-const logger = createLogger('FormService')
+const logger = createLogger("FormService");
 
 // Internal Imports
 // import { createRecaptchaProvider } from './recaptcha/index.js'
-import { sanitizeFormData } from '../utils/sanitizeInput.js'
-import { debounce } from '../utils/debounce.js'
-import { handleError } from '../utils/errorHandler.js'
+import { sanitizeFormData } from "../utils/sanitizeInput.js";
+import { debounce } from "../utils/debounce.js";
+import { handleError } from "../utils/errorHandler.js";
 
 // Import screen reader service to avoid circular dependencies
-import * as screenReaderService from './screenReaderService.js'
+import * as screenReaderService from "./screenReaderService.js";
 
 /**
  * Initialize a form with standard configuration
@@ -32,39 +32,48 @@ import * as screenReaderService from './screenReaderService.js'
  * @param {Object} options.extraOptions - Additional superForm options
  * @returns {Object} The initialized form object and related utilities
  */
-export function initializeForm({ initialData, schema, onSubmitHandler, extraOptions = {} }) {
-	// Validate schema before passing to zod adapter
-	if (!schema || typeof schema !== 'object' || !schema._def) {
-		const errorMsg = `Invalid schema provided to initializeForm. Schema details: type=${typeof schema}, hasDefProperty=${!!schema?._def}, schema=${JSON.stringify(schema, null, 2)}`;
-		logger.error(errorMsg);
-		throw new Error(errorMsg);
-	}
+export function initializeForm({
+  initialData,
+  schema,
+  onSubmitHandler,
+  extraOptions = {},
+}) {
+  // Validate schema before passing to zod adapter
+  if (!schema || typeof schema !== "object" || !schema._def) {
+    const errorMsg = `Invalid schema provided to initializeForm. Schema details: type=${typeof schema}, hasDefProperty=${!!schema?._def}, schema=${JSON.stringify(schema, null, 2)}`;
+    logger.error(errorMsg);
+    throw new Error(errorMsg);
+  }
 
-	logger.debug('Initializing form with schema', { 
-		schemaType: typeof schema, 
-		hasDefProperty: !!schema._def,
-		schemaKeys: schema ? Object.keys(schema) : [],
-		initialDataKeys: initialData ? Object.keys(initialData) : []
-	});
+  logger.debug("Initializing form with schema", {
+    schemaType: typeof schema,
+    hasDefProperty: !!schema._def,
+    schemaKeys: schema ? Object.keys(schema) : [],
+    initialDataKeys: initialData ? Object.keys(initialData) : [],
+  });
 
-	try {
-		return superForm(initialData, {
-			dataType: 'json',
-			validators: zod4(schema),
-			resetForm: false,
-			taintedMessage: false,
-			multipleSubmits: 'prevent',
-			SPA: true,
-			onSubmit: onSubmitHandler,
-			onUpdate() {
-				// Handle form updates
-			},
-			...extraOptions
-		});
-	} catch (error) {
-		logger.error('Failed to initialize superForm', { error: error.message, schema, initialData });
-		throw error;
-	}
+  try {
+    return superForm(initialData, {
+      dataType: "json",
+      validators: zod4(schema),
+      resetForm: false,
+      taintedMessage: false,
+      multipleSubmits: "prevent",
+      SPA: true,
+      onSubmit: onSubmitHandler,
+      onUpdate() {
+        // Handle form updates
+      },
+      ...extraOptions,
+    });
+  } catch (error) {
+    logger.error("Failed to initialize superForm", {
+      error: error.message,
+      schema,
+      initialData,
+    });
+    throw error;
+  }
 }
 
 /**
@@ -73,15 +82,15 @@ export function initializeForm({ initialData, schema, onSubmitHandler, extraOpti
  * @returns {Object} The initial form state
  */
 export function initializeFormState(initialState = {}) {
-	return {
-		attachments: [],
-		selectedCategory: '',
-		submissionError: null,
-		recaptcha: null,
-		touched: {},
-		cachedCategory: null,
-		...initialState
-	}
+  return {
+    attachments: [],
+    selectedCategory: "",
+    submissionError: null,
+    recaptcha: null,
+    touched: {},
+    cachedCategory: null,
+    ...initialState,
+  };
 }
 
 /**
@@ -91,11 +100,11 @@ export function initializeFormState(initialState = {}) {
  * @param {Function} validate - Validation function
  */
 export function handleFieldInput(touched, fieldName, validate) {
-	// Validate if the field has been touched
-	if (touched[fieldName]) {
-		// Use debounce to prevent too many validation calls
-		debounce(() => validate(fieldName), 300)()
-	}
+  // Validate if the field has been touched
+  if (touched[fieldName]) {
+    // Use debounce to prevent too many validation calls
+    debounce(() => validate(fieldName), 300)();
+  }
 }
 
 /**
@@ -105,10 +114,10 @@ export function handleFieldInput(touched, fieldName, validate) {
  * @returns {Object} Updated touched object
  */
 export function handleFieldTouch(touched, fieldName) {
-	return {
-		...touched,
-		[fieldName]: true
-	}
+  return {
+    ...touched,
+    [fieldName]: true,
+  };
 }
 
 /**
@@ -117,53 +126,58 @@ export function handleFieldTouch(touched, fieldName) {
  * @returns {Function} Submission handler function
  */
 export function createFormSubmitHandler(options) {
-	const {
-		validateForm,
-		recaptcha,
-		prepareFormData,
-		submitForm,
-		onSuccess,
-		onError
-	} = options
+  const {
+    validateForm,
+    recaptcha,
+    prepareFormData,
+    submitForm,
+    onSuccess,
+    onError,
+  } = options;
 
-	return async function(formData) {
-		// Validate the form first
-		if (!validateForm()) {
-			const error = handleError('Please fix the validation errors before submitting.', 'FormSubmission', { step: 'validation' })
-			onError(error)
-			return { success: false, error }
-		}
+  return async function (formData) {
+    // Validate the form first
+    if (!validateForm()) {
+      const error = handleError(
+        "Please fix the validation errors before submitting.",
+        "FormSubmission",
+        { step: "validation" },
+      );
+      onError(error);
+      return { success: false, error };
+    }
 
-		try {
-			// Get reCAPTCHA token if available
-			const recaptchaToken = await getRecaptchaToken(recaptcha)
+    try {
+      // Get reCAPTCHA token if available
+      const recaptchaToken = await getRecaptchaToken(recaptcha);
 
-			// Prepare, sanitize and submit
-			const preparedData = await prepareFormData(formData, recaptchaToken)
-			const sanitizedData = sanitizeFormData(preparedData)
-			const response = await submitForm(sanitizedData)
+      // Prepare, sanitize and submit
+      const preparedData = await prepareFormData(formData, recaptchaToken);
+      const sanitizedData = sanitizeFormData(preparedData);
+      const response = await submitForm(sanitizedData);
 
-			// Handle response
-			if (response?.success) {
-				onSuccess(response)
-				return { success: true, data: response }
-			}
+      // Handle response
+      if (response?.success) {
+        onSuccess(response);
+        return { success: true, data: response };
+      }
 
-			// Handle non-success response
-			const error = handleError(
-				response?.error || 'Form submission failed',
-				'FormSubmission',
-				{ response }
-			)
-			throw error
-		} catch (error) {
-			const standardizedError = error.name === 'ContactFormError'
-				? error
-				: handleError(error, 'FormSubmission', { formData })
-			onError(standardizedError)
-			return { success: false, error: standardizedError }
-		}
-	}
+      // Handle non-success response
+      const error = handleError(
+        response?.error || "Form submission failed",
+        "FormSubmission",
+        { response },
+      );
+      throw error;
+    } catch (error) {
+      const standardizedError =
+        error.name === "ContactFormError"
+          ? error
+          : handleError(error, "FormSubmission", { formData });
+      onError(standardizedError);
+      return { success: false, error: standardizedError };
+    }
+  };
 }
 
 /**
@@ -172,14 +186,14 @@ export function createFormSubmitHandler(options) {
  * @returns {Promise<string|null>} Token or null
  */
 async function getRecaptchaToken(recaptcha) {
-	if (!recaptcha) return null
+  if (!recaptcha) return null;
 
-	try {
-		return await recaptcha.getToken('submit')
-	} catch (error) {
-		logger.error('reCAPTCHA execution failed:', error)
-		return null
-	}
+  try {
+    return await recaptcha.getToken("submit");
+  } catch (error) {
+    logger.error("reCAPTCHA execution failed:", error);
+    return null;
+  }
 }
 
 /**
@@ -189,20 +203,16 @@ async function getRecaptchaToken(recaptcha) {
  * @param {Object} state - State variables to reset
  */
 export function resetForm(setFormData, defaultProps, state) {
-	// Reset the form data
-	setFormData(defaultProps)
+  // Reset the form data
+  setFormData(defaultProps);
 
-	// Reset form state
-	if (state.submissionError) {
-		state.submissionError = null
-	}
+  // Reset form state
+  if (state.submissionError) {
+    state.submissionError = null;
+  }
 
-	// Clear touched state
-	if (state.touched) {
-		state.touched = {}
-	}
+  // Clear touched state
+  if (state.touched) {
+    state.touched = {};
+  }
 }
-
-// Deprecated createStatusRegion removed - use screenReaderService.announce() instead
-
-// Deprecated cleanupStatusRegions removed - use screenReaderService.cleanupAllAnnouncements() instead

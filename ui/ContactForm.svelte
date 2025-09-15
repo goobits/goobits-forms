@@ -6,10 +6,10 @@
 	import SelectMenu from './SelectMenu.svelte'
 	import Input from './Input.svelte'
 	import Textarea from './Textarea.svelte'
-	import { createEventDispatcher, onDestroy, onMount, untrack } from 'svelte'
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte'
 	import { z } from 'zod'
 
-	const dispatch = createEventDispatcher()
+	const _dispatch = createEventDispatcher()
 
 	import { getContactFormConfig } from '../config/index.js'
 	import { Field, Control, Label, FieldErrors } from 'formsnap'
@@ -113,25 +113,8 @@
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages })
 	
-	// Create a fallback schema if none exists (Zod 4 compatible)
-	const fallbackSchema = z.object({
-		name: z.string().min(1, { message: 'Name is required' }),
-		email: z.string().email({ message: 'Invalid email' }),
-		message: z.string().min(1, { message: 'Message is required' }),
-		category: z.string().optional(),
-		attachments: z.array(z.any()).optional()
-	})
-	
-	// For now, always use the fallback schema to avoid compatibility issues
-	// TODO: Fix the schema generation to be compatible with sveltekit-superforms
-	const contactSchema = fallbackSchema
-	
-	// Debug logging - using fallback schema
-	console.log('ContactForm: Using fallback schema', {
-		category: initialData.category,
-		schemaType: typeof contactSchema,
-		isZodSchema: contactSchema?._def ? true : false
-	})
+	// Use dynamic schema based on selected category
+	const contactSchema = schemas.categories[initialData.category] || schemas.categories.general || schemas.complete
 
 	// Initialize form state using shared service
 	const formState = initializeFormState({
@@ -141,7 +124,7 @@
 	})
 
 	let attachments = $state(formState.attachments)
-	let cachedCategory = $state(formState.cachedCategory)
+	let _cachedCategory = $state(formState.cachedCategory)
 	let recaptcha = $state(formState.recaptcha)
 	let selectedCategory = $state(formState.selectedCategory)
 	let showThankYou = $state(formState.showThankYou)
@@ -546,7 +529,7 @@
 			{#each categoryToFieldMap[selectedCategory] || [] as fieldName}
 				{#if fieldConfigs[fieldName] && fieldName !== 'category'}
 					<Field {form} name={fieldName}>
-						{#snippet children({ value, errors, tainted, constraints })}
+						{#snippet children({ value: _value, errors, tainted: _tainted, constraints: _constraints })}
 							<Control>
 								{#snippet children({ props })}
 									<Label class="contact-form__label" data-name={fieldName}>
@@ -569,7 +552,7 @@
 														typeof option === 'object' ? option : { value: option, label: option }
 													)}
 													placeholder="Select {fieldConfigs[fieldName].label.replace('(optional)', '')}"
-													onchange={(value) => {
+													onchange={(_value) => {
 														handleInput(fieldName);
 														handleBlur(fieldName);
 													}}
