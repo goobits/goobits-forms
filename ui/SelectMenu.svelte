@@ -189,30 +189,19 @@
   </div>
 </button>
 
-{#if isOpen}
-  <div
-    class="select-menu-dropdown"
-    style="
-      position: fixed;
-      left: {menuPosition.x}px;
-      top: {menuPosition.y + 4}px;
-      width: {triggerWidth}px;
-      z-index: 1000;
-    "
-  >
-    <Menu
-      isVisible={isOpen}
-      items={menuItems}
-      x={0}
-      y={0}
-      onClose={closeMenu}
-      autoFocus={true}
-      showIcons={false}
-      showShortcuts={false}
-      className="select-menu-dropdown__menu"
-    />
-  </div>
-{/if}
+<Menu
+  isVisible={isOpen}
+  items={menuItems}
+  x={menuPosition.x}
+  y={menuPosition.y + 4}
+  onClose={closeMenu}
+  anchorEl={triggerRef}
+  autoFocus={true}
+  showIcons={false}
+  showShortcuts={false}
+  minWidth={triggerWidth}
+  className="select-menu-dropdown__menu"
+/>
 
 <style>
   .select-menu-trigger {
@@ -288,19 +277,10 @@
     transform: rotate(180deg);
   }
 
-  /* Dropdown positioning wrapper */
-  .select-menu-dropdown {
-    /* Container for precise positioning */
-  }
-
-  .select-menu-dropdown :global(.menu) {
-    position: relative !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    transform: none !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+  /* Select menu styling overrides */
+  :global(.select-menu-dropdown__menu .menu__content) {
+    max-height: 240px;
+    overflow-y: auto;
   }
 
   /* High contrast mode adjustments */
