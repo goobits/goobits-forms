@@ -216,7 +216,6 @@
 		content: '⚠️';
 		font-size: var(--font-size-small);
 	}
-	}
 
 	/* Add styling for formsnap generated field errors */
 	[data-fs-field-errors] {
