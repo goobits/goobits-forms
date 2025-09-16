@@ -182,8 +182,9 @@
   {...ariaAttributes}
 >
   {#if displayIcon}
+    {@const Icon = displayIcon}
     <div class="select-menu-trigger__icon">
-      <svelte:component this={displayIcon} size="16" />
+      <Icon size="16" />
     </div>
   {/if}
   
