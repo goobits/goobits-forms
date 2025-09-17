@@ -163,9 +163,44 @@ const getMessage = createMessageGetter({
     FormErrors,         // Error display
     FeedbackForm,       // Quick feedback widget
     ThankYou,           // Success message
-    UploadImage         // File upload with preview
-  } from '@goobits/forms'
+    UploadImage,        // File upload with preview
+    DemoPlayground      // Interactive demo component
+  } from '@goobits/forms/ui'
 </script>
+```
+
+### 🎮 Interactive Demo
+
+Use the `DemoPlayground` component to create an interactive demonstration of all form components:
+
+```svelte
+<script>
+  import { DemoPlayground } from '@goobits/forms/ui';
+  import '@goobits/forms/ui/variables.css';
+  import '@goobits/forms/ui/DemoPlayground.css';
+
+  // Your external components (optional)
+  import { ToggleSwitch, SelectMenu } from '$lib/components/ui';
+
+  const contactConfig = {
+    appName: "My App",
+    categories: {
+      general: { label: "General Inquiry", fields: ["name", "email", "message"] }
+    }
+  };
+</script>
+
+<DemoPlayground
+  config={contactConfig}
+  apiEndpoints={{
+    contact: "/api/contact",
+    feedback: "/api/feedback"
+  }}
+  externalComponents={{
+    ToggleSwitch,
+    SelectMenu
+  }}
+/>
 ```
 
 ## 🎨 Styling

@@ -40,5 +40,5 @@ export {
 } from "./handlers/categoryRouter.js";
 
 // UI Components - must be imported separately to avoid SSR issues
-// Use: import { ContactForm, CategoryContactForm } from '@goobits/forms/ui'
+// Use: import { ContactForm, CategoryContactForm, DemoPlayground } from '@goobits/forms/ui'
 // export * from './ui/index.js'

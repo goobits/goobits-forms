@@ -39,10 +39,7 @@
     transition: var(--transition-base);
   }
 
-  :global(.theme-dark) .thank-you__button,
-  :global(.theme-system-dark) .thank-you__button {
-    background-color: var(--color-surface-elevated);
-  }
+  /* Dark theme button styles handled via CSS variables */
 
   .thank-you__button:hover {
     background-color: var(--color-surface-hover);

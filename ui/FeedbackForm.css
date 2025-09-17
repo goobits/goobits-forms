@@ -136,10 +136,7 @@
     font-size: 1rem;
   }
 
-  :global(.theme-dark) .feedback__radio__text,
-  :global(.theme-system-dark) .feedback__radio__text {
-    color: var(--color-text);
-  }
+  /* Dark theme radio text handled via CSS variables */
 
   .feedback__field {
     display: block;
@@ -162,12 +159,7 @@
     margin-bottom: var(--space-4);
   }
 
-  :global(.theme-dark) .feedback__error,
-  :global(.theme-system-dark) .feedback__error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border-color: var(--color-error-600);
-    color: var(--color-error-400);
-  }
+  /* Dark theme error styles handled via CSS variables */
 
   .feedback__error__message {
     margin: 0;
@@ -191,13 +183,7 @@
     transition: border-color 0.15s ease;
   }
 
-  :global(.theme-dark) .feedback__input,
-  :global(.theme-system-dark) .feedback__input,
-  :global(.theme-dark) .feedback__textarea,
-  :global(.theme-system-dark) .feedback__textarea {
-    background-color: var(--color-surface-elevated);
-    border-color: var(--color-border);
-  }
+  /* Dark theme input/textarea styles handled via CSS variables */
 
   .feedback__input:focus,
   .feedback__textarea:focus {
@@ -206,12 +192,7 @@
     box-shadow: 0 0 0 3px var(--color-primary-100);
   }
 
-  :global(.theme-dark) .feedback__input:focus,
-  :global(.theme-system-dark) .feedback__input:focus,
-  :global(.theme-dark) .feedback__textarea:focus,
-  :global(.theme-system-dark) .feedback__textarea:focus {
-    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
-  }
+  /* Dark theme focus styles handled via CSS variables */
 
   .feedback__textarea {
     min-height: 100px;
@@ -223,11 +204,7 @@
     background-color: var(--color-error-50);
   }
 
-  :global(.theme-dark) .feedback__textarea.feedback--error,
-  :global(.theme-system-dark) .feedback__textarea.feedback--error {
-    border-color: var(--color-error-400) !important;
-    background-color: rgba(239, 68, 68, 0.1);
-  }
+  /* Dark theme textarea error handled via CSS variables */
 
   .feedback__note {
     color: var(--color-text-secondary);
@@ -320,12 +297,7 @@
     border: 1px solid var(--color-border);
   }
 
-  :global(.theme-dark) .feedback__btn.feedback--secondary,
-  :global(.theme-system-dark) .feedback__btn.feedback--secondary {
-    background-color: var(--color-surface-elevated);
-    border-color: var(--color-border);
-    color: var(--color-text-secondary);
-  }
+  /* Dark theme secondary button handled via CSS variables */
 
   .feedback__btn.feedback--secondary:hover {
     background-color: var(--color-surface-hover);
