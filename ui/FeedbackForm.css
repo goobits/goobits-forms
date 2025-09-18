@@ -1,5 +1,5 @@
 /* CSS Variables for local use */
-:root {
+.forms-scope {
   --feedback-transition-quick: 0.2s ease;
   --feedback-btn-padding: 0.75rem 2.5rem;
 }

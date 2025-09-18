@@ -108,10 +108,10 @@
   }
 
   .toggle-switch--ios.active {
-    background: linear-gradient(to bottom, #4CD964, #34C759);
-    box-shadow: 
+    background: linear-gradient(to bottom, var(--color-success-400, #4CD964), var(--color-success-500, #34C759));
+    box-shadow:
       inset 0 1px 3px rgba(0, 0, 0, 0.1),
-      0 0 0 0.5px rgba(52, 199, 89, 0.5);
+      0 0 0 0.5px var(--color-success-300, rgba(52, 199, 89, 0.5));
   }
 
   .toggle-switch--ios.active::after {

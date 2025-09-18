@@ -157,9 +157,9 @@
 <style>
 	/* Enhanced focus styles for keyboard navigation */
 	:global(.contact-form__field--focused) {
-		outline: 2px solid #4d90fe !important;
+		outline: 2px solid var(--color-primary-500) !important;
 		outline-offset: 2px !important;
-		box-shadow: 0 0 0 3px rgba(77, 144, 254, 0.3) !important;
+		box-shadow: 0 0 0 3px var(--color-primary-100) !important;
 		transition: outline 0.2s ease, box-shadow 0.2s ease;
 	}
 

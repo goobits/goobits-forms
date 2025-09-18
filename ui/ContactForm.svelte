@@ -657,8 +657,8 @@
 	.submission-error {
 		text-align: center;
 		padding: 1rem;
-		color: #e74c3c;
-		background-color: #fae5e5;
+		color: var(--color-error-600);
+		background-color: var(--color-error-50);
 		border-radius: 4px;
 		margin-bottom: 1rem;
 		display: flex;

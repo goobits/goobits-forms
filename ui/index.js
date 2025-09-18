@@ -11,3 +11,7 @@ export { default as FormField } from "./FormField.svelte";
 export { default as ThankYou } from "./ThankYou.svelte";
 export { default as UploadImage } from "./UploadImage.svelte";
 export { default as DemoPlayground } from "./DemoPlayground.svelte";
+export { default as Input } from "./Input.svelte";
+export { default as Textarea } from "./Textarea.svelte";
+export { default as SelectMenu } from "./SelectMenu.svelte";
+export { default as ToggleSwitch } from "./ToggleSwitch.svelte";

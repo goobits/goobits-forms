@@ -84,8 +84,13 @@
 				continue
 			}
 
-			const preview = await createPreview(file)
-			files = [ ...files, { file, preview } ]
+			try {
+				const preview = await createPreview(file)
+				files = [ ...files, { file, preview } ]
+			} catch (error) {
+				onError('Failed to create preview for file: ' + file.name)
+				continue
+			}
 		}
 
 		onChange(files)
@@ -107,9 +112,10 @@
 	 * @returns {Promise<string>}
 	 */
 	async function createPreview(file) {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			const reader = new FileReader()
 			reader.onloadend = () => resolve(reader.result)
+			reader.onerror = () => reject(new Error('Failed to read file'))
 			reader.readAsDataURL(file)
 		})
 	}

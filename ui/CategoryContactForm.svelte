@@ -212,7 +212,7 @@
 	.required-fields-notice {
 		font-size: 0.875rem;
 		margin-bottom: 1rem;
-		color: #666;
+		color: var(--color-text-secondary);
 	}
 	
 	.form-field {
@@ -229,7 +229,7 @@
 	.form-field textarea,
 	.form-field select {
 		padding: 0.75rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--color-border);
 		border-radius: 4px;
 		font-size: 1rem;
 		width: 100%;
@@ -239,21 +239,21 @@
 	.form-field textarea:focus,
 	.form-field select:focus {
 		outline: none;
-		border-color: #4a90e2;
+		border-color: var(--color-primary-500);
 		box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 	}
 	
 	.form-field input.is-invalid,
 	.form-field textarea.is-invalid,
 	.form-field select.is-invalid {
-		border-color: #dc3545;
+		border-color: var(--color-error-500);
 		background-color: rgba(220, 53, 69, 0.05);
 	}
 	
 	.form-field input.is-valid,
 	.form-field textarea.is-valid,
 	.form-field select.is-valid {
-		border-color: #28a745;
+		border-color: var(--color-success-500);
 		background-color: rgba(40, 167, 69, 0.05);
 	}
 	
@@ -277,13 +277,13 @@
 	}
 	
 	.field-error {
-		color: #dc3545;
+		color: var(--color-error-500);
 		font-size: 0.875rem;
 		margin-top: 0.25rem;
 	}
 	
 	.required-indicator {
-		color: #dc3545;
+		color: var(--color-error-500);
 		margin-left: 0.25rem;
 	}
 	
@@ -293,7 +293,7 @@
 	
 	.submit-button {
 		padding: 0.75rem 1.5rem;
-		background-color: #007bff;
+		background-color: var(--color-primary-500);
 		color: white;
 		border: none;
 		border-radius: 4px;
@@ -303,11 +303,11 @@
 	}
 	
 	.submit-button:hover {
-		background-color: #0056b3;
+		background-color: var(--color-primary-600);
 	}
 	
 	.submit-button:disabled {
-		background-color: #6c757d;
+		background-color: var(--color-text-disabled);
 		cursor: not-allowed;
 	}
 </style>
