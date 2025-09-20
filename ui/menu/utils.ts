@@ -269,7 +269,7 @@ export function getMenuAriaAttributes(menuId: string, focusedIndex: number) {
  */
 export function createContextMenuState(
   event: MouseEvent,
-  data?: Record<string, any>
+  data?: Record<string, any>,
 ): { x: number; y: number; target?: HTMLElement; data?: Record<string, any> } {
   event.preventDefault();
   event.stopPropagation();
@@ -278,7 +278,7 @@ export function createContextMenuState(
     x: event.clientX,
     y: event.clientY,
     target: event.currentTarget as HTMLElement,
-    data: data || {}
+    data: data || {},
   };
 }
 
@@ -288,10 +288,15 @@ export function createContextMenuState(
 export function contextMenuAction(
   node: HTMLElement,
   params: {
-    onContextMenu: (state: { x: number; y: number; target?: HTMLElement; data?: Record<string, any> }) => void;
+    onContextMenu: (state: {
+      x: number;
+      y: number;
+      target?: HTMLElement;
+      data?: Record<string, any>;
+    }) => void;
     data?: Record<string, any>;
     disabled?: boolean;
-  }
+  },
 ) {
   function handleContextMenu(event: MouseEvent) {
     if (params.disabled) return;
@@ -300,15 +305,15 @@ export function contextMenuAction(
     params.onContextMenu(state);
   }
 
-  node.addEventListener('contextmenu', handleContextMenu);
+  node.addEventListener("contextmenu", handleContextMenu);
 
   return {
     update(newParams: typeof params) {
       params = newParams;
     },
     destroy() {
-      node.removeEventListener('contextmenu', handleContextMenu);
-    }
+      node.removeEventListener("contextmenu", handleContextMenu);
+    },
   };
 }
 

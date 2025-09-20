@@ -42,7 +42,7 @@ export {
   getMenuAriaAttributes,
   getMenuItemAriaAttributes,
   createContextMenuState,
-  contextMenuAction
+  contextMenuAction,
 } from "./utils";
 
 /**

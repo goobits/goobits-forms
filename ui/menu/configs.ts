@@ -14,7 +14,7 @@ export function createSelectMenu(options: {
   items: Array<{ value: string; label: string; icon?: string }>;
   onSelect: (value: string) => void;
 }): MenuConfig {
-  const items: MenuItem[] = options.items.map(option => ({
+  const items: MenuItem[] = options.items.map((option) => ({
     type: "action",
     label: option.label,
     icon: option.icon,
@@ -25,7 +25,7 @@ export function createSelectMenu(options: {
     id: "select-menu",
     items,
     variant: "default",
-    showIcons: !!options.items.some(item => item.icon),
+    showIcons: !!options.items.some((item) => item.icon),
     showShortcuts: false,
   };
 }
@@ -42,7 +42,7 @@ export function createActionMenu(options: {
     confirmMessage?: string;
   }>;
 }): MenuConfig {
-  const items: MenuItem[] = options.actions.map(action => ({
+  const items: MenuItem[] = options.actions.map((action) => ({
     type: action.destructive ? "destructive" : "action",
     label: action.label,
     icon: action.icon,
