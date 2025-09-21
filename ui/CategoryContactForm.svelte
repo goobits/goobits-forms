@@ -1,18 +1,77 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte'
 	import { generateCsrfToken } from '../security/csrf.js'
-	import { getValidationClasses } from '../validation/index.js'
+	import { getValidationClasses } from '../validation/index.ts'
 	import FormErrors from './FormErrors.svelte'
 	
-	export let config = {}
-	export let categorySlug = 'general'
-	export let form = { data: {}, errors: {}, isSubmitted: false }
-	export let messages = {}
-	export let showRequiredLabel = true
-	export let submitButtonText = undefined
-	export let submittingButtonText = undefined
-	export let resetAfterSubmit = true
-	export let hideLabels = false
+	/**
+	 * Configuration object containing categories, field configurations, and UI settings
+	 */
+	export let config: {
+		categories?: Record<string, { fields: string[] }>
+		fieldConfigs?: Record<string, {
+			type?: string
+			label: string
+			placeholder?: string
+			required?: boolean
+			rows?: number
+			maxlength?: number
+			min?: string | number
+			max?: string | number
+			pattern?: string
+			accept?: string
+			multiple?: boolean
+			options?: Array<{ value: string; label: string }>
+		}>
+		ui?: {
+			submitButtonText?: string
+			submittingButtonText?: string
+		}
+	} = {}
+
+	/**
+	 * The category slug to determine which fields to display
+	 */
+	export let categorySlug: string = 'general'
+
+	/**
+	 * Form state object containing data, errors, and submission status
+	 */
+	export let form: {
+		data: Record<string, any>
+		errors: Record<string, string>
+		isSubmitted: boolean
+	} = { data: {}, errors: {}, isSubmitted: false }
+
+	/**
+	 * Localization messages for form labels and validation
+	 */
+	export let messages: Record<string, string> = {}
+
+	/**
+	 * Whether to show the required fields label
+	 */
+	export let showRequiredLabel: boolean = true
+
+	/**
+	 * Custom text for the submit button
+	 */
+	export let submitButtonText: string | undefined = undefined
+
+	/**
+	 * Custom text for the submit button when submitting
+	 */
+	export let submittingButtonText: string | undefined = undefined
+
+	/**
+	 * Whether to reset form after successful submission
+	 */
+	export let resetAfterSubmit: boolean = true
+
+	/**
+	 * Whether to hide field labels
+	 */
+	export let hideLabels: boolean = false
 	
 	// Extract form configuration
 	const { categories = {}, fieldConfigs = {}, ui = {} } = config
@@ -25,26 +84,26 @@
 	const _submittingButtonText = submittingButtonText || ui.submittingButtonText || 'Sending...'
 	
 	// Generate CSRF token for form security
-	let csrfToken = ''
+	let csrfToken: string = ''
 	$: {
-		generateCsrfToken().then(token => {
+		generateCsrfToken().then((token: string) => {
 			csrfToken = token
 		})
 	}
 	
 	// Track form submission state
-	let isSubmitting = false
+	let isSubmitting: boolean = false
 	
 	// Track form field touched state
-	let touchedFields = {}
-	function markAsTouched(fieldName) {
+	let touchedFields: Record<string, boolean> = {}
+	function markAsTouched(fieldName: string): void {
 		touchedFields[fieldName] = true
 	}
 	
 	// Form submission handler
 	const dispatch = createEventDispatcher()
 	
-	function handleSubmit(event) {
+	function handleSubmit(event: SubmitEvent): void {
 		// Mark all fields as touched on submit
 		if (categoryConfig.fields) {
 			categoryConfig.fields.forEach(field => {
@@ -64,7 +123,7 @@
 		// Don't prevent default to allow normal form submission
 	}
 	
-	function getMessage(key, defaultMsg) {
+	function getMessage(key: string, defaultMsg: string): string {
 		return messages[key] || defaultMsg
 	}
 </script>

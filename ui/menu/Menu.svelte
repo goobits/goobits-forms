@@ -10,8 +10,8 @@
 	import MenuItem from './MenuItem.svelte';
 	import MenuSeparator from './MenuSeparator.svelte';
 	import Portal from '../Portal.svelte';
-	import type { MenuProps } from './types';
 
+	/** @type {import('./types').MenuProps} */
 	const {
 		id = `menu-${Math.random().toString(36).substr(2, 9)}`,
 		items,
@@ -31,28 +31,47 @@
 		pointerDirection = 'auto',
 		anchorEl,
 		autoFocus = false
-	}: MenuProps = $props();
+	} = $props();
 
-	let menuRef = $state<HTMLDivElement | undefined>();
-	let menuStyle = $state<Record<string, string>>({});
-	let pointerPosition = $state<{ placement: string; offset: number }>({
+	/** @type {HTMLDivElement|undefined} */
+	let menuRef = $state();
+	/** @type {Record<string, string>} */
+	let menuStyle = $state({});
+	/** @type {{ placement: string; offset: number }} */
+	let pointerPosition = $state({
 		placement: 'bottom-right',
 		offset: 0
 	});
 	let isPositioned = $state(false);
+	let isClosing = $state(false);
+	let fadeTimeout = $state<number | null>(null);
 
 	// Keyboard navigation state
-	let keyboardNav = $state<ReturnType<typeof createKeyboardNavigation>>();
+	/** @type {ReturnType<typeof createKeyboardNavigation>|undefined} */
+	let keyboardNav = $state();
 
 	// Z-index from design system - menus should appear above modals
 	const MENU_Z_INDEX = 10001; // Higher than modal (10000)
+
+	// Handle fade-out animation on close
+	function handleClose() {
+		if (isClosing) return; // Prevent multiple close calls
+
+		isClosing = true;
+
+		// Fade out over 200ms then actually close
+		fadeTimeout = window.setTimeout(() => {
+			onClose();
+			isClosing = false;
+		}, 200);
+	}
 
 	// Initialize keyboard navigation when menu becomes visible
 	$effect(() => {
 		if (isVisible && items) {
 			keyboardNav = createKeyboardNavigation(
 				items,
-				onClose,
+				handleClose,
 				(index: number) => {
 					const item = items[index];
 					if (item && item.type !== 'separator') {
@@ -66,7 +85,13 @@
 			isPositioned = true;
 		} else if (!isVisible) {
 			isPositioned = false;
+			isClosing = false;
 			keyboardNav = undefined;
+			// Clear any pending fade timeout
+			if (fadeTimeout) {
+				clearTimeout(fadeTimeout);
+				fadeTimeout = null;
+			}
 		}
 	});
 
@@ -114,7 +139,7 @@
 					if (anchorEl && anchorEl.contains(target)) {
 						return; // Don't close if clicking on the button that opens the menu
 					}
-					onClose();
+					handleClose();
 				}
 			};
 
@@ -181,9 +206,9 @@
 			bind:this={menuRef}
 			class={menuClasses}
 			style="{Object.entries(menuStyle).map(([key, value]) => `${key}: ${value}`).join('; ')};
-			       opacity: {isPositioned ? 1 : 0};
-			       transform: scale({isPositioned ? 1 : 0.95});
-			       pointer-events: {isPositioned ? 'auto' : 'none'};
+			       opacity: {isClosing ? 0 : (isPositioned ? 1 : 0)};
+			       transform: scale({isClosing ? 0.95 : (isPositioned ? 1 : 0.95)});
+			       pointer-events: {isPositioned && !isClosing ? 'auto' : 'none'};
 			       {maxHeight ? `max-height: ${maxHeight}px;` : ''}
 			       {minWidth ? `min-width: ${minWidth}px;` : ''}"
 			{...ariaAttributes}
@@ -208,7 +233,7 @@
 							showIcon={showIcons}
 							showShortcut={showShortcuts}
 							isFocused={false}
-							onClose={onClose}
+							onClose={handleClose}
 						/>
 					{:else}
 						<div data-menu-item-index={index}>
@@ -220,7 +245,7 @@
 								showIcon={showIcons}
 								showShortcut={showShortcuts}
 								isFocused={keyboardNav?.focusedIndex === index}
-								onClose={onClose}
+								onClose={handleClose}
 							/>
 						</div>
 					{/if}
@@ -238,8 +263,8 @@
 		box-shadow: var(--shadow-lg);
 		position: fixed;
 		transition:
-			opacity var(--duration-100) var(--ease-out),
-			transform var(--duration-100) var(--ease-out);
+			opacity var(--duration-200) var(--ease-out),
+			transform var(--duration-200) var(--ease-out);
 		outline: none;
 		z-index: 10001; /* Higher than modals (10000) */
 	}

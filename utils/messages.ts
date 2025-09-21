@@ -3,22 +3,34 @@
  * Provides a flexible way to handle messages from any i18n library
  */
 
-import { defaultMessages } from "../config/defaultMessages.js";
+import { defaultMessages } from "../config/defaultMessages";
 
 // Use console for logging within the package
 const logger = console;
 
+// Type definitions for message handling
+export interface MessageFunction {
+  (...args: any[]): string;
+}
+
+export interface MessageObject {
+  [key: string]: string | MessageFunction | MessageObject;
+}
+
+export interface MessageGetter {
+  (key: string, fallback?: string, ...args: any[]): string;
+}
+
 /**
  * Creates a message getter function that handles both string and function messages
  *
- * @param {Object} messages - Object containing message strings or functions
- * @param {Object} [messages.validation] - Nested message object for validation messages
- * @returns {Function} A function that retrieves messages with fallback support
- * @throws {TypeError} If messages is not an object
+ * @param messages - Object containing message strings or functions
+ * @returns A function that retrieves messages with fallback support
+ * @throws TypeError If messages is not an object
  */
-export function createMessageGetter(messages = {}) {
+export function createMessageGetter(messages: MessageObject = {}): MessageGetter {
   if (messages !== null && typeof messages === "object") {
-    return (key, fallback, ...args) => {
+    return (key: string, fallback?: string, ...args: any[]): string => {
       // Validate key to prevent prototype pollution
       if (
         typeof key !== "string" ||
@@ -43,7 +55,7 @@ export function createMessageGetter(messages = {}) {
             return fallback || key;
           }
         }
-        return msg;
+        return msg as string;
       }
 
       // Then check default messages
@@ -68,12 +80,12 @@ export function createMessageGetter(messages = {}) {
             typeof nestedKey === "string" &&
             nestedKey !== "__proto__" &&
             nestedKey !== "constructor" &&
-            defaultMsg[nestedKey]
+            (defaultMsg as MessageObject)[nestedKey]
           ) {
-            return defaultMsg[nestedKey];
+            return (defaultMsg as MessageObject)[nestedKey] as string;
           }
         }
-        return defaultMsg;
+        return defaultMsg as string;
       }
 
       // Finally use fallback or key
@@ -87,11 +99,11 @@ export function createMessageGetter(messages = {}) {
 /**
  * Merges user-provided messages with default messages
  *
- * @param {Object} [userMessages={}] - User-provided messages to override defaults
- * @returns {Object} Complete messages object with defaults and user overrides
- * @throws {TypeError} If userMessages is not an object
+ * @param userMessages - User-provided messages to override defaults
+ * @returns Complete messages object with defaults and user overrides
+ * @throws TypeError If userMessages is not an object
  */
-export function getMergedMessages(userMessages = {}) {
+export function getMergedMessages(userMessages: MessageObject = {}): MessageObject {
   if (userMessages !== null && typeof userMessages === "object") {
     return {
       ...defaultMessages,

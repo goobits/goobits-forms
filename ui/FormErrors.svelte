@@ -1,11 +1,21 @@
-<script>
+<script lang="ts">
 	import { AlertCircle } from '@lucide/svelte'
 	import { onMount } from 'svelte'
 	// Check if we're in browser
-	const browser = typeof window !== 'undefined'
+	const browser: boolean = typeof window !== 'undefined'
 
-	let { errors, title = 'Form problem' } = $props()
-	let errorContainer = $state(null)
+	/**
+	 * Form errors object containing error messages
+	 */
+	let { errors, title = 'Form problem' }: {
+		errors: { _errors?: string[] }
+		title?: string
+	} = $props()
+
+	/**
+	 * Reference to the error container element
+	 */
+	let errorContainer: HTMLElement | null = $state(null)
 	
 	// Focus the error container when it appears
 	onMount(() => {

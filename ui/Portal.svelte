@@ -10,11 +10,14 @@
    * that need to escape their container's overflow/z-index constraints.
    */
 
+  /**
+   * Props interface for the Portal component
+   */
   interface Props {
     /** Whether the portal is enabled */
-    enabled?: boolean;
+    enabled?: boolean
     /** Children to render in the portal */
-    children?: any;
+    children?: any
   }
 
   const {
@@ -22,8 +25,8 @@
     children
   }: Props = $props();
 
-  let portalContainer = $state<HTMLDivElement | undefined>();
-  let placeholder = $state<HTMLDivElement | undefined>();
+  let portalContainer: HTMLDivElement | undefined = $state();
+  let placeholder: HTMLDivElement | undefined = $state();
 
   $effect(() => {
     if (!browser || !enabled || !portalContainer || !placeholder) return;

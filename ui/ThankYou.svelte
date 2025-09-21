@@ -1,24 +1,33 @@
-<script>
+<script lang="ts">
 	import './ThankYou.css'
 	import { onMount } from 'svelte'
 	// browser check can be done inline
-	const browser = typeof window !== 'undefined'
+	const browser: boolean = typeof window !== 'undefined'
 	
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.js'
-	import { defaultMessages } from '../config/defaultMessages.js'
+	import { createMessageGetter } from '../utils/messages.ts'
+	import { defaultMessages } from '../config/defaultMessages'
 	
-	// Props
+	/**
+	 * Props for the ThankYou component
+	 */
 	let {
+		/** URL to the thank you image */
 		thankYouImageUrl = '/images/contact-thank-you.svg',
+		/** URL to the home page */
 		homeUrl = '/',
+		/** Localization messages */
 		messages = {}
+	}: {
+		thankYouImageUrl?: string
+		homeUrl?: string
+		messages?: Record<string, string>
 	} = $props()
 	
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages })
 	
-	let thankYouContainer = $state()
+	let thankYouContainer: HTMLElement | undefined = $state()
 	
 	// Focus the thank you message when it appears
 	onMount(() => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * MenuItem Component
-	 * 
+	 *
 	 * Flexible menu item component supporting multiple variants:
 	 * - action: Standard clickable item
 	 * - toggle: Checkbox-style item with checked state
@@ -11,7 +11,6 @@
 	 */
 
 	import { getMenuItemAriaAttributes } from './utils';
-	import type { MenuItem as MenuItemType, MenuItemSize } from './types';
 	// Confirmation import removed - now optional via prop
 	import {
 		Type,
@@ -44,18 +43,19 @@
 		Clock
 	} from '@lucide/svelte';
 
-	interface Props {
-		item: MenuItemType;
-		menuId: string;
-		index: number;
-		size?: MenuItemSize;
-		showIcon?: boolean;
-		showShortcut?: boolean;
-		isFocused?: boolean;
-		isNested?: boolean;
-		onClose?: () => void;
-		confirmationHandler?: (message: string) => Promise<boolean>;
-	}
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('./types').MenuItem} item - The menu item configuration
+	 * @property {string} menuId - Unique menu identifier
+	 * @property {number} index - Item index within menu
+	 * @property {import('./types').MenuItemSize} [size] - Size variant
+	 * @property {boolean} [showIcon] - Whether to show icons
+	 * @property {boolean} [showShortcut] - Whether to show keyboard shortcuts
+	 * @property {boolean} [isFocused] - Whether item is focused
+	 * @property {boolean} [isNested] - Whether item is in a nested menu
+	 * @property {function} [onClose] - Callback to close the menu
+	 * @property {function} [confirmationHandler] - Handler for confirmation dialogs
+	 */
 
 	const {
 		item,
@@ -83,26 +83,68 @@
 	let buttonRef = $state<HTMLButtonElement | null>(null);
 	let submenuPosition = $state({ x: 0, y: 0 });
 
-	async function handleClick() {
+	// Flash animation state
+	let isFlashing = $state(false);
+	let flashTimeout = $state<number | null>(null);
+
+	async function handleClick(event?: MouseEvent) {
+		// Stop event propagation to prevent immediate menu closure
+		event?.stopPropagation();
+
+		// Clear any existing flash timeout
+		if (flashTimeout) {
+			clearTimeout(flashTimeout);
+			flashTimeout = null;
+		}
+
 		if (item.type === 'action' && !item.disabled) {
+			// Trigger flash animation
+			isFlashing = true;
+
+			// Execute action immediately but delay menu close
 			item.onClick();
-			onClose?.();
+
+			// Delay menu close to show animation
+			flashTimeout = window.setTimeout(() => {
+				isFlashing = false;
+				onClose?.();
+			}, 300); // Match --menu-close-delay
 		} else if (item.type === 'destructive' && !item.disabled) {
 			if (item.confirmMessage) {
 				const confirmed = confirmationHandler
 					? await confirmationHandler(item.confirmMessage)
 					: confirm(item.confirmMessage); // Fallback to window.confirm
 				if (confirmed) {
+					// Trigger flash animation
+					isFlashing = true;
 					item.onClick();
-					onClose?.();
+
+					// Delay menu close
+					flashTimeout = window.setTimeout(() => {
+						isFlashing = false;
+						onClose?.();
+					}, 300);
 				}
 			} else {
+				isFlashing = true;
 				item.onClick();
-				onClose?.();
+
+				flashTimeout = window.setTimeout(() => {
+					isFlashing = false;
+					onClose?.();
+				}, 300);
 			}
 		} else if (item.type === 'toggle' && !item.disabled) {
+			// Trigger single flash for toggles
+			isFlashing = true;
 			item.onChange(!item.checked);
-			// Don't close menu for toggles unless explicitly requested
+
+			// Reset flash state after animation
+			flashTimeout = window.setTimeout(() => {
+				isFlashing = false;
+			}, 150); // Shorter for toggles
+
+			// Don't close menu for toggles
 		} else if (item.type === 'submenu' && !item.disabled) {
 			// Toggle submenu visibility
 			if (!showSubmenu) {
@@ -233,8 +275,26 @@
 		return null;
 	});
 
-	// Submenu items are handled above
+	// Cleanup on destroy
+	$effect(() => {
+		return () => {
+			if (flashTimeout) {
+				clearTimeout(flashTimeout);
+			}
+			if (submenuTimeout) {
+				clearTimeout(submenuTimeout);
+			}
+		};
+	});
+
+	// Determine if this is a special item (Save As Command/Agent)
+	const isSpecialItem = $derived(
+		item.type === 'toggle' &&
+		('label' in item) &&
+		(item.label?.includes('Save As') || item.label?.includes('Agent'))
+	);
 </script>
+
 
 {#if item.type === 'separator'}
 	<!-- Separators are handled by parent component -->
@@ -265,8 +325,12 @@
 			class:menu-item--checked={item.type === 'toggle' && item.checked}
 			class:menu-item--has-submenu={item.type === 'submenu'}
 			class:menu-item--special-action={isSpecialAction}
+			class:menu-item--flashing={isFlashing && item.type !== 'toggle'}
+			class:menu-item--flashing-single={isFlashing && item.type === 'toggle'}
+			class:menu-item--special={isSpecialItem && isFlashing}
+			data-checked={item.type === 'toggle' ? item.checked : undefined}
 			disabled={isDisabled}
-			onclick={handleClick}
+			onclick={(e) => handleClick(e)}
 			onkeydown={handleKeydown}
 			onmouseenter={handleMouseEnter}
 			onmouseleave={handleMouseLeave}
@@ -326,8 +390,12 @@
 				class:menu-item--nested={isNested}
 				class:menu-item--checked={item.type === 'toggle' && item.checked}
 				class:menu-item--has-submenu={item.type === 'submenu'}
+				class:menu-item--flashing={isFlashing && item.type !== 'toggle'}
+				class:menu-item--flashing-single={isFlashing && item.type === 'toggle'}
+				class:menu-item--special={isSpecialItem && isFlashing}
+				data-checked={item.type === 'toggle' ? item.checked : undefined}
 				disabled={isDisabled}
-				onclick={handleClick}
+				onclick={(e) => handleClick(e)}
 				onkeydown={handleKeydown}
 				onmouseenter={handleMouseEnter}
 				onmouseleave={handleMouseLeave}
@@ -410,6 +478,8 @@
 {/if}
 
 <style>
+	@import './animations.css';
+
 	.menu-item {
 		display: flex;
 		align-items: center;

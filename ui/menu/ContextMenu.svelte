@@ -7,7 +7,6 @@
    */
 
   import Menu from './Menu.svelte';
-  import type { ContextMenuProps } from './types';
 
   const {
     state,
@@ -19,7 +18,7 @@
     offset = { x: 0, y: 0 },
     autoFocus = true,
     ...menuConfig
-  }: ContextMenuProps = $props();
+  }: import('./types').ContextMenuProps = $props();
 
   // Calculate position with smart defaults for context menus
   const menuX = $derived(() => {

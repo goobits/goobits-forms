@@ -1,88 +1,43 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 
+	/**
+	 * Props interface for the Textarea component
+	 */
 	interface Props {
-		/**
-		 * The size of the textarea
-		 */
-		size?: 'sm' | 'md' | 'lg';
-
-		/**
-		 * The validation state of the textarea
-		 */
-		variant?: 'default' | 'error' | 'success';
-
-		/**
-		 * Whether the textarea should auto-resize based on content
-		 */
-		autoResize?: boolean;
-
-		/**
-		 * Maximum number of characters allowed
-		 */
-		maxLength?: number;
-
-		/**
-		 * Whether to show character counter
-		 */
-		showCharCount?: boolean;
-
-		/**
-		 * Additional CSS class names
-		 */
-		class?: string;
-
-		/**
-		 * The textarea value (for two-way binding)
-		 */
-		value?: string;
-
-		/**
-		 * Placeholder text
-		 */
-		placeholder?: string;
-
-		/**
-		 * Whether the textarea is disabled
-		 */
-		disabled?: boolean;
-
-		/**
-		 * Whether the textarea is readonly
-		 */
-		readonly?: boolean;
-
-		/**
-		 * Textarea ID
-		 */
-		id?: string;
-
-		/**
-		 * Textarea name
-		 */
-		name?: string;
-
-		/**
-		 * Whether the textarea is required
-		 */
-		required?: boolean;
-
-		/**
-		 * Number of rows
-		 */
-		rows?: number;
-
-		/**
-		 * Number of columns
-		 */
-		cols?: number;
-
-		/**
-		 * Wrap attribute
-		 */
-		wrap?: 'hard' | 'soft' | 'off';
+		/** The size of the textarea */
+		size?: 'sm' | 'md' | 'lg'
+		/** The validation state of the textarea */
+		variant?: 'default' | 'error' | 'success'
+		/** Whether the textarea should auto-resize based on content */
+		autoResize?: boolean
+		/** Maximum number of characters allowed */
+		maxLength?: number
+		/** Whether to show character counter */
+		showCharCount?: boolean
+		/** Additional CSS class names */
+		class?: string
+		/** The textarea value (for two-way binding) */
+		value?: string
+		/** Placeholder text */
+		placeholder?: string
+		/** Whether the textarea is disabled */
+		disabled?: boolean
+		/** Whether the textarea is readonly */
+		readonly?: boolean
+		/** Textarea ID */
+		id?: string
+		/** Textarea name */
+		name?: string
+		/** Whether the textarea is required */
+		required?: boolean
+		/** Number of rows */
+		rows?: number
+		/** Number of columns */
+		cols?: number
+		/** Wrap attribute */
+		wrap?: 'hard' | 'soft' | 'off'
 	}
-
 	let {
 		size = 'md',
 		variant = 'default',
@@ -104,10 +59,10 @@
 	}: Props = $props();
 
 	// Textarea element reference
-	let textareaElement: HTMLTextAreaElement;
-	
+	let textareaElement: HTMLTextAreaElement | undefined;
+
 	// Ensure value is never undefined for binding
-	let internalValue = $state(value ?? '');
+	let internalValue: string = $state(value ?? '');
 	
 	// Keep internal value in sync with prop
 	$effect(() => {
@@ -124,7 +79,7 @@
 	});
 
 	// Auto-resize functionality
-	async function adjustHeight() {
+	async function adjustHeight(): Promise<void> {
 		if (autoResize && textareaElement) {
 			await tick();
 			textareaElement.style.height = 'auto';
@@ -133,7 +88,7 @@
 	}
 
 	// Handle input changes
-	async function handleInput(e: Event) {
+	async function handleInput(e: Event): Promise<void> {
 		const target = e.target as HTMLTextAreaElement;
 		internalValue = target.value;
 

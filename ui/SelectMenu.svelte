@@ -1,24 +1,38 @@
 <script lang="ts">
   import { ChevronDown } from '@lucide/svelte';
   import Menu from './menu/Menu.svelte';
-  import type { MenuItem } from './menu/types';
 
+  /**
+   * Interface for select options
+   */
   interface SelectOption {
-    value: string;
-    label: string;
-    icon?: any; // Support icon components
+    /** The option value */
+    value: string
+    /** The option label */
+    label: string
+    /** Support icon components */
+    icon?: any
   }
 
+  /**
+   * Props interface for the SelectMenu component
+   */
   interface Props {
-    value?: string;
-    options?: SelectOption[];
-    placeholder?: string;
-    disabled?: boolean;
-    class?: string;
-    icon?: any; // Icon for the trigger button
-    onchange?: (value: string) => void;
+    /** The selected value */
+    value?: string
+    /** Array of select options */
+    options?: SelectOption[]
+    /** Placeholder text */
+    placeholder?: string
+    /** Whether the select is disabled */
+    disabled?: boolean
+    /** Additional CSS class names */
+    class?: string
+    /** Icon for the trigger button */
+    icon?: any
+    /** Callback when value changes */
+    onchange?: (value: string) => void
   }
-
   let {
     value = $bindable(''),
     options = [],
@@ -29,12 +43,12 @@
     onchange
   }: Props = $props();
 
-  let isOpen = $state(false);
-  let triggerRef = $state<HTMLButtonElement | undefined>();
-  let triggerPosition = $state({ x: 0, y: 0 });
+  let isOpen: boolean = $state(false);
+  let triggerRef: HTMLButtonElement | undefined = $state();
+  let triggerPosition: { x: number; y: number } = $state({ x: 0, y: 0 });
 
   // Convert options to menu items
-  const menuItems = $derived<MenuItem[]>(
+  const menuItems: import('./menu/types').MenuItem[] = $derived(
     options.map(option => ({
       type: 'action',
       label: option.label,
@@ -62,7 +76,7 @@
     selectedOption?.icon || icon
   );
 
-  function updateMenuPosition() {
+  function updateMenuPosition(): void {
     if (!triggerRef) return;
 
     const rect = triggerRef.getBoundingClientRect();
@@ -72,7 +86,7 @@
     };
   }
 
-  function handleToggle() {
+  function handleToggle(): void {
     if (disabled) return;
 
     if (!isOpen) {
@@ -81,7 +95,7 @@
     isOpen = !isOpen;
   }
 
-  function handleKeydown(event: KeyboardEvent) {
+  function handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleToggle();

@@ -1,101 +1,47 @@
 <script lang="ts">
+	/**
+	 * Props interface for the Input component
+	 */
 	interface Props {
-		/**
-		 * The size of the input
-		 */
-		size?: 'sm' | 'md' | 'lg';
-
-		/**
-		 * The validation state of the input
-		 */
-		variant?: 'default' | 'error' | 'success';
-
-		/**
-		 * Text to display before the input value
-		 */
-		prefix?: string;
-
-		/**
-		 * Text to display after the input value
-		 */
-		suffix?: string;
-
-		/**
-		 * Additional CSS class names
-		 */
-		class?: string;
-
-		/**
-		 * The input value (for two-way binding)
-		 */
-		value?: string | number;
-
-		/**
-		 * Input type
-		 */
-		type?: string;
-
-		/**
-		 * Placeholder text
-		 */
-		placeholder?: string;
-
-		/**
-		 * Whether the input is disabled
-		 */
-		disabled?: boolean;
-
-		/**
-		 * Whether the input is readonly
-		 */
-		readonly?: boolean;
-
-		/**
-		 * Input ID
-		 */
-		id?: string;
-
-		/**
-		 * Input name
-		 */
-		name?: string;
-
-		/**
-		 * Whether the input is required
-		 */
-		required?: boolean;
-
-		/**
-		 * Maximum length for text inputs
-		 */
-		maxlength?: number;
-
-		/**
-		 * Minimum value for number inputs
-		 */
-		min?: number;
-
-		/**
-		 * Maximum value for number inputs
-		 */
-		max?: number;
-
-		/**
-		 * Step value for number inputs
-		 */
-		step?: number;
-
-		/**
-		 * Pattern for input validation
-		 */
-		pattern?: string;
-
-		/**
-		 * Autocomplete attribute
-		 */
-		autocomplete?: string;
+		/** The size of the input */
+		size?: 'sm' | 'md' | 'lg'
+		/** The validation state of the input */
+		variant?: 'default' | 'error' | 'success'
+		/** Text to display before the input value */
+		prefix?: string
+		/** Text to display after the input value */
+		suffix?: string
+		/** Additional CSS class names */
+		class?: string
+		/** The input value (for two-way binding) */
+		value?: string | number
+		/** Input type */
+		type?: string
+		/** Placeholder text */
+		placeholder?: string
+		/** Whether the input is disabled */
+		disabled?: boolean
+		/** Whether the input is readonly */
+		readonly?: boolean
+		/** Input ID */
+		id?: string
+		/** Input name */
+		name?: string
+		/** Whether the input is required */
+		required?: boolean
+		/** Maximum length for text inputs */
+		maxlength?: number
+		/** Minimum value for number inputs */
+		min?: number
+		/** Maximum value for number inputs */
+		max?: number
+		/** Step value for number inputs */
+		step?: number
+		/** Pattern for input validation */
+		pattern?: string
+		/** Autocomplete attribute */
+		autocomplete?: string
 	}
-
 	let {
 		size = 'md',
 		variant = 'default',
@@ -120,10 +66,10 @@
 	}: Props = $props();
 
 	// Input element reference
-	let inputElement = $state<HTMLInputElement>();
-	
+	let inputElement: HTMLInputElement | undefined = $state();
+
 	// Ensure value is never undefined for binding
-	let internalValue = $state(value ?? '');
+	let internalValue: string | number = $state(value ?? '');
 	
 	// Keep internal value in sync with prop
 	$effect(() => {

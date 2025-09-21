@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
 	import { Loader2 } from '@lucide/svelte'
@@ -16,19 +16,34 @@
 	} from '../services/formService.js'
 	
 	// Import logger utility
-	import { createLogger } from '../utils/logger.js'
+	import { createLogger } from '../utils/logger.ts'
 	
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.js'
-	import { defaultMessages } from '../config/defaultMessages.js'
+	import { createMessageGetter } from '../utils/messages.ts'
+	import { defaultMessages } from '../config/defaultMessages'
 	
 	const _logger = createLogger('FeedbackForm')
 	
 
 	// Props
-	const props = $props()
-	
-	const defaultProps = {
+	const props: {
+		feedbackType?: string;
+		userComment?: string;
+		userName?: string;
+		userEmail?: string;
+		messages?: Record<string, string>;
+		isFormVisible?: boolean;
+		isThankYouVisible?: boolean;
+		submitContactForm?: (data: any) => Promise<any>;
+	} = $props()
+
+	const defaultProps: {
+		feedbackType: string;
+		userComment: string;
+		userName: string;
+		userEmail: string;
+		messages: Record<string, string>;
+	} = {
 		feedbackType: '',
 		userComment: '',
 		userName: '',
@@ -56,17 +71,17 @@
 	})
 
 	// UI State
-	let currentPagePath = $state(formState.currentPagePath)
-	let isFormVisible = $state(formState.isFormVisible)
-	let isThankYouVisible = $state(formState.isThankYouVisible)
-	let recaptcha = $state(formState.recaptcha)
-	let submissionError = $state(formState.submissionError)
-	let submitting = $state(false)
-	let touched = $state(formState.touched)
-	let thankYouRef = $state(null)
+	let currentPagePath: string = $state(formState.currentPagePath)
+	let isFormVisible: boolean = $state(formState.isFormVisible)
+	let isThankYouVisible: boolean = $state(formState.isThankYouVisible)
+	let recaptcha: any = $state(formState.recaptcha)
+	let submissionError: string | null = $state(formState.submissionError)
+	let submitting: boolean = $state(false)
+	let touched: Record<string, boolean> = $state(formState.touched)
+	let thankYouRef: HTMLElement | null = $state(null)
 
 	// Define the submit handler using shared function
-	const handleSubmit = async(formData) => {
+	const handleSubmit = async (formData: FormData): Promise<void> => {
 		const submitHandler = createFormSubmitHandler({
 			validateForm: () => !Object.values($errors).some(v => v),
 			recaptcha,
@@ -151,14 +166,14 @@
 	/**
 	 * Show the feedback form
 	 */
-	function showFeedbackForm() {
+	function showFeedbackForm(): void {
 		isFormVisible = true
 	}
 
 	/**
 	 * Reset the form to its initial state
 	 */
-	function resetForm() {
+	function resetForm(): void {
 		isFormVisible = false
 		isThankYouVisible = false
 
@@ -174,7 +189,7 @@
 	 * Handle field blur event using shared function
 	 * @param {string} fieldName
 	 */
-	function handleBlur(fieldName) {
+	function handleBlur(fieldName: string): void {
 		touched = handleFieldTouch(touched, fieldName)
 	}
 
@@ -182,7 +197,7 @@
 	 * Handle field input event using shared function
 	 * @param {string} fieldName
 	 */
-	function handleInput(fieldName) {
+	function handleInput(fieldName: string): void {
 		handleFieldInput(touched, fieldName, validate)
 	}
 </script>

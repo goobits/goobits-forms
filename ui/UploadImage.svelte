@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import './UploadImage.css'
 	import { ImagePlus, X } from '@lucide/svelte'
 
@@ -59,7 +59,10 @@
 	 * @param {Event} e
 	 */
 	async function handleFileSelect(e) {
-		await handleFiles(e.target.files)
+		const target = e.target as HTMLInputElement;
+		if (target && target.files) {
+			await handleFiles(target.files);
+		}
 	}
 
 	/**

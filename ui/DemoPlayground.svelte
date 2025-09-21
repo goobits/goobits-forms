@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // Import forms components
   import ContactForm from './ContactForm.svelte';
   import FeedbackForm from './FeedbackForm.svelte';
@@ -6,36 +6,53 @@
   import Input from './Input.svelte';
   import Textarea from './Textarea.svelte';
 
-  // Props
-  export let config = {};
-  export let apiEndpoints = {
+  /**
+   * Configuration object for forms
+   */
+  export let config: Record<string, any> = {};
+
+  /**
+   * API endpoints for form submissions
+   */
+  export let apiEndpoints: {
+    contact: string;
+    feedback: string;
+  } = {
     contact: '/api/contact',
     feedback: '/api/feedback'
   };
-  export let externalComponents = null; // For components from the main app (like ToggleSwitch, SelectMenu)
+
+  /**
+   * External components from the main app (like ToggleSwitch, SelectMenu)
+   */
+  export let externalComponents: Record<string, any> | null = null;
 
   // Demo state
-  let selectedCategory = 'general';
-  let showContactForm = true;
-  let showFeedbackForm = false;
-  let showStandaloneField = false;
-  let showNewComponents = false;
-  let lastSubmission = null;
+  let selectedCategory: string = 'general';
+  let showContactForm: boolean = true;
+  let showFeedbackForm: boolean = false;
+  let showStandaloneField: boolean = false;
+  let showNewComponents: boolean = false;
+  let lastSubmission: {
+    type: string;
+    data: any;
+    timestamp: string;
+  } | null = null;
 
   // Field state for standalone demo
-  let standaloneValue = '';
-  let standaloneErrors = [];
-  let standaloneTouched = false;
+  let standaloneValue: string = '';
+  let standaloneErrors: string[] = [];
+  let standaloneTouched: boolean = false;
 
   // New components demo state
-  let inputValue = '';
-  let textareaValue = '';
-  let toggleValue = false;
-  let selectValue = '';
-  let testSelectValue = 'test1';
+  let inputValue: string = '';
+  let textareaValue: string = '';
+  let toggleValue: boolean = false;
+  let selectValue: string = '';
+  let testSelectValue: string = 'test1';
 
   // Handle form submissions
-  function handleContactSubmit(event) {
+  function handleContactSubmit(event: CustomEvent): void {
     lastSubmission = {
       type: 'Contact Form',
       data: event.detail,
@@ -43,7 +60,7 @@
     };
   }
 
-  function handleFeedbackSubmit(event) {
+  function handleFeedbackSubmit(event: CustomEvent): void {
     lastSubmission = {
       type: 'Feedback Form',
       data: event.detail,
@@ -51,7 +68,7 @@
     };
   }
 
-  function handleFieldInput(event) {
+  function handleFieldInput(event: Event): void {
     standaloneValue = event.target.value;
     standaloneErrors = [];
     if (!standaloneValue) {
@@ -61,11 +78,11 @@
     }
   }
 
-  function handleFieldBlur() {
+  function handleFieldBlur(): void {
     standaloneTouched = true;
   }
 
-  function getFieldClasses(hasError) {
+  function getFieldClasses(hasError: boolean): string {
     return hasError ? 'field-error' : 'field-valid';
   }
 </script>

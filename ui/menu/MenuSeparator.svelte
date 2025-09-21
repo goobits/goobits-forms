@@ -1,13 +1,17 @@
 <script lang="ts">
 	/**
 	 * MenuSeparator Component
-	 * 
+	 *
 	 * Simple divider component for menu sections.
 	 * Uses design tokens for consistent styling.
 	 */
 
+	/**
+	 * Props interface for the MenuSeparator component
+	 */
 	interface Props {
-		className?: string;
+		/** Additional CSS class names */
+		className?: string
 	}
 
 	const { className = '' }: Props = $props();

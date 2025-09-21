@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -11,17 +11,20 @@
     "test": "echo 'No tests configured'"
   },
   "exports": {
-    ".": "./index.js",
+    ".": "./index.ts",
     "./ui": "./ui/index.js",
+    "./ui/*": "./ui/*",
+    "./ui/menu": "./ui/menu/index.ts",
+    "./ui/menu/*": "./ui/menu/*",
     "./config": "./config/index.js",
-    "./validation": "./validation/index.js",
+    "./validation": "./validation/index.ts",
     "./services": "./services/index.js",
     "./handlers": "./handlers/index.js",
     "./handlers/contactFormHandler": "./handlers/contactFormHandler.js",
     "./utils": "./utils/index.js"
   },
   "files": [
-    "index.js",
+    "index.ts",
     "ui",
     "config",
     "validation",

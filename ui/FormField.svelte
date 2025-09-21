@@ -1,6 +1,9 @@
-<script>
+<script lang="ts">
 	import { CheckCircle, AlertCircle } from '@lucide/svelte'
 	
+	/**
+	 * Props for the FormField component
+	 */
 	let {
 		fieldName,
 		fieldConfig,
@@ -11,27 +14,54 @@
 		handleBlur,
 		handleInput,
 		props
+	}: {
+		/** The name of the field */
+		fieldName: string
+		/** Configuration object for the field */
+		fieldConfig: {
+			type?: string
+			label: string
+			placeholder?: string
+			required?: boolean
+			rows?: number
+			tabindex?: number
+			options?: Array<{ value: string; label: string } | string>
+		}
+		/** The current value of the field */
+		value: any
+		/** Object containing field errors */
+		errors: Record<string, string>
+		/** Object tracking which fields have been touched */
+		touched: Record<string, boolean>
+		/** Function to get CSS classes for field validation state */
+		getFieldClasses: (fieldName: string) => string
+		/** Function called when field loses focus */
+		handleBlur: (fieldName: string) => void
+		/** Function called when field value changes */
+		handleInput: (fieldName: string) => void
+		/** Additional props to pass to the field */
+		props: Record<string, any>
 	} = $props()
 	
 	// Reference to the input element
-	let inputElement = $state(null)
-	
+	let inputElement: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null = $state(null)
+
 	// Track focus state for enhanced keyboard navigation
-	let hasFocus = $state(false)
+	let hasFocus: boolean = $state(false)
 	
 	// Handle focus event
-	function handleFocus() {
+	function handleFocus(): void {
 		hasFocus = true
 	}
-	
+
 	// Handle blur with additional focus tracking
-	function handleFieldBlur() {
+	function handleFieldBlur(): void {
 		hasFocus = false
 		handleBlur(fieldName)
 	}
 	
 	// Add keyboard event handlers for enhanced navigation
-	function handleKeyDown(event) {
+	function handleKeyDown(event: KeyboardEvent): void {
 		// Handle Enter key on select elements (activate dropdown)
 		if (event.key === 'Enter' && fieldConfig.type === 'select') {
 			event.preventDefault()

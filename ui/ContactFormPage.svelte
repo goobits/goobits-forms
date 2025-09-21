@@ -1,46 +1,99 @@
-<script>
+<script lang="ts">
 	import ContactForm from './ContactForm.svelte'
 	import { onMount, onDestroy } from 'svelte'
-	import { createLogger } from '../utils/logger.js'
+	import { createLogger } from '../utils/logger.ts'
 
 	const logger = createLogger('ContactFormPage')
 
 	// Props
 	let {
-		// Initial data from page load
+		/**
+		 * Initial data from page load
+		 */
 		initialData = {},
-		// Configuration
+		/**
+		 * Configuration object
+		 */
 		config = {},
-		// URL parameter names
+		/**
+		 * URL parameter name for category
+		 */
 		categoryParam = 'type',
+		/**
+		 * Value for thank you page parameter
+		 */
 		thankYouValue = 'thank-you',
+		/**
+		 * Default category to show
+		 */
 		defaultCategory = 'general',
-		// Explicitly specify a category (takes precedence over initialData)
+		/**
+		 * Explicitly specify a category (takes precedence over initialData)
+		 */
 		category = null,
-		// Optional booking mode
+		/**
+		 * Optional booking mode parameter
+		 */
 		bookingParam = 'booking',
+		/**
+		 * Category for booking mode
+		 */
 		bookingCategory = 'booking',
-		// Customization
+		/**
+		 * Page title for normal mode
+		 */
 		pageTitle = 'Contact Us',
+		/**
+		 * Page title for booking mode
+		 */
 		bookingPageTitle = 'Book an Appointment',
+		/**
+		 * Intro text for normal mode
+		 */
 		introText = 'Have a question? Want to get in touch? Fill out the form below and we\'ll get back to you as soon as possible.',
+		/**
+		 * Intro text for booking mode
+		 */
 		bookingIntroText = 'Schedule an appointment with us.',
-		// ContactForm props
+		/**
+		 * Props to pass to ContactForm component
+		 */
 		contactFormProps = {},
-		// Callbacks
+		/**
+		 * Callback when category changes
+		 */
 		onCategoryChange = null,
+		/**
+		 * Callback when URL updates
+		 */
 		onUrlUpdate = null
+	}: {
+		initialData?: Record<string, any>
+		config?: { categories?: Record<string, any> }
+		categoryParam?: string
+		thankYouValue?: string
+		defaultCategory?: string
+		category?: string | null
+		bookingParam?: string
+		bookingCategory?: string
+		pageTitle?: string
+		bookingPageTitle?: string
+		introText?: string
+		bookingIntroText?: string
+		contactFormProps?: Record<string, any>
+		onCategoryChange?: ((category: string) => void) | null
+		onUrlUpdate?: ((url: URL) => void) | null
 	} = $props()
 
 	// State
-	let selectedCategory = $state(category || initialData.category || defaultCategory)
-	let showThankYou = $state(false)
-	let isBookingMode = $state(false)
-	let currentPageTitle = $state(pageTitle)
-	let isInitialRender = true
+	let selectedCategory: string = $state(category || initialData.category || defaultCategory)
+	let showThankYou: boolean = $state(false)
+	let isBookingMode: boolean = $state(false)
+	let currentPageTitle: string = $state(pageTitle)
+	let isInitialRender: boolean = true
 
 	// Get valid categories from config
-	const validCategories = config.categories ? Object.keys(config.categories) : []
+	const validCategories: string[] = config.categories ? Object.keys(config.categories) : []
 
 	// Initialize on mount
 	onMount(() => {
@@ -60,7 +113,7 @@
 	})
 
 	// Handle category change event from ContactForm
-	function handleCategoryChange(event) {
+	function handleCategoryChange(event: CustomEvent): void {
 		if (event.detail && event.detail.category) {
 			selectedCategory = event.detail.category
 			updateUrl()
@@ -73,7 +126,7 @@
 	}
 
 	// Handle browser navigation
-	function handlePopState() {
+	function handlePopState(): void {
 		const url = new URL(window.location.toString())
 		const type = url.searchParams.get(categoryParam)
 		const isBooking = url.searchParams.has(bookingParam)
@@ -114,7 +167,7 @@
 	}
 
 	// Update URL based on state
-	function updateUrl() {
+	function updateUrl(): void {
 		if (typeof window === 'undefined') return
 
 		const currentUrl = new URL(window.location.toString())

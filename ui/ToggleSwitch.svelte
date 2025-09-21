@@ -1,13 +1,21 @@
 <script lang="ts">
+  /**
+   * Props interface for the ToggleSwitch component
+   */
   interface ToggleSwitchProps {
-    checked?: boolean;
-    disabled?: boolean;
-    onchange?: (checked: boolean) => void;
-    variant?: 'default' | 'ios';
-    size?: 'small' | 'medium' | 'large';
-    class?: string;
+    /** Whether the toggle is checked */
+    checked?: boolean
+    /** Whether the toggle is disabled */
+    disabled?: boolean
+    /** Callback function when toggle state changes */
+    onchange?: (checked: boolean) => void
+    /** Visual variant of the toggle */
+    variant?: 'default' | 'ios'
+    /** Size of the toggle */
+    size?: 'small' | 'medium' | 'large'
+    /** Additional CSS class names */
+    class?: string
   }
-
   const {
     checked = false,
     disabled = false,
@@ -17,7 +25,7 @@
     class: className = ''
   }: ToggleSwitchProps = $props();
 
-  function handleToggle() {
+  function handleToggle(): void {
     if (!disabled && onchange) {
       onchange(!checked);
     }

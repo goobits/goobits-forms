@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import './ContactForm.css'
 	import FormErrors from './FormErrors.svelte'
 	import ThankYou from './ThankYou.svelte'
@@ -11,14 +11,14 @@
 
 	const _dispatch = createEventDispatcher()
 
-	import { getContactFormConfig } from '../config/index.js'
+	import { getContactFormConfig } from '../config/index.ts'
 	import { Field, Control, Label, FieldErrors } from 'formsnap'
 	import { hydrateForm } from '../services/formHydration.js'
 	import { Loader2, AlertCircle, CheckCircle } from '@lucide/svelte'
-	import { getValidationClasses } from '../validation/index.js'
-	import { debounce } from '../utils/debounce.js'
+	import { getValidationClasses } from '../validation/index.ts'
+	import { debounce } from '../utils/debounce.ts'
 	import { saveFormData, clearFormData } from '../services/formStorage.js'
-	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.js'
+	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts'
 
 	// Import shared form service functions
 	import {
@@ -40,11 +40,11 @@
 
 	// Import reCAPTCHA provider
 	import { createRecaptchaProvider } from '../services/recaptcha/index.js'
-	import { createLogger } from '../utils/logger.js'
+	import { createLogger } from '../utils/logger.ts'
 
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.js'
-	import { defaultMessages } from '../config/defaultMessages.js'
+	import { createMessageGetter } from '../utils/messages.ts'
+	import { defaultMessages } from '../config/defaultMessages'
 
 	const logger = createLogger('ContactForm')
 
@@ -63,11 +63,22 @@
 
 	// Props
 	let {
+		/**
+		 * API endpoint for form submission
+		 */
 		apiEndpoint = '/api/contact',
+		/**
+		 * Initial form data
+		 */
 		initialData: providedInitialData = {},
+		/**
+		 * Localization messages
+		 */
 		messages = {},
-		// Functions that need to be provided by the app
-		submitContactForm = async (data, endpoint) => {
+		/**
+		 * Function to submit contact form data
+		 */
+		submitContactForm = async (data: any, endpoint: string) => {
 			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -76,19 +87,39 @@
 			if (!response.ok) throw new Error('Form submission failed')
 			return response.json()
 		},
-		uploadAttachments = async (files) => {
+		/**
+		 * Function to upload file attachments
+		 */
+		uploadAttachments = async (files: Array<{ file: File; preview: string }>) => {
 			// Default implementation - can be overridden
 			logger.warn('No uploadAttachments function provided')
 			return []
 		},
-		// URLs that can be customized
+		/**
+		 * URL to privacy policy page
+		 */
 		privacyPolicyUrl = '/legal/privacy-policy',
+		/**
+		 * URL to thank you image
+		 */
 		thankYouImageUrl = '/images/contact-thank-you.svg',
+		/**
+		 * URL to home page
+		 */
 		homeUrl = '/'
+	}: {
+		apiEndpoint?: string
+		initialData?: Record<string, any>
+		messages?: Record<string, string>
+		submitContactForm?: (data: any, endpoint: string) => Promise<any>
+		uploadAttachments?: (files: Array<{ file: File; preview: string }>) => Promise<any[]>
+		privacyPolicyUrl?: string
+		thankYouImageUrl?: string
+		homeUrl?: string
 	} = $props()
 
 	// Initialize all possible form fields to ensure they're never undefined
-	const initializeAllFormFields = (data = {}) => {
+	const initializeAllFormFields = (data: Record<string, any> = {}): Record<string, any> => {
 		const baseFields = {
 			category: data.category || 'product-feedback',
 			name: data.name || '',
@@ -108,7 +139,7 @@
 	};
 
 	// Ensure all fields are initialized
-	const initialData = initializeAllFormFields(providedInitialData);
+	const initialData: Record<string, any> = initializeAllFormFields(providedInitialData);
 
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages })
@@ -123,20 +154,20 @@
 		cachedCategory: null
 	})
 
-	let attachments = $state(formState.attachments)
-	let _cachedCategory = $state(formState.cachedCategory)
-	let recaptcha = $state(formState.recaptcha)
-	let selectedCategory = $state(formState.selectedCategory)
-	let showThankYou = $state(formState.showThankYou)
-	let submissionError = $state(formState.submissionError)
-	let submitting = $state(false)
-	let touched = $state(formState.touched)
-	let statusMessage = $state(null)
-	let formErrors = $state({})
+	let attachments: Array<{ file: File; preview: string }> = $state(formState.attachments)
+	let _cachedCategory: string | null = $state(formState.cachedCategory)
+	let recaptcha: any = $state(formState.recaptcha)
+	let selectedCategory: string = $state(formState.selectedCategory)
+	let showThankYou: boolean = $state(formState.showThankYou)
+	let submissionError: string | null = $state(formState.submissionError)
+	let submitting: boolean = $state(false)
+	let touched: Record<string, boolean> = $state(formState.touched)
+	let statusMessage: string | null = $state(null)
+	let formErrors: Record<string, any> = $state({})
 
 
 	// Define the submit handler using shared function
-	const handleSubmit = async (formData) => {
+	const handleSubmit = async (formData: FormData): Promise<void> => {
 		const submitHandler = createFormSubmitHandler({
 			validateForm: () => !Object.values(formErrors).some(v => v),
 			recaptcha,
@@ -327,7 +358,7 @@
 	 * Handle beforeunload event to warn about unsaved form data
 	 * @param {BeforeUnloadEvent} event - The beforeunload event
 	 */
-	function handleBeforeUnload(event) {
+	function handleBeforeUnload(event: BeforeUnloadEvent): string | undefined {
 		// Check if the form has unsaved data
 		if (!showThankYou && Object.keys(touched).length > 0) {
 			// Save form data before unloading
@@ -343,7 +374,7 @@
 	}
 
 	// Handler for force update events
-	function handleForceUpdate(event) {
+	function handleForceUpdate(event: CustomEvent): void {
 		if (event.detail && event.detail.category) {
 			showThankYou = false
 			selectedCategory = event.detail.category
@@ -365,7 +396,7 @@
 	 * Set the selected category
 	 * @param {string} value - The selected category
 	 */
-	function handleCategorySelect(value) {
+	function handleCategorySelect(value: string): void {
 		showThankYou = false
 		selectedCategory = value
 		
@@ -407,7 +438,7 @@
 	 * Handle field blur event using shared function
 	 * @param {string} fieldName
 	 */
-	function handleBlur(fieldName) {
+	function handleBlur(fieldName: string): void {
 		touched = handleFieldTouch(touched, fieldName)
 
 		// Validate on blur for immediate feedback
@@ -429,7 +460,7 @@
 	 * Handle field input event using shared function
 	 * @param {string} fieldName
 	 */
-	function handleInput(fieldName) {
+	function handleInput(fieldName: string): void {
 		handleFieldInput(touched, fieldName, validate)
 		
 		// Manual auto-save functionality (avoiding reactive effects)
@@ -447,7 +478,7 @@
 	 * Handle file change event
 	 * @param {Array<{file: File, preview: string}>} files
 	 */
-	function handleFileChange(files) {
+	function handleFileChange(files: Array<{ file: File; preview: string }>): void {
 		attachments = files
 		
 		// Manually update form data with attachments (avoiding reactive effects)
@@ -462,7 +493,7 @@
 	 * Handle file error event
 	 * @param {string} error
 	 */
-	function handleFileError(error) {
+	function handleFileError(error: string): void {
 		validate('attachments')
 		logger.error(error)
 
@@ -480,7 +511,7 @@
 	 * @param {string} fieldName - The field name
 	 * @returns {string} CSS classes
 	 */
-	function getFieldClasses(fieldName) {
+	function getFieldClasses(fieldName: string): string {
 		const hasError = !!$errors[fieldName]
 		const isTouched = touched[fieldName]
 		const value = $formData[fieldName]
