@@ -168,11 +168,7 @@ function buildValidationSchemas(config) {
     const builder = {
         email: () => z.string().email(getMessage(errorMessages.email, "Invalid email")),
         tel: () => z.string(),
-        checkbox: (fieldName) => z
-            .union([z.literal("on"), z.literal(true)])
-            .refine((val) => val === "on" || val === true, {
-            message: getMessage(errorMessages.required, `${fieldName} is required`, fieldName),
-        }),
+        checkbox: (fieldName) => z.boolean().default(false),
         select: () => z.string().min(1, "Please select an option"),
         textarea: () => z.string(),
         text: () => z.string(),

@@ -172,6 +172,9 @@ export function createLogger(module: string): Logger {
   ): void => {
     if (!shouldLog(level)) return;
 
+    // Skip logging during server-side rendering
+    if (typeof window === 'undefined' || typeof console === 'undefined') return;
+
     const timestamp = new Date().toISOString();
     const logMethod = (console[method] as Function) || console.log;
     logMethod(`${timestamp} ${prefix} ${message}`, ...args);
