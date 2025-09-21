@@ -14,6 +14,7 @@
     ".": "./index.ts",
     "./ui": "./ui/index.js",
     "./ui/*": "./ui/*",
+    "./ui/index.css": "./ui/index.css",
     "./ui/menu": "./ui/menu/index.ts",
     "./ui/menu/*": "./ui/menu/*",
     "./config": "./config/index.js",
