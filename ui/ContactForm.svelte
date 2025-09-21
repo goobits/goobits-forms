@@ -19,6 +19,7 @@
 	import { debounce } from '../utils/debounce.ts'
 	import { saveFormData, clearFormData } from '../services/formStorage.ts'
 	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts'
+	import { z } from 'zod'
 
 	// Import shared form service functions
 	import {
@@ -143,9 +144,22 @@
 
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages })
-	
-	// Use dynamic schema based on selected category
-	const contactSchema = schemas.categories[initialData.category] || schemas.categories.general || schemas.complete
+
+	// Create fallback schema if none provided
+	function createFallbackSchema() {
+		return z.object({
+			name: z.string().default(''),
+			email: z.string().email().default(''),
+			message: z.string().default(''),
+			category: z.string().default('general')
+		})
+	}
+
+	// Use dynamic schema based on selected category with fallback
+	const contactSchema = schemas.categories?.[initialData.category] ||
+	                     schemas.categories?.['general'] ||
+	                     schemas.complete ||
+	                     createFallbackSchema()
 
 	// Initialize form state using shared service
 	const formState = initializeFormState({

@@ -25,6 +25,57 @@ import { handleError } from "../utils/errorHandler.ts";
 import * as screenReaderService from "./screenReaderService.ts";
 
 /**
+ * Extracts default values from a Zod schema
+ * @param schema - The Zod schema to extract defaults from
+ * @returns Object with default values for all schema fields
+ */
+function getSchemaDefaults(schema: ZodSchema): Record<string, any> {
+  const defaults: Record<string, any> = {};
+
+  try {
+    if (schema && schema._def && schema._def.shape) {
+      // Handle ZodObject schemas
+      const shape = schema._def.shape();
+      Object.keys(shape).forEach(key => {
+        const field = shape[key];
+        if (field._def) {
+          if (field._def.defaultValue !== undefined) {
+            defaults[key] = field._def.defaultValue();
+          } else {
+            // Provide sensible defaults based on field type
+            const typeName = field._def.typeName;
+            switch (typeName) {
+              case 'ZodString':
+                defaults[key] = '';
+                break;
+              case 'ZodNumber':
+                defaults[key] = 0;
+                break;
+              case 'ZodBoolean':
+                defaults[key] = false;
+                break;
+              case 'ZodArray':
+                defaults[key] = [];
+                break;
+              case 'ZodUnion':
+                // For unions, use the first option's default or empty string
+                defaults[key] = '';
+                break;
+              default:
+                defaults[key] = '';
+            }
+          }
+        }
+      });
+    }
+  } catch (error) {
+    logger.warn("Could not extract schema defaults", { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  return defaults;
+}
+
+/**
  * Form initialization options interface
  */
 export interface FormInitializationOptions {
@@ -140,7 +191,11 @@ export function initializeForm({
   });
 
   try {
-    return superForm(initialData, {
+    // Ensure initialData has proper defaults for all schema fields
+    const schemaDefaults = getSchemaDefaults(schema);
+    const mergedData = { ...schemaDefaults, ...initialData };
+
+    return superForm(mergedData, {
       dataType: "json",
       validators: zod4(schema),
       resetForm: false,
