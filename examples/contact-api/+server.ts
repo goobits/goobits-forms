@@ -12,7 +12,7 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import { createContactApiHandler } from "../../handlers/contactFormHandler.js";
+import { createContactApiHandler } from "../../handlers/contactFormHandler.ts";
 
 /**
  * Interface for custom validation errors

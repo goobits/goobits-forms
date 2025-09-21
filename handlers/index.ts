@@ -6,11 +6,11 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { getContactFormConfig } from '../config/index.js';
-import { getValidatorForCategory } from '../validation/index.js';
+import { getContactFormConfig } from '../config/index.ts';
+import { getValidatorForCategory } from '../validation/index.ts';
 
 // Export simplified contact form handler
-export * from './contactFormHandler.js';
+export * from './contactFormHandler.ts';
 
 /**
  * URL category extractor function type

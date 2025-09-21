@@ -13,11 +13,11 @@
 
 	import { getContactFormConfig } from '../config/index.ts'
 	import { Field, Control, Label, FieldErrors } from 'formsnap'
-	import { hydrateForm } from '../services/formHydration.js'
+	import { hydrateForm } from '../services/formHydration.ts'
 	import { Loader2, AlertCircle, CheckCircle } from '@lucide/svelte'
 	import { getValidationClasses } from '../validation/index.ts'
 	import { debounce } from '../utils/debounce.ts'
-	import { saveFormData, clearFormData } from '../services/formStorage.js'
+	import { saveFormData, clearFormData } from '../services/formStorage.ts'
 	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts'
 
 	// Import shared form service functions
@@ -39,7 +39,7 @@
 	} from '../services/screenReaderService.js'
 
 	// Import reCAPTCHA provider
-	import { createRecaptchaProvider } from '../services/recaptcha/index.js'
+	import { createRecaptchaProvider } from '../services/recaptcha/index.ts'
 	import { createLogger } from '../utils/logger.ts'
 
 	// Import message helpers

@@ -16,7 +16,7 @@ import { createLogger } from "../utils/logger.ts";
 const logger = createLogger("FormService");
 
 // Internal Imports
-// import { createRecaptchaProvider } from './recaptcha/index.js'
+// import { createRecaptchaProvider } from './recaptcha/index.ts'
 import { sanitizeFormData } from "../utils/sanitizeInput.ts";
 import { debounce } from "../utils/debounce.ts";
 import { handleError } from "../utils/errorHandler.ts";

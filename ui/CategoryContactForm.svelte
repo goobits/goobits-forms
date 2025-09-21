@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
-	import { generateCsrfToken } from '../security/csrf.js'
+	import { generateCsrfToken } from '../security/csrf.ts'
 	import { getValidationClasses } from '../validation/index.ts'
 	import FormErrors from './FormErrors.svelte'
 	

@@ -11,7 +11,7 @@ import type { MessageObject } from "./types";
 /**
  * Message function type for dynamic messages with parameters
  */
-type MessageFunction = (value: number | string) => string;
+type MessageFunction = (...args: any[]) => string;
 
 /**
  * Complete default message configuration interface

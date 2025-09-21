@@ -88,7 +88,7 @@ function createFormDataParser(config: ContactFormConfig) {
 
       if (!result.success) {
         const errors: Record<string, string> = {};
-        result.error.issues.forEach((issue) => {
+        result.error.issues.forEach((issue: any) => {
           const path = issue.path.join(".");
           errors[path] = issue.message;
         });

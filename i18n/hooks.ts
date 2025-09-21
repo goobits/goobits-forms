@@ -90,7 +90,7 @@ export async function handleFormI18n(
         await handler(event);
       } catch (error) {
         // Import logger inline to avoid circular dependencies
-        const { createLogger } = await import("../utils/logger.js");
+        const { createLogger } = await import("../utils/logger.ts");
         const logger = createLogger("ContactFormI18n");
 
         const errorMessage = error instanceof Error ? error.message : String(error);

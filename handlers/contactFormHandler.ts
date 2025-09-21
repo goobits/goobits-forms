@@ -5,11 +5,11 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
-import { createLogger } from '../utils/logger.js';
-import { sanitizeFormData } from '../utils/sanitizeInput.js';
-import { rateLimitFormSubmission } from '../services/rateLimiterService.js';
-import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.js';
-import sendEmail from '../services/emailService.js';
+import { createLogger } from '../utils/logger.ts';
+import { sanitizeFormData } from '../utils/sanitizeInput.ts';
+import { rateLimitFormSubmission } from '../services/rateLimiterService.ts';
+import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.ts';
+import sendEmail from '../services/emailService.ts';
 
 const logger = createLogger('ContactFormHandler');
 
