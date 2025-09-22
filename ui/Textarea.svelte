@@ -61,23 +61,6 @@
 	// Textarea element reference
 	let textareaElement: HTMLTextAreaElement | undefined;
 
-	// Ensure value is never undefined for binding
-	let internalValue: string = $state(value ?? '');
-	
-	// Keep internal value in sync with prop
-	$effect(() => {
-		if (value !== undefined && value !== internalValue) {
-			internalValue = value;
-		}
-	});
-	
-	// Update external value when internal value changes
-	$effect(() => {
-		if (value !== internalValue) {
-			value = internalValue;
-		}
-	});
-
 	// Auto-resize functionality
 	async function adjustHeight(): Promise<void> {
 		if (autoResize && textareaElement) {
@@ -90,7 +73,7 @@
 	// Handle input changes
 	async function handleInput(e: Event): Promise<void> {
 		const target = e.target as HTMLTextAreaElement;
-		internalValue = target.value;
+		value = target.value;
 
 		if (autoResize) {
 			await adjustHeight();
@@ -99,7 +82,7 @@
 
 	// Adjust height when value changes externally
 	$effect(() => {
-		if (internalValue !== undefined) {
+		if (value !== undefined) {
 			adjustHeight();
 		}
 	});
@@ -116,7 +99,7 @@
 	].filter(Boolean).join(' '));
 
 	// Character count
-	const currentLength = $derived(internalValue?.toString().length || 0);
+	const currentLength = $derived(value?.toString().length || 0);
 	const isOverLimit = $derived(maxLength ? currentLength > maxLength : false);
 
 	// Expose the textarea element for binding
@@ -126,7 +109,7 @@
 <div>
 	<textarea
 		bind:this={textareaElement}
-		bind:value={internalValue}
+		bind:value={value}
 		oninput={handleInput}
 		class={textareaClasses}
 		{placeholder}

@@ -1,0 +1,423 @@
+/**
+ * @goobits/forms Modal Shared Styles
+ *
+ * Generalized modal styling patterns based on the superior apple-style
+ * visual language found in PromptForm, SettingsModal, and LoginModal.
+ */
+
+/* ========================================
+ * APPLE-STYLE MODAL COMPONENTS
+ * ======================================== */
+
+/* Main container patterns */
+.modal-apple {
+  position: relative;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header with icon and title */
+.modal-apple__header {
+  padding: var(--space-6) var(--space-8);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--color-border-subtle);
+  min-height: var(--space-20);
+}
+
+.modal-apple__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.modal-apple__title-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  color: var(--color-primary-500);
+}
+
+/* Content area */
+.modal-apple__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+/* Section groupings */
+.modal-apple__section {
+  margin-bottom: var(--space-8);
+}
+
+.modal-apple__section-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-4);
+}
+
+.modal-apple__section-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-4);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Dividers between sections */
+.modal-apple__divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin: var(--space-6) 0;
+}
+
+/* Interactive items with apple-style hover effects */
+.modal-apple__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-4);
+  background: transparent;
+  border: none;
+  color: inherit;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-1);
+  text-align: left;
+  position: relative;
+}
+
+.modal-apple__item:hover {
+  background: var(--color-background-secondary);
+  transform: translateX(2px);
+}
+
+.modal-apple__item:active {
+  background: var(--color-background-tertiary);
+  transform: scale(0.98);
+}
+
+.modal-apple__item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-apple__item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: var(--space-4);
+}
+
+/* Icon containers with scaling hover effect */
+.modal-apple__item-icon {
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.modal-apple__item:hover .modal-apple__item-icon {
+  transform: scale(1.05);
+}
+
+/* Text content hierarchy */
+.modal-apple__item-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.modal-apple__item-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+/* Card-style containers */
+.modal-apple__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+  transition: var(--transition-all);
+}
+
+.modal-apple__card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Enhanced button styling */
+.modal-apple__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-apple__button--primary {
+  background: var(--color-primary-500);
+  color: var(--color-text-on-primary);
+}
+
+.modal-apple__button--primary:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-apple__button--primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.modal-apple__button--secondary {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.modal-apple__button--secondary:hover {
+  background: var(--color-background-secondary);
+  border-color: var(--color-border-strong);
+  transform: translateY(-1px);
+}
+
+/* Grid layouts for options */
+.modal-apple__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.modal-apple__grid--compact {
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--space-2);
+}
+
+/* Tighter items for compact grids */
+.modal-apple__grid--compact .modal-apple__item {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: all 0.2s ease;
+}
+
+.modal-apple__grid--compact .modal-apple__item:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-background-secondary);
+  transform: translateY(-1px);
+}
+
+.modal-apple__grid--compact .modal-apple__item--selected {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+.modal-apple__grid--compact .modal-apple__item-left {
+  gap: var(--space-2);
+  flex-direction: column;
+  text-align: center;
+}
+
+.modal-apple__grid--compact .modal-apple__item-title {
+  font-size: var(--font-size-xs);
+  margin-bottom: 0;
+}
+
+/* Category color options in compact grids */
+.modal-apple__grid--compact .modal-apple__card {
+  padding: var(--space-3);
+  margin-bottom: 0;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.modal-apple__grid--compact .modal-apple__card:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-background-secondary);
+  transform: translateY(-1px);
+}
+
+.modal-apple__grid--compact .modal-apple__card.category-color-option--selected {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+/* Dark mode support */
+:global(.theme-dark) .modal-apple__grid--compact .modal-apple__item--selected {
+  background: var(--color-primary-900);
+  border-color: var(--color-primary-400);
+}
+
+:global(.theme-dark) .modal-apple__grid--compact .modal-apple__card.category-color-option--selected {
+  background: var(--color-primary-900);
+  border-color: var(--color-primary-400);
+}
+
+/* Form field styling */
+.modal-apple__field {
+  margin-bottom: var(--space-5);
+}
+
+.modal-apple__label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.modal-apple__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: var(--transition-all);
+}
+
+.modal-apple__input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-500), 0.1);
+}
+
+/* Status indicators */
+.modal-apple__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-info-50);
+  border: 1px solid var(--color-info-200);
+  border-radius: var(--radius-lg);
+  color: var(--color-info-700);
+  font-size: var(--font-size-sm);
+}
+
+.modal-apple__status--success {
+  background: var(--color-success-50);
+  border-color: var(--color-success-200);
+  color: var(--color-success-700);
+}
+
+.modal-apple__status--warning {
+  background: var(--color-warning-50);
+  border-color: var(--color-warning-200);
+  color: var(--color-warning-700);
+}
+
+.modal-apple__status--error {
+  background: var(--color-error-50);
+  border-color: var(--color-error-200);
+  color: var(--color-error-700);
+}
+
+/* Loading spinner */
+.modal-apple__spinner {
+  width: var(--space-5);
+  height: var(--space-5);
+  border: 2px solid var(--color-border);
+  border-top: 2px solid var(--color-primary-500);
+  border-radius: 50%;
+  animation: modal-apple-spin 1s linear infinite;
+}
+
+@keyframes modal-apple-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+ * RESPONSIVE DESIGN
+ * ======================================== */
+
+@media (max-width: 768px) {
+  .modal-apple__header {
+    padding: var(--space-4) var(--space-6);
+    min-height: var(--space-16);
+  }
+
+  .modal-apple__content {
+    padding: var(--space-4);
+  }
+
+  .modal-apple__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-apple__item {
+    padding: var(--space-4) var(--space-3);
+  }
+}
+
+/* ========================================
+ * ACCESSIBILITY ENHANCEMENTS
+ * ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-apple__item,
+  .modal-apple__button,
+  .modal-apple__card,
+  .modal-apple__item-icon {
+    transition: none;
+  }
+
+  .modal-apple__item:hover,
+  .modal-apple__button:hover {
+    transform: none;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.modal-apple__item:focus-visible,
+.modal-apple__button:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}

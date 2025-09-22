@@ -68,23 +68,6 @@
 	// Input element reference
 	let inputElement: HTMLInputElement | undefined = $state();
 
-	// Ensure value is never undefined for binding
-	let internalValue: string | number = $state(value ?? '');
-	
-	// Keep internal value in sync with prop
-	$effect(() => {
-		if (value !== undefined && value !== internalValue) {
-			internalValue = value;
-		}
-	});
-	
-	// Update external value when internal value changes
-	$effect(() => {
-		if (value !== internalValue) {
-			value = internalValue;
-		}
-	});
-
 	// Combine CSS classes
 	const inputClasses = $derived([
 		'input',
@@ -110,7 +93,7 @@
 		{#if type === 'checkbox'}
 			<input
 				bind:this={inputElement}
-				bind:checked={internalValue}
+				bind:checked={value}
 				class="{inputClasses} input-group-input"
 				type="checkbox"
 				{placeholder}
@@ -130,7 +113,7 @@
 		{:else}
 			<input
 				bind:this={inputElement}
-				bind:value={internalValue}
+				bind:value={value}
 				class="{inputClasses} input-group-input"
 				{type}
 				{placeholder}
@@ -158,7 +141,7 @@
 	{#if type === 'checkbox'}
 		<input
 			bind:this={inputElement}
-			bind:checked={internalValue}
+			bind:checked={value}
 			class={inputClasses}
 			type="checkbox"
 			{placeholder}
@@ -178,7 +161,7 @@
 	{:else}
 		<input
 			bind:this={inputElement}
-			bind:value={internalValue}
+			bind:value={value}
 			class={inputClasses}
 			{type}
 			{placeholder}
