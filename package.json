@@ -17,6 +17,8 @@
     "./ui/index.css": "./ui/index.css",
     "./ui/menu": "./ui/menu/index.ts",
     "./ui/menu/*": "./ui/menu/*",
+    "./ui/modals": "./ui/modals/index.ts",
+    "./ui/modals/*": "./ui/modals/*",
     "./config": "./config/index.js",
     "./validation": "./validation/index.ts",
     "./services": "./services/index.js",

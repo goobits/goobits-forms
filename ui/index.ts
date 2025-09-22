@@ -23,5 +23,8 @@ export { default as MenuItem } from "./menu/MenuItem.svelte";
 export { default as MenuSeparator } from "./menu/MenuSeparator.svelte";
 export { default as Portal } from "./Portal.svelte";
 
+// Modal System
+export * from "./modals";
+
 // Menu configurations are available in ./menu/configs.ts
 // Import directly from menu/configs.ts for app-specific configurations
