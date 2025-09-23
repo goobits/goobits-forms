@@ -531,4 +531,4 @@ export function validateRecaptchaConfig(config: RecaptchaConfig): void {
 }
 
 // Default export - factory function for convenience
-export default createRecaptchaProvider;
+export { createRecaptchaProvider as default };
