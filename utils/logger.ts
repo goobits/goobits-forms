@@ -127,7 +127,7 @@ export function configureLogger(config: LoggerConfig): void {
  * }
  * ```
  */
-export function getLoggerConfig(): Required<LoggerConfig> {
+function getLoggerConfig(): Required<LoggerConfig> {
   return { ...globalConfig };
 }
 

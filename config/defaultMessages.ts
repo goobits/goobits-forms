@@ -168,7 +168,7 @@ export const defaultMessages: DefaultMessageConfig = {
  * // Returns: "Thank You!"
  * ```
  */
-export function getMessage(
+function getMessage(
   key: keyof DefaultMessageConfig,
   customMessages?: Partial<DefaultMessageConfig>,
   ...params: any[]

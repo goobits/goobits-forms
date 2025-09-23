@@ -51,7 +51,7 @@ export interface ErrorMessageConfig extends MessageObject {
 /**
  * File settings configuration
  */
-export interface FileSettingsConfig {
+interface FileSettingsConfig {
   /** Maximum file size in bytes */
   maxFileSize: number;
   /** Array of accepted MIME types */
