@@ -176,7 +176,6 @@
 	let submitting: boolean = $state(false)
 	let touched: Record<string, boolean> = $state(formState.touched)
 	let statusMessage: string | null = $state(null)
-	const formErrors = $derived(errors || {})
 
 
 	// Define the submit handler using shared function
@@ -294,6 +293,7 @@
 	})
 
 	const { form: formData, errors, enhance, validate } = form
+	const formErrors = $derived(errors || {})
 
 	// Production-ready effects with minimal reactivity to prevent loops
 	
