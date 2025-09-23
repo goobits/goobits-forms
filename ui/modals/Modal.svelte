@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   /**
    * Size variants for the modal
@@ -101,7 +101,10 @@
     // Fade out over 200ms then actually close
     fadeTimeout = window.setTimeout(() => {
       internalIsClosing = false;
-      onClose(); // Call the parent's close handler after animation
+      // Safety check: ensure onClose is still a function before calling
+      if (typeof onClose === 'function') {
+        onClose(); // Call the parent's close handler after animation
+      }
     }, 200);
   }
 
@@ -214,6 +217,14 @@
     smoothTransitions && 'modal-dialog__content--smooth',
     contentClass
   ].filter(Boolean).join(' '));
+
+  // Cleanup on component destruction
+  onDestroy(() => {
+    if (fadeTimeout) {
+      clearTimeout(fadeTimeout);
+      fadeTimeout = null;
+    }
+  });
 </script>
 
 <!-- Keep in DOM during fade-out animation -->
