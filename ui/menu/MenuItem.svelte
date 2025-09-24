@@ -447,8 +447,9 @@
 
 <!-- Portal-based submenu rendered at document root -->
 {#if item.type === 'submenu' && showSubmenu}
-	<div 
+	<div
 		class="submenu__portal"
+		role="menu"
 		style="position: fixed; left: {submenuPosition.x}px; top: {submenuPosition.y}px; z-index: 1001;"
 		onmouseenter={() => {
 			if (submenuTimeout) {
