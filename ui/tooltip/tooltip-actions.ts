@@ -32,7 +32,7 @@ let globalTooltipState: TooltipState = {
 };
 
 // Global tooltip callbacks for the Svelte component to subscribe to
-let globalTooltipCallbacks: Array<() => void> = [];
+const globalTooltipCallbacks: Array<() => void> = [];
 
 // Timeout tracking for debouncing
 let hideTimeout: number | undefined;

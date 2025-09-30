@@ -19,7 +19,7 @@ let _tooltipElement: HTMLElement | null = null;
 let _currentState: TooltipState | null = null;
 let _stateCallbacks: Array<(state: TooltipState) => void> = [];
 let _hideCallbacks: Array<() => void> = [];
-let _attachedEvents: Map<string, () => void> = new Map();
+const _attachedEvents: Map<string, () => void> = new Map();
 
 // Timers
 let _showTimer: number | undefined;

@@ -186,7 +186,7 @@ function calculateAdvancedArrowPosition(
   const targetCenterX = targetRect.left + targetRect.width / 2;
   const targetCenterY = targetRect.top + targetRect.height / 2;
 
-  let arrowPos = { x: 0, y: 0 };
+  const arrowPos = { x: 0, y: 0 };
   let visible = true;
 
   // Calculate where the arrow should point to (target center)
@@ -366,7 +366,7 @@ export function calculateAdvancedPosition(options: PositionOptions): PositionCal
   }
 
   // Get final position and constrain to viewport
-  let finalPos = allPositions[finalPosition];
+  const finalPos = allPositions[finalPosition];
   const constrainedPos = constrainToViewport(finalPos, dimensions, viewport);
 
   // Calculate advanced arrow position with visibility
