@@ -42,29 +42,29 @@ export { default as TooltipManagerComponent } from './TooltipManager.svelte';
 
 // Global manager and action exports
 export {
-  TooltipManager as TooltipAPI,
-  tooltip,
-  subscribeToTooltipState,
-  setTooltipElement
+	TooltipManager as TooltipAPI,
+	tooltip,
+	subscribeToTooltipState,
+	setTooltipElement
 } from './tooltip-manager.js';
 
 // Legacy action exports for backward compatibility
 export {
-  useTooltip,
-  tooltipManager,
-  subscribeToTooltip,
-  getTooltipState,
-  initializeGlobalTooltips
+	useTooltip,
+	tooltipManager,
+	subscribeToTooltip,
+	getTooltipState,
+	initializeGlobalTooltips
 } from './tooltip-actions.js';
 
 // Type exports
 export type {
-  TooltipOptions,
-  TooltipPosition,
-  TooltipState,
-  TooltipManager as TooltipManagerType,
-  TooltipAction,
-  TooltipContent
+	TooltipOptions,
+	TooltipPosition,
+	TooltipState,
+	TooltipManager as TooltipManagerType,
+	TooltipAction,
+	TooltipContent
 } from './tooltip.types.js';
 
 // Default export is the tooltip action

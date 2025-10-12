@@ -19,18 +19,18 @@
  * ```
  */
 
-import { createLogger } from "./logger.ts";
+import { createLogger } from './logger.ts';
 
-const logger = createLogger("SanitizeInput");
+const logger = createLogger('SanitizeInput');
 
 /**
  * Input validation result for type checking
  */
 interface ValidationResult {
-  /** Whether the validation passed */
-  valid: boolean;
-  /** Error message if validation failed */
-  error?: string;
+	/** Whether the validation passed */
+	valid: boolean;
+	/** Error message if validation failed */
+	error?: string;
 }
 
 /**
@@ -42,7 +42,7 @@ type SanitizableValue = string | number | boolean | null | undefined | object | 
  * Form data interface for sanitization
  */
 interface FormData {
-  [key: string]: SanitizableValue;
+	[key: string]: SanitizableValue;
 }
 
 /**
@@ -54,8 +54,8 @@ interface FormData {
  * @returns The original error for re-throwing if needed
  */
 function handleError(moduleName: string, error: Error): Error {
-  logger.error("Error:", error);
-  return error;
+	logger.error('Error:', error);
+	return error;
 }
 
 /**
@@ -69,30 +69,30 @@ function handleError(moduleName: string, error: Error): Error {
  * @throws {TypeError} If validation fails
  */
 function validateType(
-  value: unknown,
-  type: string,
-  name: string,
-  isOptional: boolean = true
+	value: unknown,
+	type: string,
+	name: string,
+	isOptional: boolean = true
 ): void {
-  if (value === undefined || value === null) {
-    if (!isOptional) {
-      throw new TypeError(`${name} is required`);
-    }
-    return;
-  }
+	if (value === undefined || value === null) {
+		if (!isOptional) {
+			throw new TypeError(`${name} is required`);
+		}
+		return;
+	}
 
-  const actualType = typeof value;
-  if (type === "array") {
-    if (!Array.isArray(value)) {
-      throw new TypeError(`${name} must be an array, got ${actualType}`);
-    }
-  } else if (actualType !== type) {
-    throw new TypeError(`${name} must be a ${type}, got ${actualType}`);
-  }
+	const actualType = typeof value;
+	if (type === 'array') {
+		if (!Array.isArray(value)) {
+			throw new TypeError(`${name} must be an array, got ${actualType}`);
+		}
+	} else if (actualType !== type) {
+		throw new TypeError(`${name} must be a ${type}, got ${actualType}`);
+	}
 }
 
 // Module name for error context
-const MODULE_NAME = "SanitizeInput";
+const MODULE_NAME = 'SanitizeInput';
 
 /**
  * Potentially dangerous URL protocols that should be blocked
@@ -111,14 +111,14 @@ const MODULE_NAME = "SanitizeInput";
  * ```
  */
 export const DANGEROUS_PROTOCOLS: readonly string[] = [
-  "javascript:",
-  "data:",
-  "vbscript:",
-  "file:",
-  "about:",
-  "jscript:",
-  "livescript:",
-  "mhtml:",
+	'javascript:',
+	'data:',
+	'vbscript:',
+	'file:',
+	'about:',
+	'jscript:',
+	'livescript:',
+	'mhtml:'
 ] as const;
 
 /**
@@ -143,15 +143,15 @@ export const DANGEROUS_PROTOCOLS: readonly string[] = [
  * ```
  */
 export function escapeHTML(str: unknown): string | typeof str {
-  // Return non-string inputs unchanged
-  if (typeof str !== "string") return str;
+	// Return non-string inputs unchanged
+	if (typeof str !== 'string') return str;
 
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
 }
 
 /**
@@ -180,35 +180,33 @@ export function escapeHTML(str: unknown): string | typeof str {
  * ```
  */
 export function sanitizeURL(url: unknown): string | null {
-  try {
-    // Return non-string inputs unchanged (but typed as string|null)
-    if (typeof url !== "string") return url as string | null;
+	try {
+		// Return non-string inputs unchanged (but typed as string|null)
+		if (typeof url !== 'string') return url as string | null;
 
-    // Remove whitespace
-    const trimmed = url.trim();
-    if (!trimmed) return url;
+		// Remove whitespace
+		const trimmed = url.trim();
+		if (!trimmed) return url;
 
-    // Enhanced detection for obfuscated protocols
-    const normalized = trimmed
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      // eslint-disable-next-line no-control-regex
-      .replace(/[\x01-\x20]/g, "") // Remove control characters (excluding null)
-      .replace(/\\+/g, ""); // Handle escaping
+		// Enhanced detection for obfuscated protocols
+		const normalized = trimmed
+			.toLowerCase()
+			.replace(/\s+/g, '')
+			// eslint-disable-next-line no-control-regex
+			.replace(/[\x01-\x20]/g, '') // Remove control characters (excluding null)
+			.replace(/\\+/g, ''); // Handle escaping
 
-    // Check if URL starts with any dangerous protocol
-    if (
-      DANGEROUS_PROTOCOLS.some((protocol) => normalized.startsWith(protocol))
-    ) {
-      return null; // Return null for potentially malicious URLs
-    }
+		// Check if URL starts with any dangerous protocol
+		if (DANGEROUS_PROTOCOLS.some((protocol) => normalized.startsWith(protocol))) {
+			return null; // Return null for potentially malicious URLs
+		}
 
-    // Return safe URL
-    return trimmed;
-  } catch (error) {
-    handleError(MODULE_NAME, error as Error);
-    return null; // Return null on error as a safety measure
-  }
+		// Return safe URL
+		return trimmed;
+	} catch (error) {
+		handleError(MODULE_NAME, error as Error);
+		return null; // Return null on error as a safety measure
+	}
 }
 
 /**
@@ -244,27 +242,27 @@ export function sanitizeURL(url: unknown): string | null {
  * ```
  */
 export function sanitize(input: SanitizableValue): SanitizableValue {
-  try {
-    // Handle primitives
-    if (typeof input !== "object" || input === null) {
-      return typeof input === "string" ? escapeHTML(input) : input;
-    }
+	try {
+		// Handle primitives
+		if (typeof input !== 'object' || input === null) {
+			return typeof input === 'string' ? escapeHTML(input) : input;
+		}
 
-    // Handle arrays
-    if (Array.isArray(input)) {
-      return input.map((item) => sanitize(item));
-    }
+		// Handle arrays
+		if (Array.isArray(input)) {
+			return input.map((item) => sanitize(item));
+		}
 
-    // Handle objects
-    const result: Record<string, SanitizableValue> = {};
-    for (const [key, value] of Object.entries(input)) {
-      result[key] = sanitize(value);
-    }
-    return result;
-  } catch (error) {
-    handleError(MODULE_NAME, error as Error);
-    return input; // Return original input if sanitization fails
-  }
+		// Handle objects
+		const result: Record<string, SanitizableValue> = {};
+		for (const [key, value] of Object.entries(input)) {
+			result[key] = sanitize(value);
+		}
+		return result;
+	} catch (error) {
+		handleError(MODULE_NAME, error as Error);
+		return input; // Return original input if sanitization fails
+	}
 }
 
 /**
@@ -304,43 +302,43 @@ export function sanitize(input: SanitizableValue): SanitizableValue {
  * ```
  */
 export function sanitizeFormData(formData: FormData): FormData | undefined {
-  try {
-    // Validate input is an object
-    validateType(formData, "object", "formData", false);
+	try {
+		// Validate input is an object
+		validateType(formData, 'object', 'formData', false);
 
-    const sanitized: FormData = { ...formData };
+		const sanitized: FormData = { ...formData };
 
-    // Sanitize each field based on its key and type
-    Object.keys(sanitized).forEach((key) => {
-      const value = sanitized[key];
+		// Sanitize each field based on its key and type
+		Object.keys(sanitized).forEach((key) => {
+			const value = sanitized[key];
 
-      // Skip null/undefined values
-      if (value === null || value === undefined) return;
+			// Skip null/undefined values
+			if (value === null || value === undefined) return;
 
-      // Field name patterns that should be treated as URLs
-      const urlFieldPatterns = ["url", "website", "link", "href", "src"];
+			// Field name patterns that should be treated as URLs
+			const urlFieldPatterns = ['url', 'website', 'link', 'href', 'src'];
 
-      // Check if field name suggests it's a URL (using a more reliable pattern match)
-      const isUrlField = urlFieldPatterns.some((pattern) =>
-        key.toLowerCase().includes(pattern.toLowerCase())
-      );
+			// Check if field name suggests it's a URL (using a more reliable pattern match)
+			const isUrlField = urlFieldPatterns.some((pattern) =>
+				key.toLowerCase().includes(pattern.toLowerCase())
+			);
 
-      if (isUrlField && typeof value === "string") {
-        // URL fields get URL sanitization
-        sanitized[key] = sanitizeURL(value);
-      } else if (typeof value === "string") {
-        // All other strings get HTML escaped (including emails)
-        sanitized[key] = escapeHTML(value) as string;
-      } else if (typeof value === "object") {
-        // Deep sanitize objects and arrays
-        sanitized[key] = sanitize(value);
-      }
-      // Numbers, booleans, and other primitives are left unchanged
-    });
+			if (isUrlField && typeof value === 'string') {
+				// URL fields get URL sanitization
+				sanitized[key] = sanitizeURL(value);
+			} else if (typeof value === 'string') {
+				// All other strings get HTML escaped (including emails)
+				sanitized[key] = escapeHTML(value) as string;
+			} else if (typeof value === 'object') {
+				// Deep sanitize objects and arrays
+				sanitized[key] = sanitize(value);
+			}
+			// Numbers, booleans, and other primitives are left unchanged
+		});
 
-    return sanitized;
-  } catch (error) {
-    handleError(MODULE_NAME, error as Error);
-    return undefined; // Return undefined on error for safety
-  }
+		return sanitized;
+	} catch (error) {
+		handleError(MODULE_NAME, error as Error);
+		return undefined; // Return undefined on error for safety
+	}
 }

@@ -10,8 +10,8 @@
  * @since 1.0.0
  */
 
-import type { RequestEvent, Handle } from '@sveltejs/kit';
-import { getContactFormConfig } from "../config/index.ts";
+import type { RequestEvent } from '@sveltejs/kit';
+import { getContactFormConfig } from '../config/index.ts';
 
 /**
  * Type definition for i18n handler function
@@ -27,16 +27,16 @@ type LoadFunction<T = Record<string, any>> = (event: RequestEvent) => Promise<T>
  * Type definition for i18n data returned by load functions
  */
 interface I18nLoadData {
-  lang: string;
-  supportedLanguages: string[];
+	lang: string;
+	supportedLanguages: string[];
 }
 
 /**
  * Type definition for load function result with i18n data
  */
 interface LoadResultWithI18n {
-  i18n?: I18nLoadData;
-  [key: string]: any;
+	i18n?: I18nLoadData;
+	[key: string]: any;
 }
 
 // Get the contact form configuration
@@ -72,33 +72,30 @@ const formConfig = getContactFormConfig();
  *
  * @throws Will log errors but not throw to avoid breaking request flow
  */
-export async function handleFormI18n(
-  event: RequestEvent,
-  handler?: I18nHandler
-): Promise<void> {
-  // Only run if i18n is enabled and the URL is related to the contact form
-  // Using startsWith for path-based check instead of includes for better security
-  if (
-    formConfig.i18n?.enabled &&
-    event.url.pathname &&
-    (event.url.pathname === formConfig.formUri ||
-      event.url.pathname.startsWith(formConfig.formUri + "/"))
-  ) {
-    // Only call handler if it's actually a function
-    if (typeof handler === "function") {
-      try {
-        await handler(event);
-      } catch (error) {
-        // Import logger inline to avoid circular dependencies
-        const { createLogger } = await import("../utils/logger.ts");
-        const logger = createLogger("ContactFormI18n");
+export async function handleFormI18n(event: RequestEvent, handler?: I18nHandler): Promise<void> {
+	// Only run if i18n is enabled and the URL is related to the contact form
+	// Using startsWith for path-based check instead of includes for better security
+	if (
+		formConfig.i18n?.enabled &&
+		event.url.pathname &&
+		(event.url.pathname === formConfig.formUri ||
+			event.url.pathname.startsWith(formConfig.formUri + '/'))
+	) {
+		// Only call handler if it's actually a function
+		if (typeof handler === 'function') {
+			try {
+				await handler(event);
+			} catch (error) {
+				// Import logger inline to avoid circular dependencies
+				const { createLogger } = await import('../utils/logger.ts');
+				const logger = createLogger('ContactFormI18n');
 
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error("Error in contactform i18n handler:", errorMessage);
-        // Don't rethrow to avoid breaking the request flow
-      }
-    }
-  }
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				logger.error('Error in contactform i18n handler:', errorMessage);
+				// Don't rethrow to avoid breaking the request flow
+			}
+		}
+	}
 }
 
 /**
@@ -126,29 +123,29 @@ export async function handleFormI18n(
  * ```
  */
 export async function loadWithFormI18n<T extends Record<string, any> = Record<string, any>>(
-  event: RequestEvent,
-  originalLoad?: LoadFunction<T>
+	event: RequestEvent,
+	originalLoad?: LoadFunction<T>
 ): Promise<T & LoadResultWithI18n> {
-  // Call the original load function if provided and it's a function
-  const originalData: T =
-    typeof originalLoad === "function" ? await originalLoad(event) : {} as T;
+	// Call the original load function if provided and it's a function
+	const originalData: T =
+		typeof originalLoad === 'function' ? await originalLoad(event) : ({} as T);
 
-  // Skip if i18n is not enabled
-  if (!formConfig.i18n?.enabled) {
-    return originalData as T & LoadResultWithI18n;
-  }
+	// Skip if i18n is not enabled
+	if (!formConfig.i18n?.enabled) {
+		return originalData as T & LoadResultWithI18n;
+	}
 
-  // Get the language from locals or use default
-  const lang: string = (event.locals as any)?.lang || formConfig.i18n.defaultLanguage;
+	// Get the language from locals or use default
+	const lang: string = (event.locals as any)?.lang || formConfig.i18n.defaultLanguage;
 
-  // Return the data with i18n information
-  return {
-    ...originalData,
-    i18n: {
-      lang,
-      supportedLanguages: formConfig.i18n.supportedLanguages,
-    },
-  } as T & LoadResultWithI18n;
+	// Return the data with i18n information
+	return {
+		...originalData,
+		i18n: {
+			lang,
+			supportedLanguages: formConfig.i18n.supportedLanguages
+		}
+	} as T & LoadResultWithI18n;
 }
 
 /**
@@ -172,9 +169,9 @@ export async function loadWithFormI18n<T extends Record<string, any> = Record<st
  * ```
  */
 export async function layoutLoadWithFormI18n<T extends Record<string, any> = Record<string, any>>(
-  event: RequestEvent,
-  originalLoad?: LoadFunction<T>
+	event: RequestEvent,
+	originalLoad?: LoadFunction<T>
 ): Promise<T & LoadResultWithI18n> {
-  // This is similar to loadWithFormI18n but typically used in +layout.server.js
-  return await loadWithFormI18n(event, originalLoad);
+	// This is similar to loadWithFormI18n but typically used in +layout.server.js
+	return await loadWithFormI18n(event, originalLoad);
 }

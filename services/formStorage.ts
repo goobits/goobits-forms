@@ -6,31 +6,31 @@
  */
 
 // Import logger utility and constants
-import { createLogger } from "../utils/logger.ts";
+import { createLogger } from '../utils/logger.ts';
 import {
-  IS_BROWSER,
-  STORAGE_KEY,
-  STORAGE_EXPIRY_KEY,
-  DEFAULT_EXPIRY_HOURS,
-} from "../utils/constants.ts";
+	IS_BROWSER,
+	STORAGE_KEY,
+	STORAGE_EXPIRY_KEY,
+	DEFAULT_EXPIRY_HOURS
+} from '../utils/constants.ts';
 // import { handleError } from '../utils/errorHandler.ts'
 
-const logger = createLogger("FormStorage");
+const logger = createLogger('FormStorage');
 
 /**
  * Form data that can be stored in localStorage
  */
 export interface StorableFormData {
-  /** Form field key-value pairs */
-  [key: string]: any;
+	/** Form field key-value pairs */
+	[key: string]: any;
 }
 
 /**
  * All form data stored by category
  */
 export interface CategorizedFormData {
-  /** Category name as key, form data as value */
-  [category: string]: StorableFormData;
+	/** Category name as key, form data as value */
+	[category: string]: StorableFormData;
 }
 
 /**
@@ -58,50 +58,50 @@ export interface CategorizedFormData {
  * ```
  */
 export function saveFormData(formData: StorableFormData, category: string): boolean {
-  if (!IS_BROWSER) return false;
+	if (!IS_BROWSER) return false;
 
-  try {
-    // Only save if there's actual user data (at least one field with content)
-    const hasUserData = Object.keys(formData).some((key) => {
-      // Skip system fields and empty values
-      if (key === "category" || key === "attachments") return false;
-      return !!formData[key];
-    });
+	try {
+		// Only save if there's actual user data (at least one field with content)
+		const hasUserData = Object.keys(formData).some((key) => {
+			// Skip system fields and empty values
+			if (key === 'category' || key === 'attachments') return false;
+			return !!formData[key];
+		});
 
-    if (!hasUserData) {
-      logger.debug("No user data to save");
-      return false;
-    }
+		if (!hasUserData) {
+			logger.debug('No user data to save');
+			return false;
+		}
 
-    // Store form data by category
-    const existingData = loadAllFormData() || {};
+		// Store form data by category
+		const existingData = loadAllFormData() || {};
 
-    // Filter out fields that shouldn't be stored (like attachments)
-    const filteredData: StorableFormData = {};
-    for (const key in formData) {
-      // Skip attachments and empty fields
-      if (key === "attachments" || !formData[key]) continue;
+		// Filter out fields that shouldn't be stored (like attachments)
+		const filteredData: StorableFormData = {};
+		for (const key in formData) {
+			// Skip attachments and empty fields
+			if (key === 'attachments' || !formData[key]) continue;
 
-      // Store other fields
-      filteredData[key] = formData[key];
-    }
+			// Store other fields
+			filteredData[key] = formData[key];
+		}
 
-    // Update data for this category
-    existingData[category] = filteredData;
+		// Update data for this category
+		existingData[category] = filteredData;
 
-    // Save to localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existingData));
+		// Save to localStorage
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(existingData));
 
-    // Set expiry timestamp
-    const expiryTime = Date.now() + DEFAULT_EXPIRY_HOURS * 60 * 60 * 1000;
-    localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
+		// Set expiry timestamp
+		const expiryTime = Date.now() + DEFAULT_EXPIRY_HOURS * 60 * 60 * 1000;
+		localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
 
-    logger.debug(`Saved form data for category: ${category}`);
-    return true;
-  } catch (error) {
-    logger.error("Error saving form data to localStorage", error);
-    return false;
-  }
+		logger.debug(`Saved form data for category: ${category}`);
+		return true;
+	} catch (error) {
+		logger.error('Error saving form data to localStorage', error);
+		return false;
+	}
 }
 
 /**
@@ -123,27 +123,27 @@ export function saveFormData(formData: StorableFormData, category: string): bool
  * ```
  */
 export function loadFormData(category: string): StorableFormData | null {
-  if (!IS_BROWSER) return null;
+	if (!IS_BROWSER) return null;
 
-  try {
-    // Check if data is expired
-    if (isDataExpired()) {
-      clearAllFormData();
-      return null;
-    }
+	try {
+		// Check if data is expired
+		if (isDataExpired()) {
+			clearAllFormData();
+			return null;
+		}
 
-    // Load all saved data
-    const allData = loadAllFormData();
-    if (!allData || !allData[category]) {
-      return null;
-    }
+		// Load all saved data
+		const allData = loadAllFormData();
+		if (!allData || !allData[category]) {
+			return null;
+		}
 
-    logger.debug(`Loaded saved form data for category: ${category}`);
-    return allData[category];
-  } catch (error) {
-    logger.error("Error loading form data from localStorage", error);
-    return null;
-  }
+		logger.debug(`Loaded saved form data for category: ${category}`);
+		return allData[category];
+	} catch (error) {
+		logger.error('Error loading form data from localStorage', error);
+		return null;
+	}
 }
 
 /**
@@ -164,15 +164,15 @@ export function loadFormData(category: string): StorableFormData | null {
  * ```
  */
 function loadAllFormData(): CategorizedFormData | null {
-  if (!IS_BROWSER) return null;
+	if (!IS_BROWSER) return null;
 
-  try {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    return savedData ? JSON.parse(savedData) : null;
-  } catch (error) {
-    logger.error("Error parsing saved form data", error);
-    return null;
-  }
+	try {
+		const savedData = localStorage.getItem(STORAGE_KEY);
+		return savedData ? JSON.parse(savedData) : null;
+	} catch (error) {
+		logger.error('Error parsing saved form data', error);
+		return null;
+	}
 }
 
 /**
@@ -191,20 +191,20 @@ function loadAllFormData(): CategorizedFormData | null {
  * ```
  */
 export function clearFormData(category: string): boolean {
-  if (!IS_BROWSER) return false;
+	if (!IS_BROWSER) return false;
 
-  try {
-    const allData = loadAllFormData();
-    if (allData && allData[category]) {
-      delete allData[category];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
-      logger.debug(`Cleared form data for category: ${category}`);
-    }
-    return true;
-  } catch (error) {
-    logger.error("Error clearing form data", error);
-    return false;
-  }
+	try {
+		const allData = loadAllFormData();
+		if (allData && allData[category]) {
+			delete allData[category];
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+			logger.debug(`Cleared form data for category: ${category}`);
+		}
+		return true;
+	} catch (error) {
+		logger.error('Error clearing form data');
+		return false;
+	}
 }
 
 /**
@@ -222,17 +222,17 @@ export function clearFormData(category: string): boolean {
  * ```
  */
 export function clearAllFormData(): boolean {
-  if (!IS_BROWSER) return false;
+	if (!IS_BROWSER) return false;
 
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_EXPIRY_KEY);
-    logger.debug("Cleared all saved form data");
-    return true;
-  } catch (error) {
-    logger.error("Error clearing all form data", error);
-    return false;
-  }
+	try {
+		localStorage.removeItem(STORAGE_KEY);
+		localStorage.removeItem(STORAGE_EXPIRY_KEY);
+		logger.debug('Cleared all saved form data');
+		return true;
+	} catch {
+		logger.error('Error clearing all form data');
+		return false;
+	}
 }
 
 /**
@@ -251,15 +251,15 @@ export function clearAllFormData(): boolean {
  * ```
  */
 function isDataExpired(): boolean {
-  try {
-    const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
-    if (!expiryTime) return true;
+	try {
+		const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
+		if (!expiryTime) return true;
 
-    const expiryTimestamp = parseInt(expiryTime, 10);
-    return Date.now() > expiryTimestamp;
-  } catch (error) {
-    return true;
-  }
+		const expiryTimestamp = parseInt(expiryTime, 10);
+		return Date.now() > expiryTimestamp;
+	} catch (error) {
+		return true;
+	}
 }
 
 /**
@@ -277,17 +277,17 @@ function isDataExpired(): boolean {
  * ```
  */
 export function getDataExpiry(): Date | null {
-  if (!IS_BROWSER) return null;
+	if (!IS_BROWSER) return null;
 
-  try {
-    const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
-    if (!expiryTime) return null;
+	try {
+		const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
+		if (!expiryTime) return null;
 
-    const expiryTimestamp = parseInt(expiryTime, 10);
-    return new Date(expiryTimestamp);
-  } catch (error) {
-    return null;
-  }
+		const expiryTimestamp = parseInt(expiryTime, 10);
+		return new Date(expiryTimestamp);
+	} catch (error) {
+		return null;
+	}
 }
 
 /**
@@ -305,12 +305,12 @@ export function getDataExpiry(): Date | null {
  * ```
  */
 export function hasSavedData(): boolean {
-  if (!IS_BROWSER || isDataExpired()) {
-    return false;
-  }
+	if (!IS_BROWSER || isDataExpired()) {
+		return false;
+	}
 
-  const allData = loadAllFormData();
-  return allData !== null && Object.keys(allData).length > 0;
+	const allData = loadAllFormData();
+	return allData !== null && Object.keys(allData).length > 0;
 }
 
 /**
@@ -328,12 +328,12 @@ export function hasSavedData(): boolean {
  * ```
  */
 export function getSavedCategories(): string[] {
-  if (!IS_BROWSER || isDataExpired()) {
-    return [];
-  }
+	if (!IS_BROWSER || isDataExpired()) {
+		return [];
+	}
 
-  const allData = loadAllFormData();
-  return allData ? Object.keys(allData) : [];
+	const allData = loadAllFormData();
+	return allData ? Object.keys(allData) : [];
 }
 
 /**
@@ -352,7 +352,7 @@ export function getSavedCategories(): string[] {
  * ```
  */
 export function isStorableFormData(obj: any): obj is StorableFormData {
-  return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
+	return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
 }
 
 /**
@@ -376,37 +376,37 @@ export function isStorableFormData(obj: any): obj is StorableFormData {
  * ```
  */
 export function sanitizeForStorage(formData: any): StorableFormData {
-  const sanitized: StorableFormData = {};
+	const sanitized: StorableFormData = {};
 
-  if (!isStorableFormData(formData)) {
-    return sanitized;
-  }
+	if (!isStorableFormData(formData)) {
+		return sanitized;
+	}
 
-  for (const [key, value] of Object.entries(formData)) {
-    // Skip system fields
-    if (key === 'attachments' || key === 'category') {
-      continue;
-    }
+	for (const [key, value] of Object.entries(formData)) {
+		// Skip system fields
+		if (key === 'attachments' || key === 'category') {
+			continue;
+		}
 
-    // Skip functions, Files, and other non-serializable types
-    if (typeof value === 'function' || value instanceof File || value instanceof FileList) {
-      continue;
-    }
+		// Skip functions, Files, and other non-serializable types
+		if (typeof value === 'function' || value instanceof File || value instanceof FileList) {
+			continue;
+		}
 
-    // Skip empty values
-    if (value === null || value === undefined || value === '') {
-      continue;
-    }
+		// Skip empty values
+		if (value === null || value === undefined || value === '') {
+			continue;
+		}
 
-    // Store serializable values
-    try {
-      JSON.stringify(value);
-      sanitized[key] = value;
-    } catch (error) {
-      // Skip values that can't be serialized
-      logger.debug(`Skipping non-serializable field: ${key}`);
-    }
-  }
+		// Store serializable values
+		try {
+			JSON.stringify(value);
+			sanitized[key] = value;
+		} catch (error) {
+			// Skip values that can't be serialized
+			logger.debug(`Skipping non-serializable field: ${key}`);
+		}
+	}
 
-  return sanitized;
+	return sanitized;
 }

@@ -1,92 +1,73 @@
 /**
  * @goobits/forms
- * Configurable form components with validation, CSRF protection, and category-based routing
  *
- * @fileoverview Main entry point for the @goobits/forms package. This module provides
- * a comprehensive form handling solution with built-in validation, CSRF protection,
- * internationalization, and category-based routing capabilities.
- *
+ * @description Configurable form components with validation, CSRF protection, and category-based routing.
  * @author @goobits
  * @version 1.0.0
- * @since 1.0.0
  */
 
-// Configuration (safe for SSR)
 /**
- * Configuration utilities and types for form setup and customization.
- * Includes default configurations, schemas, and type definitions.
+ * @module config
+ * @description Configuration utilities and types for form setup and customization.
  */
-export * from "./config/index.ts";
+export * from './config/index.ts';
 
-// Internationalization (safe for SSR)
 /**
- * Internationalization support for multi-language form interfaces.
- * Provides hooks and utilities for locale-aware form rendering.
+ * @module i18n
+ * @description Internationalization support for multi-language form interfaces.
  */
-export * from "./i18n/index.ts";
+export * from './i18n/index.ts';
 
-// Validation utilities (safe for SSR)
 /**
- * Form validation utilities and schemas for client and server-side validation.
- * Built on top of popular validation libraries with custom extensions.
+ * @module validation
+ * @description Form validation utilities and schemas for client and server-side validation.
  */
-export * from "./validation/index.ts";
+export * from './validation/index.ts';
 
-// Services (safe for SSR)
 /**
- * Backend services for form processing, including email delivery,
- * rate limiting, and third-party integrations.
+ * @module services
+ * @description Backend services for form processing, including email delivery and rate limiting.
  */
-export * from "./services/index.js";
+export * from './services/index.js';
 
-// Route handlers (safe for SSR)
 /**
- * SvelteKit route handlers for form submission processing.
- * Includes category-based routing and form processing logic.
+ * @module handlers
+ * @description SvelteKit route handlers for form submission processing.
  */
-export * from "./handlers/index.js";
+export * from './handlers/index.js';
 
-// Security utilities (safe for SSR)
 /**
- * Security utilities including CSRF token generation and validation.
- * Essential for protecting against cross-site request forgery attacks.
+ * @module security
+ * @description Security utilities including CSRF token generation and validation.
  */
-export * from "./security/csrf.ts";
+export * from './security/csrf.ts';
 
-// Utilities (safe for SSR)
 /**
- * General utility functions for form handling, including input sanitization,
- * debouncing, and logging capabilities.
+ * @module utils
+ * @description General utility functions for form handling and logging.
  */
-export * from "./utils/index.js";
+export * from './utils/index.js';
 
-// Logger configuration (safe for SSR)
 /**
- * Configurable logging system for debugging and monitoring form operations.
- * Supports multiple log levels and output formats.
+ * @function configureLogger
+ * @description Configurable logging system for debugging and monitoring.
+ * @param {object} options - Logging configuration.
  */
-export { configureLogger, LogLevels } from "./utils/logger.js";
+export { configureLogger, LogLevels } from './utils/logger.js';
 
-// Export specific config functions
 /**
- * Contact form configuration functions for setting up category-based
- * form handling with custom validation rules and schemas.
+ * @function initContactFormConfig
+ * @description Initializes contact form configuration with custom categories and validation.
+ * @param {object} config - The contact form configuration.
  */
-export {
-  initContactFormConfig,
-  getValidatorForCategory,
-} from "./config/contactSchemas.js";
+export { initContactFormConfig, getValidatorForCategory } from './config/contactSchemas.js';
 
-// Export category router functions
 /**
- * Category-based routing functions for creating dynamic form handlers
- * that can process different types of contact forms based on categories.
+ * @function createCategoryRouter
+ * @description Creates category-based routing functions for dynamic form handlers.
+ * @param {object} config - The router configuration.
  */
-export {
-  createCategoryRouter,
-  createContactRouteHandlers,
-} from "./handlers/categoryRouter.js";
+export { createCategoryRouter, createContactRouteHandlers } from './handlers/categoryRouter.js';
 
-// UI Components - must be imported separately to avoid SSR issues
-// Use: import { ContactForm, CategoryContactForm, DemoPlayground } from '@goobits/forms/ui'
-// export * from './ui/index.js'
+// UI Components are exported separately to avoid SSR issues.
+// Example: import { ContactForm } from '@goobits/forms/ui';

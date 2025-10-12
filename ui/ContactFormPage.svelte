@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ContactForm from './ContactForm.svelte'
-	import { onMount, onDestroy } from 'svelte'
-	import { createLogger } from '../utils/logger.ts'
+	import ContactForm from './ContactForm.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { createLogger } from '../utils/logger.ts';
 
-	const logger = createLogger('ContactFormPage')
+	const logger = createLogger('ContactFormPage');
 
 	// Props
 	let {
@@ -50,7 +50,7 @@
 		/**
 		 * Intro text for normal mode
 		 */
-		introText = 'Have a question? Want to get in touch? Fill out the form below and we\'ll get back to you as soon as possible.',
+		introText = "Have a question? Want to get in touch? Fill out the form below and we'll get back to you as soon as possible.",
 		/**
 		 * Intro text for booking mode
 		 */
@@ -68,136 +68,138 @@
 		 */
 		onUrlUpdate = null
 	}: {
-		initialData?: Record<string, any>
-		config?: { categories?: Record<string, any> }
-		categoryParam?: string
-		thankYouValue?: string
-		defaultCategory?: string
-		category?: string | null
-		bookingParam?: string
-		bookingCategory?: string
-		pageTitle?: string
-		bookingPageTitle?: string
-		introText?: string
-		bookingIntroText?: string
-		contactFormProps?: Record<string, any>
-		onCategoryChange?: ((category: string) => void) | null
-		onUrlUpdate?: ((url: URL) => void) | null
-	} = $props()
+		initialData?: Record<string, any>;
+		config?: { categories?: Record<string, any> };
+		categoryParam?: string;
+		thankYouValue?: string;
+		defaultCategory?: string;
+		category?: string | null;
+		bookingParam?: string;
+		bookingCategory?: string;
+		pageTitle?: string;
+		bookingPageTitle?: string;
+		introText?: string;
+		bookingIntroText?: string;
+		contactFormProps?: Record<string, any>;
+		onCategoryChange?: ((category: string) => void) | null;
+		onUrlUpdate?: ((url: URL) => void) | null;
+	} = $props();
 
 	// State
-	let selectedCategory: string = $state(category || initialData.category || defaultCategory)
-	let showThankYou: boolean = $state(false)
-	let isBookingMode: boolean = $state(false)
-	let currentPageTitle: string = $state(pageTitle)
-	let isInitialRender: boolean = true
+	let selectedCategory: string = $state(category || initialData.category || defaultCategory);
+	let showThankYou: boolean = $state(false);
+	let isBookingMode: boolean = $state(false);
+	let currentPageTitle: string = $state(pageTitle);
+	let isInitialRender: boolean = true;
 
 	// Get valid categories from config
-	const validCategories: string[] = config.categories ? Object.keys(config.categories) : []
+	const validCategories: string[] = config.categories ? Object.keys(config.categories) : [];
 
 	// Initialize on mount
 	onMount(() => {
 		// Add event listeners
-		window.addEventListener('popstate', handlePopState)
-		window.addEventListener('formCategoryChange', handleCategoryChange)
+		window.addEventListener('popstate', handlePopState);
+		window.addEventListener('formCategoryChange', handleCategoryChange);
 
 		// Process initial URL
-		handlePopState()
-	})
+		handlePopState();
+	});
 
 	onDestroy(() => {
 		if (typeof window !== 'undefined') {
-			window.removeEventListener('popstate', handlePopState)
-			window.removeEventListener('formCategoryChange', handleCategoryChange)
+			window.removeEventListener('popstate', handlePopState);
+			window.removeEventListener('formCategoryChange', handleCategoryChange);
 		}
-	})
+	});
 
 	// Handle category change event from ContactForm
 	function handleCategoryChange(event: CustomEvent): void {
 		if (event.detail && event.detail.category) {
-			selectedCategory = event.detail.category
-			updateUrl()
+			selectedCategory = event.detail.category;
+			updateUrl();
 
 			// Call custom callback if provided
 			if (onCategoryChange) {
-				onCategoryChange(event.detail.category)
+				onCategoryChange(event.detail.category);
 			}
 		}
 	}
 
 	// Handle browser navigation
 	function handlePopState(): void {
-		const url = new URL(window.location.toString())
-		const type = url.searchParams.get(categoryParam)
-		const isBooking = url.searchParams.has(bookingParam)
+		const url = new URL(window.location.toString());
+		const type = url.searchParams.get(categoryParam);
+		const isBooking = url.searchParams.has(bookingParam);
 
 		// Update booking mode
 		if (isBooking) {
-			isBookingMode = true
-			currentPageTitle = bookingPageTitle
+			isBookingMode = true;
+			currentPageTitle = bookingPageTitle;
 			if (!validCategories.includes(type)) {
-				selectedCategory = bookingCategory
+				selectedCategory = bookingCategory;
 			}
 		} else {
-			isBookingMode = false
-			currentPageTitle = pageTitle
+			isBookingMode = false;
+			currentPageTitle = pageTitle;
 		}
 
 		// Handle page state based on URL
 		if (type === thankYouValue) {
-			showThankYou = true
+			showThankYou = true;
 		} else if (validCategories.includes(type)) {
-			showThankYou = false
-			selectedCategory = type
+			showThankYou = false;
+			selectedCategory = type;
 
 			// Force form update
 			setTimeout(() => {
 				if (typeof window !== 'undefined') {
-					window.dispatchEvent(new CustomEvent('formCategoryForceUpdate', {
-						detail: { category: type }
-					}))
+					window.dispatchEvent(
+						new CustomEvent('formCategoryForceUpdate', {
+							detail: { category: type }
+						})
+					);
 				}
-			}, 0)
+			}, 0);
 		} else {
-			showThankYou = false
-			selectedCategory = defaultCategory
+			showThankYou = false;
+			selectedCategory = defaultCategory;
 		}
 
-		window.scrollTo(0, 0)
+		window.scrollTo(0, 0);
 	}
 
 	// Update URL based on state
 	function updateUrl(): void {
-		if (typeof window === 'undefined') return
+		if (typeof window === 'undefined') return;
 
-		const currentUrl = new URL(window.location.toString())
-		const newUrl = new URL(window.location.toString())
+		const currentUrl = new URL(window.location.toString());
+		const newUrl = new URL(window.location.toString());
 
 		// Set URL parameters
 		if (showThankYou) {
-			newUrl.searchParams.set(categoryParam, thankYouValue)
+			newUrl.searchParams.set(categoryParam, thankYouValue);
 		} else {
-			newUrl.searchParams.set(categoryParam, selectedCategory)
+			newUrl.searchParams.set(categoryParam, selectedCategory);
 		}
 
 		if (isBookingMode) {
-			newUrl.searchParams.set(bookingParam, 'true')
+			newUrl.searchParams.set(bookingParam, 'true');
 		} else {
-			newUrl.searchParams.delete(bookingParam)
+			newUrl.searchParams.delete(bookingParam);
 		}
 
 		// Only update if changed
 		if (newUrl.toString() !== currentUrl.toString()) {
 			try {
 				// Use history.pushState for better control
-				window.history.pushState({}, '', newUrl.toString())
+				window.history.pushState({}, '', newUrl.toString());
 
 				// Call custom callback if provided
 				if (onUrlUpdate) {
-					onUrlUpdate(newUrl)
+					onUrlUpdate(newUrl);
 				}
 			} catch (error) {
-				logger.warn('Could not update URL:', error)
+				logger.warn('Could not update URL:', error);
 			}
 		}
 	}
@@ -205,28 +207,27 @@
 	// Watch for state changes
 	$effect(() => {
 		if (!isInitialRender) {
-			updateUrl()
+			updateUrl();
 		}
-	})
+	});
 
 	// After first render
 	$effect(() => {
-		isInitialRender = false
-	})
+		isInitialRender = false;
+	});
 </script>
 
 {#key showThankYou}
 	<h1 class="contact-form-page__title">{currentPageTitle}</h1>
 	{#if isBookingMode}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<p class="contact-form-page__intro">{@html bookingIntroText}</p>
 	{:else}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<p class="contact-form-page__intro">{@html introText}</p>
 	{/if}
 
-	<ContactForm
-			initialData={{...initialData, category: selectedCategory}}
-			{...contactFormProps}
-	/>
+	<ContactForm initialData={{ ...initialData, category: selectedCategory }} {...contactFormProps} />
 {/key}
 
 <style>

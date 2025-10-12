@@ -28,24 +28,24 @@ bun add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-sup
 ```js
 // src/lib/contact-config.js - Configure form categories
 export const contactConfig = {
-  appName: "My App",
-  categories: {
-    general: {
-      label: "General Inquiry",
-      fields: ["name", "email", "message", "coppa"],
-    },
-    support: {
-      label: "Technical Support",
-      fields: ["name", "email", "urgency", "message", "attachment"],
-    },
-  },
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'General Inquiry',
+			fields: ['name', 'email', 'message', 'coppa']
+		},
+		support: {
+			label: 'Technical Support',
+			fields: ['name', 'email', 'urgency', 'message', 'attachment']
+		}
+	}
 };
 ```
 
 ```js
 // src/app.js - Initialize configuration
-import { initContactFormConfig } from "@goobits/forms/config";
-import { contactConfig } from "$lib/contact-config.js";
+import { initContactFormConfig } from '@goobits/forms/config';
+import { contactConfig } from '$lib/contact-config.js';
 
 initContactFormConfig(contactConfig);
 ```
@@ -53,8 +53,8 @@ initContactFormConfig(contactConfig);
 ```svelte
 <!-- src/routes/contact/+page.svelte - Basic usage -->
 <script>
-  import { ContactForm } from '@goobits/forms'
-  export let data
+	import { ContactForm } from '@goobits/forms';
+	export let data;
 </script>
 
 <h1>Contact Us</h1>
@@ -66,30 +66,30 @@ initContactFormConfig(contactConfig);
 ```js
 // Complete configuration options
 const contactConfig = {
-  appName: "My App",
+	appName: 'My App',
 
-  // UI customization
-  ui: {
-    submitButtonText: "Send Message",
-    submittingButtonText: "Sending...",
-    resetAfterSubmit: true,
-    showSuccessMessage: true,
-  },
+	// UI customization
+	ui: {
+		submitButtonText: 'Send Message',
+		submittingButtonText: 'Sending...',
+		resetAfterSubmit: true,
+		showSuccessMessage: true
+	},
 
-  // reCAPTCHA integration
-  recaptcha: {
-    enabled: true,
-    provider: "google-v3",
-    siteKey: "YOUR_RECAPTCHA_SITE_KEY",
-    threshold: 0.5,
-  },
+	// reCAPTCHA integration
+	recaptcha: {
+		enabled: true,
+		provider: 'google-v3',
+		siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
+		threshold: 0.5
+	},
 
-  // File upload settings
-  uploads: {
-    enabled: true,
-    maxSize: "5MB",
-    allowedTypes: ["image/jpeg", "image/png", "application/pdf"],
-  },
+	// File upload settings
+	uploads: {
+		enabled: true,
+		maxSize: '5MB',
+		allowedTypes: ['image/jpeg', 'image/png', 'application/pdf']
+	}
 };
 ```
 
@@ -100,13 +100,13 @@ const contactConfig = {
 ```svelte
 <!-- Direct message prop override -->
 <script>
-  import { ContactForm } from '@goobits/forms'
+	import { ContactForm } from '@goobits/forms';
 
-  const messages = {
-    howCanWeHelp: 'Comment pouvons-nous vous aider?',
-    sendMessage: 'Envoyer le message',
-    sending: 'Envoi en cours...'
-  }
+	const messages = {
+		howCanWeHelp: 'Comment pouvons-nous vous aider?',
+		sendMessage: 'Envoyer le message',
+		sending: 'Envoi en cours...'
+	};
 </script>
 
 <ContactForm {messages} />
@@ -141,13 +141,13 @@ export const load = async (event) => {
 
 ```js
 // Seamless Paraglide integration
-import { createMessageGetter } from "@goobits/forms/i18n";
-import * as m from "$paraglide/messages";
+import { createMessageGetter } from '@goobits/forms/i18n';
+import * as m from '$paraglide/messages';
 
 const getMessage = createMessageGetter({
-  howCanWeHelp: m.howCanWeHelp,
-  sendMessage: m.sendMessage,
-  sending: m.sending,
+	howCanWeHelp: m.howCanWeHelp,
+	sendMessage: m.sendMessage,
+	sending: m.sending
 });
 ```
 
@@ -156,16 +156,16 @@ const getMessage = createMessageGetter({
 ```svelte
 <!-- Core components -->
 <script>
-  import {
-    ContactForm,        // Main form with validation
-    ContactFormPage,    // Complete page layout
-    FormField,          // Reusable field component
-    FormErrors,         // Error display
-    FeedbackForm,       // Quick feedback widget
-    ThankYou,           // Success message
-    UploadImage,        // File upload with preview
-    DemoPlayground      // Interactive demo component
-  } from '@goobits/forms/ui'
+	import {
+		ContactForm, // Main form with validation
+		ContactFormPage, // Complete page layout
+		FormField, // Reusable field component
+		FormErrors, // Error display
+		FeedbackForm, // Quick feedback widget
+		ThankYou, // Success message
+		UploadImage, // File upload with preview
+		DemoPlayground // Interactive demo component
+	} from '@goobits/forms/ui';
 </script>
 ```
 
@@ -175,31 +175,31 @@ Use the `DemoPlayground` component to create an interactive demonstration of all
 
 ```svelte
 <script>
-  import { DemoPlayground } from '@goobits/forms/ui';
-  import '@goobits/forms/ui/variables.css';
-  import '@goobits/forms/ui/DemoPlayground.css';
+	import { DemoPlayground } from '@goobits/forms/ui';
+	import '@goobits/forms/ui/variables.css';
+	import '@goobits/forms/ui/DemoPlayground.css';
 
-  // Your external components (optional)
-  import { ToggleSwitch, SelectMenu } from '$lib/components/ui';
+	// Your external components (optional)
+	import { ToggleSwitch, SelectMenu } from '$lib/components/ui';
 
-  const contactConfig = {
-    appName: "My App",
-    categories: {
-      general: { label: "General Inquiry", fields: ["name", "email", "message"] }
-    }
-  };
+	const contactConfig = {
+		appName: 'My App',
+		categories: {
+			general: { label: 'General Inquiry', fields: ['name', 'email', 'message'] }
+		}
+	};
 </script>
 
 <DemoPlayground
-  config={contactConfig}
-  apiEndpoints={{
-    contact: "/api/contact",
-    feedback: "/api/feedback"
-  }}
-  externalComponents={{
-    ToggleSwitch,
-    SelectMenu
-  }}
+	config={contactConfig}
+	apiEndpoints={{
+		contact: '/api/contact',
+		feedback: '/api/feedback'
+	}}
+	externalComponents={{
+		ToggleSwitch,
+		SelectMenu
+	}}
 />
 ```
 
@@ -221,12 +221,12 @@ import '@goobits/forms/ui/ContactForm.css'
 ```css
 /* Override component styles */
 .contact-form {
-  max-width: 600px;
-  margin: 0 auto;
+	max-width: 600px;
+	margin: 0 auto;
 }
 
 .form-field {
-  margin-bottom: 1rem;
+	margin-bottom: 1rem;
 }
 ```
 

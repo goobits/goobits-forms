@@ -1,35 +1,35 @@
 /* FormErrors component styles */
 .form-error {
-  background-color: var(--color-error-50);
-  border: 1px solid var(--color-error-500);
-  color: var(--color-error-600);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-small);
-  position: relative;
+	background-color: var(--color-error-50);
+	border: 1px solid var(--color-error-500);
+	color: var(--color-error-600);
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--border-radius-small);
+	position: relative;
 }
 
 /* Dark theme handled via CSS variable fallbacks */
 
 .form-error__icon-wrapper {
-  display: inline-block;
-  margin-right: var(--space-2);
+	display: inline-block;
+	margin-right: var(--space-2);
 }
 
 .form-error__icon-wrapper :global(svg) {
-  height: var(--font-size-base);
-  width: var(--font-size-base);
+	height: var(--font-size-base);
+	width: var(--font-size-base);
 }
 
 .form-error__title {
-  font-weight: var(--font-weight-bold);
+	font-weight: var(--font-weight-bold);
 }
 
 .form-error__list {
-  margin-top: var(--space-1);
-  list-style-type: disc;
-  list-style-position: inside;
+	margin-top: var(--space-1);
+	list-style-type: disc;
+	list-style-position: inside;
 }
 
 .form-error__item {
-  margin-top: var(--space-1);
+	margin-top: var(--space-1);
 }

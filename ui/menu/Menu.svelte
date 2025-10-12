@@ -6,7 +6,12 @@
 	 * keyboard navigation, and accessibility features.
 	 */
 
-	import { calculateMenuPosition, getMenuPositionStyles, createKeyboardNavigation, getMenuAriaAttributes } from './utils';
+	import {
+		calculateMenuPosition,
+		getMenuPositionStyles,
+		createKeyboardNavigation,
+		getMenuAriaAttributes
+	} from './utils';
 	import MenuItem from './MenuItem.svelte';
 	import MenuSeparator from './MenuSeparator.svelte';
 	import Portal from '../Portal.svelte';
@@ -76,11 +81,13 @@
 					const item = items[index];
 					if (item && item.type !== 'separator') {
 						// Trigger click handler for the focused item
-						const itemEl = menuRef?.querySelector(`[data-menu-item-index="${index}"]`) as HTMLButtonElement;
+						const itemEl = menuRef?.querySelector(
+							`[data-menu-item-index="${index}"]`
+						) as HTMLButtonElement;
 						itemEl?.click();
 					}
 				},
-				autoFocus  // Use the autoFocus prop to determine focus behavior
+				autoFocus // Use the autoFocus prop to determine focus behavior
 			);
 			isPositioned = true;
 		} else if (!isVisible) {
@@ -101,7 +108,7 @@
 			// Use requestAnimationFrame to ensure DOM is rendered
 			requestAnimationFrame(() => {
 				if (!menuRef) return;
-				
+
 				const rect = menuRef.getBoundingClientRect();
 				const position = calculateMenuPosition(
 					x,
@@ -114,7 +121,7 @@
 					forceDirection,
 					anchorEl
 				);
-				
+
 				const style = getMenuPositionStyles(position, MENU_Z_INDEX);
 				menuStyle = style;
 
@@ -168,12 +175,7 @@
 	});
 
 	function getMenuClasses(): string {
-		const baseClasses = [
-			'menu',
-			`menu--${variant}`,
-			`menu--${size}`,
-			className
-		].filter(Boolean);
+		const baseClasses = ['menu', `menu--${variant}`, `menu--${size}`, className].filter(Boolean);
 
 		return baseClasses.join(' ');
 	}
@@ -205,23 +207,22 @@
 		<div
 			bind:this={menuRef}
 			class={menuClasses}
-			style="{Object.entries(menuStyle).map(([key, value]) => `${key}: ${value}`).join('; ')};
-			       opacity: {isClosing ? 0 : (isPositioned ? 1 : 0)};
-			       transform: scale({isClosing ? 0.95 : (isPositioned ? 1 : 0.95)});
+			style="{Object.entries(menuStyle)
+				.map(([key, value]) => `${key}: ${value}`)
+				.join('; ')};
+			       opacity: {isClosing ? 0 : isPositioned ? 1 : 0};
+			       transform: scale({isClosing ? 0.95 : isPositioned ? 1 : 0.95});
 			       pointer-events: {isPositioned && !isClosing ? 'auto' : 'none'};
 			       {maxHeight ? `max-height: ${maxHeight}px;` : ''}
 			       {minWidth ? `min-width: ${minWidth}px;` : ''}"
 			{...ariaAttributes}
 		>
 			{#if showPointer}
-				<div
-					class={getPointerClasses()}
-					style="top: {pointerPosition.offset}px;"
-				></div>
+				<div class={getPointerClasses()} style="top: {pointerPosition.offset}px;"></div>
 			{/if}
 
 			<div class="menu__content">
-				{#each items as item, index}
+				{#each items as item, index (item.id || index)}
 					{#if item.type === 'separator'}
 						<MenuSeparator />
 					{:else if item.type === 'label'}
@@ -336,7 +337,6 @@
 		position: relative;
 		z-index: 2;
 	}
-
 
 	/* Focus management */
 	.menu:focus-visible {

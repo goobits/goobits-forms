@@ -6,37 +6,37 @@
 	 */
 	interface Props {
 		/** The size of the textarea */
-		size?: 'sm' | 'md' | 'lg'
+		size?: 'sm' | 'md' | 'lg';
 		/** The validation state of the textarea */
-		variant?: 'default' | 'error' | 'success'
+		variant?: 'default' | 'error' | 'success';
 		/** Whether the textarea should auto-resize based on content */
-		autoResize?: boolean
+		autoResize?: boolean;
 		/** Maximum number of characters allowed */
-		maxLength?: number
+		maxLength?: number;
 		/** Whether to show character counter */
-		showCharCount?: boolean
+		showCharCount?: boolean;
 		/** Additional CSS class names */
-		class?: string
+		class?: string;
 		/** The textarea value (for two-way binding) */
-		value?: string
+		value?: string;
 		/** Placeholder text */
-		placeholder?: string
+		placeholder?: string;
 		/** Whether the textarea is disabled */
-		disabled?: boolean
+		disabled?: boolean;
 		/** Whether the textarea is readonly */
-		readonly?: boolean
+		readonly?: boolean;
 		/** Textarea ID */
-		id?: string
+		id?: string;
 		/** Textarea name */
-		name?: string
+		name?: string;
 		/** Whether the textarea is required */
-		required?: boolean
+		required?: boolean;
 		/** Number of rows */
-		rows?: number
+		rows?: number;
 		/** Number of columns */
-		cols?: number
+		cols?: number;
 		/** Wrap attribute */
-		wrap?: 'hard' | 'soft' | 'off'
+		wrap?: 'hard' | 'soft' | 'off';
 	}
 	let {
 		size = 'md',
@@ -88,15 +88,19 @@
 	});
 
 	// Combine CSS classes
-	const textareaClasses = $derived([
-		'textarea',
-		'input',
-		`input-${size}`,
-		variant === 'error' && 'input-error',
-		variant === 'success' && 'input-success',
-		autoResize && 'textarea-auto-resize',
-		className
-	].filter(Boolean).join(' '));
+	const textareaClasses = $derived(
+		[
+			'textarea',
+			'input',
+			`input-${size}`,
+			variant === 'error' && 'input-error',
+			variant === 'success' && 'input-success',
+			autoResize && 'textarea-auto-resize',
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
+	);
 
 	// Character count
 	const currentLength = $derived(value?.toString().length || 0);
@@ -109,7 +113,7 @@
 <div>
 	<textarea
 		bind:this={textareaElement}
-		bind:value={value}
+		bind:value
 		oninput={handleInput}
 		class={textareaClasses}
 		{placeholder}

@@ -11,17 +11,13 @@
 	 */
 	interface Props {
 		/** Additional CSS class names */
-		className?: string
+		className?: string;
 	}
 
 	const { className = '' }: Props = $props();
 </script>
 
-<div 
-	class="menu__separator {className}"
-	role="separator"
-	aria-orientation="horizontal"
-></div>
+<div class="menu__separator {className}" role="separator" aria-orientation="horizontal"></div>
 
 <style>
 	.menu__separator {

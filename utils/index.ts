@@ -16,11 +16,11 @@
  */
 
 // Re-export all utility modules for convenient access
-export * from "./sanitizeInput.ts";
-export * from "./constants.ts";
-export * from "./debounce.ts";
-export * from "./errorHandler.ts";
-export * from "./messages.ts";
+export * from './sanitizeInput.ts';
+export * from './constants.ts';
+export * from './debounce.ts';
+export * from './errorHandler.ts';
+export * from './messages.ts';
 
 /**
  * Configuration interfaces for type safety
@@ -30,47 +30,47 @@ export * from "./messages.ts";
  * Field configuration interface
  */
 export interface FieldConfig {
-  /** Whether the field is required */
-  required?: boolean;
-  /** Validation rules for the field */
-  validation?: {
-    /** Minimum length for text fields */
-    minLength?: number;
-    /** Maximum length for text fields */
-    maxLength?: number;
-    /** Regular expression pattern */
-    pattern?: string;
-    /** Custom validation function */
-    custom?: (value: unknown) => boolean | string;
-  };
-  /** Default value for the field */
-  defaultValue?: unknown;
-  /** Field label for display */
-  label?: string;
-  /** Placeholder text */
-  placeholder?: string;
+	/** Whether the field is required */
+	required?: boolean;
+	/** Validation rules for the field */
+	validation?: {
+		/** Minimum length for text fields */
+		minLength?: number;
+		/** Maximum length for text fields */
+		maxLength?: number;
+		/** Regular expression pattern */
+		pattern?: string;
+		/** Custom validation function */
+		custom?: (value: unknown) => boolean | string;
+	};
+	/** Default value for the field */
+	defaultValue?: unknown;
+	/** Field label for display */
+	label?: string;
+	/** Placeholder text */
+	placeholder?: string;
 }
 
 /**
  * Category configuration interface
  */
 export interface CategoryConfig {
-  /** List of field names included in this category */
-  fields: string[];
-  /** Category display label */
-  label?: string;
-  /** Category description */
-  description?: string;
+	/** List of field names included in this category */
+	fields: string[];
+	/** Category display label */
+	label?: string;
+	/** Category description */
+	description?: string;
 }
 
 /**
  * Main configuration interface
  */
 export interface Config {
-  /** Field-specific configurations */
-  fieldConfigs: Record<string, FieldConfig>;
-  /** Category configurations */
-  categories: Record<string, CategoryConfig>;
+	/** Field-specific configurations */
+	fieldConfigs: Record<string, FieldConfig>;
+	/** Category configurations */
+	categories: Record<string, CategoryConfig>;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface Config {
  * ```
  */
 export function getFieldConfig(config: Config, fieldName: string): FieldConfig {
-  return config.fieldConfigs[fieldName] || {};
+	return config.fieldConfigs[fieldName] || {};
 }
 
 /**
@@ -121,7 +121,7 @@ export function getFieldConfig(config: Config, fieldName: string): FieldConfig {
  * ```
  */
 export function getCategoryConfig(config: Config, category: string): CategoryConfig {
-  return config.categories[category] || config.categories.general;
+	return config.categories[category] || config.categories.general;
 }
 
 /**
@@ -153,8 +153,8 @@ export function getCategoryConfig(config: Config, category: string): CategoryCon
  * ```
  */
 export function isFieldRequired(config: Config, category: string, fieldName: string): boolean {
-  const categoryConfig = getCategoryConfig(config, category);
-  const fieldConfig = getFieldConfig(config, fieldName);
+	const categoryConfig = getCategoryConfig(config, category);
+	const fieldConfig = getFieldConfig(config, fieldName);
 
-  return categoryConfig.fields.includes(fieldName) && fieldConfig.required === true;
+	return categoryConfig.fields.includes(fieldName) && fieldConfig.required === true;
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import './UploadImage.css'
-	import { ImagePlus, X } from '@lucide/svelte'
+	import './UploadImage.css';
+	import { ImagePlus, X } from '@lucide/svelte';
 
 	let {
 		accept = 'image/jpeg,image/jpg,image/png,image/webp,image/gif',
@@ -10,25 +10,23 @@
 		maxSize = 5 * 1024 * 1024,
 		onChange = () => {},
 		onError = () => {}
-	} = $props()
+	} = $props();
 
-	let dragCounter = $state(0)
-	let error = $state(initialError)
-	let fileInput = $state()
-	let isDragging = $state(false)
+	let dragCounter = $state(0);
+	let error = $state(initialError);
+	let fileInput = $state();
+	let isDragging = $state(false);
 
-	let canAddMore = $derived(
-		files.length < maxFiles
-	)
+	let canAddMore = $derived(files.length < maxFiles);
 
 	/**
 	 * Handle drag enter event
 	 * @param {DragEvent} e
 	 */
 	function handleDragEnter(e) {
-		e.preventDefault()
-		dragCounter++
-		isDragging = true
+		e.preventDefault();
+		dragCounter++;
+		isDragging = true;
 	}
 
 	/**
@@ -36,10 +34,10 @@
 	 * @param {DragEvent} e
 	 */
 	function handleDragLeave(e) {
-		e.preventDefault()
-		dragCounter--
+		e.preventDefault();
+		dragCounter--;
 		if (dragCounter === 0) {
-			isDragging = false
+			isDragging = false;
 		}
 	}
 
@@ -48,10 +46,10 @@
 	 * @param {DragEvent} e
 	 */
 	function handleDrop(e) {
-		e.preventDefault()
-		dragCounter = 0
-		isDragging = false
-		handleFiles(e.dataTransfer?.files)
+		e.preventDefault();
+		dragCounter = 0;
+		isDragging = false;
+		handleFiles(e.dataTransfer?.files);
 	}
 
 	/**
@@ -71,33 +69,33 @@
 	 */
 	async function handleFiles(fileList) {
 		if (!fileList) {
-			return
+			return;
 		}
 
-		const newFiles = Array.from(fileList).slice(0, maxFiles - files.length)
+		const newFiles = Array.from(fileList).slice(0, maxFiles - files.length);
 
 		for (const file of newFiles) {
 			if (!accept.includes(file.type)) {
-				onError('Please upload only image files.')
-				continue
+				onError('Please upload only image files.');
+				continue;
 			}
 
 			if (file.size > maxSize) {
-				onError('Image too large (max 5MB)')
-				continue
+				onError('Image too large (max 5MB)');
+				continue;
 			}
 
 			try {
-				const preview = await createPreview(file)
-				files = [ ...files, { file, preview } ]
+				const preview = await createPreview(file);
+				files = [...files, { file, preview }];
 			} catch (error) {
-				onError('Failed to create preview for file: ' + file.name)
-				continue
+				onError('Failed to create preview for file: ' + file.name);
+				continue;
 			}
 		}
 
-		onChange(files)
-		if (fileInput) fileInput.value = ''
+		onChange(files);
+		if (fileInput) fileInput.value = '';
 	}
 
 	/**
@@ -105,8 +103,8 @@
 	 * @param {number} index
 	 */
 	function removeFile(index) {
-		files = files.filter((_, i) => i !== index)
-		onChange(files)
+		files = files.filter((_, i) => i !== index);
+		onChange(files);
 	}
 
 	/**
@@ -115,12 +113,12 @@
 	 * @returns {Promise<string>}
 	 */
 	async function createPreview(file) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader()
-			reader.onloadend = () => resolve(reader.result)
-			reader.onerror = () => reject(new Error('Failed to read file'))
-			reader.readAsDataURL(file)
-		})
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onloadend = () => resolve(reader.result);
+			reader.onerror = () => new Error('Failed to read file');
+			reader.readAsDataURL(file);
+		});
 	}
 </script>
 
@@ -148,12 +146,7 @@
 	<div class="image-upload__grid" role="list">
 		{#each files as { preview }, i (i)}
 			<div class="image-upload__preview" role="listitem">
-				<img 
-					src={preview}
-					alt=""
-					class="image-upload__image"
-					aria-hidden="true"
-				/>
+				<img src={preview} alt="" class="image-upload__image" aria-hidden="true" />
 				<button
 					type="button"
 					class="image-upload__remove-btn"

@@ -5,23 +5,23 @@
   Apps can extend this or use their own modal management system.
 -->
 <script lang="ts">
-  interface Props {
-    children?: import('svelte').Snippet;
-  }
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-  const { children }: Props = $props();
+	const { children }: Props = $props();
 </script>
 
 <div class="modal-provider">
-  {#if children}
-    {@render children()}
-  {/if}
+	{#if children}
+		{@render children()}
+	{/if}
 </div>
 
 <style>
-  .modal-provider {
-    /* Modal provider container */
-    position: relative;
-    z-index: 1000;
-  }
+	.modal-provider {
+		/* Modal provider container */
+		position: relative;
+		z-index: 1000;
+	}
 </style>
