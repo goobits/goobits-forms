@@ -24,8 +24,25 @@
 
 	// const _logger = createLogger('FeedbackForm');
 
-	// Props
-	const props: {
+	// Props - must be declared at top level with $props()
+	const {
+		feedbackType: propsType,
+		userComment: propsComment,
+		userName: propsName,
+		userEmail: propsEmail,
+		messages = {},
+		isFormVisible: initialFormVisible = false,
+		isThankYouVisible: initialThankYouVisible = false,
+		submitContactForm = async (data: any) => {
+			const response = await fetch('/api/contact', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+			if (!response.ok) throw new Error('Form submission failed');
+			return response.json();
+		}
+	}: {
 		feedbackType?: string;
 		userComment?: string;
 		userName?: string;
@@ -34,18 +51,7 @@
 		isFormVisible?: boolean;
 		isThankYouVisible?: boolean;
 		submitContactForm?: (data: any) => Promise<any>;
-	} = {
-		submitContactForm: async (data: any) => {
-			const response = await fetch('/api/contact', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data)
-			});
-			if (!response.ok) throw new Error('Form submission failed');
-			return response.json();
-		},
-		...$props()
-	};
+	} = $props();
 
 	const defaultProps: {
 		feedbackType: string;
@@ -62,7 +68,7 @@
 	};
 
 	// Create message getter
-	createMessageGetter({ ...defaultMessages, ...props.messages });
+	createMessageGetter({ ...defaultMessages, ...messages });
 
 	// Define validation schema using zod
 	const feedbackSchema = z.object({
@@ -74,8 +80,8 @@
 
 	// Initialize form state using shared service
 	const formState = initializeFormState({
-		isFormVisible: props.isFormVisible || false,
-		isThankYouVisible: props.isThankYouVisible || false,
+		isFormVisible: initialFormVisible,
+		isThankYouVisible: initialThankYouVisible,
 		currentPagePath: '',
 		touched: {}
 	});
@@ -112,7 +118,7 @@
 			},
 			submitForm: async (formDataToSubmit) => {
 				submitting = true;
-				return await props.submitContactForm(formDataToSubmit);
+				return await submitContactForm(formDataToSubmit);
 			},
 			onSuccess: () => {
 				resetForm();
