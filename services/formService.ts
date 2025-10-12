@@ -35,7 +35,7 @@ function getSchemaDefaults(schema: ZodSchema): Record<string, any> {
   try {
     if (schema && schema._def && schema._def.shape) {
       // Handle ZodObject schemas
-      const shape = schema._def.shape();
+      const shape = schema._def.shape;
       Object.keys(shape).forEach(key => {
         const field = shape[key];
         if (field._def) {

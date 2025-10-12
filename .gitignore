@@ -61,6 +61,7 @@ yarn.lock
 
 # Local development
 .local/
+dev/
 
 # Form uploads (sensitive)
 uploads/
