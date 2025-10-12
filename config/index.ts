@@ -119,9 +119,6 @@ function createSubmissionHandlerFactory(config: ContactFormConfig) {
 				const recipient = options.recipient || defaultRecipient;
 				const subject = options.subject || defaultSubject;
 
-				// Get category specific configuration
-				const categoryConfig = config.categories[category] || {};
-
 				// Log the submission
 				logger.info?.('Form submission received', {
 					category,
@@ -134,8 +131,8 @@ function createSubmissionHandlerFactory(config: ContactFormConfig) {
 					await locals.emailService.sendEmail({
 						to: recipient,
 						subject: `${subject} - ${category}`,
-						html: formatSubmissionEmail(data, category, categoryConfig),
-						text: formatSubmissionEmailText(data, category, categoryConfig)
+						html: formatSubmissionEmail(data, category),
+						text: formatSubmissionEmailText(data, category)
 					});
 				} else {
 					// Log submission if no email service is available
@@ -285,7 +282,7 @@ function buildCategoryFieldMap(config: ContactFormConfig): Record<string, string
 /**
  * Format submission email (HTML)
  */
-function formatSubmissionEmail(data: FormData, category: string, categoryConfig: any): string {
+function formatSubmissionEmail(data: FormData, category: string): string {
 	// Implementation would format the data into HTML email
 	return `<h2>Form Submission - ${category}</h2><pre>${JSON.stringify(data, null, 2)}</pre>`;
 }
@@ -293,7 +290,7 @@ function formatSubmissionEmail(data: FormData, category: string, categoryConfig:
 /**
  * Format submission email (plain text)
  */
-function formatSubmissionEmailText(data: FormData, category: string, categoryConfig: any): string {
+function formatSubmissionEmailText(data: FormData, category: string): string {
 	// Implementation would format the data into plain text email
 	return `Form Submission - ${category}\n\n${JSON.stringify(data, null, 2)}`;
 }

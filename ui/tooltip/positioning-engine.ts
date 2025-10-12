@@ -181,8 +181,7 @@ function calculateAdvancedArrowPosition(
 	finalPosition: 'top' | 'bottom' | 'left' | 'right',
 	tooltipPos: { x: number; y: number },
 	targetRect: DOMRect,
-	dimensions: { width: number; height: number },
-	direction: 'ltr' | 'rtl'
+	dimensions: { width: number; height: number }
 ): { x: number; y: number; visible: boolean; rotation?: number } {
 	const targetCenterX = targetRect.left + targetRect.width / 2;
 	const targetCenterY = targetRect.top + targetRect.height / 2;
@@ -386,8 +385,7 @@ export function calculateAdvancedPosition(options: PositionOptions): PositionCal
 		finalPosition,
 		constrainedPos,
 		targetRect,
-		dimensions,
-		direction
+		dimensions
 	);
 
 	// Check if transitions should be disabled

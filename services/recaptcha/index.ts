@@ -119,7 +119,7 @@ export class RecaptchaProvider {
 	 * console.log('Got token:', token.substring(0, 10) + '...');
 	 * ```
 	 */
-	async getToken(action: string = 'submit'): Promise<string> {
+	async getToken(_action: string = 'submit'): Promise<string> {
 		throw new Error('RecaptchaProvider.getToken() must be implemented');
 	}
 
@@ -138,7 +138,7 @@ export class RecaptchaProvider {
 	 * }
 	 * ```
 	 */
-	async verify(token: string): Promise<boolean> {
+	async verify(_token: string): Promise<boolean> {
 		throw new Error('RecaptchaProvider.verify() must be implemented');
 	}
 
@@ -416,7 +416,7 @@ export class NoopRecaptchaProvider extends RecaptchaProvider {
 	 * @param {string} [_action] - Action name (ignored)
 	 * @returns {Promise<string>} Always returns 'noop-token'
 	 */
-	async getToken(_action?: string): Promise<string> {
+	async getToken(): Promise<string> {
 		return 'noop-token';
 	}
 
@@ -426,7 +426,7 @@ export class NoopRecaptchaProvider extends RecaptchaProvider {
 	 * @param {string} _token - Token to verify (ignored)
 	 * @returns {Promise<boolean>} Always returns true
 	 */
-	async verify(_token: string): Promise<boolean> {
+	async verify(): Promise<boolean> {
 		return true;
 	}
 }

@@ -6,7 +6,7 @@
 	import SelectMenu from './SelectMenu.svelte';
 	import Input from './Input.svelte';
 	import Textarea from './Textarea.svelte';
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { z } from 'zod';
 
 	import { getContactFormConfig } from '../config/index.ts';
@@ -403,9 +403,6 @@
 		showThankYou = false;
 		selectedCategory = value;
 
-		// Update cached category to prevent effect loops
-		cachedCategory = value;
-
 		// Handle form data hydration and accessibility manually
 		if (IS_BROWSER) {
 			const newData = hydrateForm({
@@ -610,7 +607,7 @@
 														'(optional)',
 														''
 													)}"
-													onchange={(_value) => {
+													onchange={() => {
 														handleInput(fieldName);
 														handleBlur(fieldName);
 													}}

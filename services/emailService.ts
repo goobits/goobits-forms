@@ -106,10 +106,10 @@ export class EmailProvider {
 	 * ```
 	 */
 	async sendEmail(
-		to: string,
-		subject: string,
-		bodyHtml: string,
-		bodyText?: string
+		_to: string,
+		_subject: string,
+		_bodyHtml: string,
+		_bodyText?: string
 	): Promise<EmailResult> {
 		throw new Error('EmailProvider.sendEmail() must be implemented');
 	}

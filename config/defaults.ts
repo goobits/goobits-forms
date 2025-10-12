@@ -48,15 +48,6 @@ export interface ErrorMessageConfig extends MessageObject {
 	recaptchaMissing: string;
 }
 
-/**
- * File settings configuration
- */
-interface FileSettingsConfig {
-	/** Maximum file size in bytes */
-	maxFileSize: number;
-	/** Array of accepted MIME types */
-	acceptedImageTypes: string[];
-}
 
 /**
  * reCAPTCHA configuration

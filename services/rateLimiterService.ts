@@ -3,7 +3,6 @@
  * Provides configurable rate limiting for form submissions with multiple time windows
  */
 
-
 /**
  * Rate limiting result interface
  */

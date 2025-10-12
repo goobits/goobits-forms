@@ -13,7 +13,6 @@
 	} = $props();
 
 	let dragCounter = $state(0);
-	let error = $state(initialError);
 	let fileInput = $state();
 	let isDragging = $state(false);
 
@@ -124,7 +123,7 @@
 
 <div
 	aria-label="Image upload"
-	class:image-upload--has-error={error}
+	class:image-upload--has-error={initialError}
 	class:image-upload--is-dragging={isDragging}
 	class="image-upload"
 	ondragenter={handleDragEnter}
@@ -179,9 +178,9 @@
 		</div>
 	{/if}
 
-	{#if error}
+	{#if initialError}
 		<div class="image-upload__error" role="alert">
-			{error}
+			{initialError}
 		</div>
 	{/if}
 </div>

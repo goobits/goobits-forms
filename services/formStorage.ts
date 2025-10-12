@@ -169,8 +169,8 @@ function loadAllFormData(): CategorizedFormData | null {
 	try {
 		const savedData = localStorage.getItem(STORAGE_KEY);
 		return savedData ? JSON.parse(savedData) : null;
-	} catch (error) {
-		logger.error('Error parsing saved form data', error);
+	} catch {
+		logger.error('Error parsing saved form data');
 		return null;
 	}
 }
@@ -201,7 +201,7 @@ export function clearFormData(category: string): boolean {
 			logger.debug(`Cleared form data for category: ${category}`);
 		}
 		return true;
-	} catch (error) {
+	} catch {
 		logger.error('Error clearing form data');
 		return false;
 	}
@@ -257,7 +257,7 @@ function isDataExpired(): boolean {
 
 		const expiryTimestamp = parseInt(expiryTime, 10);
 		return Date.now() > expiryTimestamp;
-	} catch (error) {
+	} catch {
 		return true;
 	}
 }

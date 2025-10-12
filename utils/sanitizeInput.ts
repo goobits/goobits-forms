@@ -23,15 +23,6 @@ import { createLogger } from './logger.ts';
 
 const logger = createLogger('SanitizeInput');
 
-/**
- * Input validation result for type checking
- */
-interface ValidationResult {
-	/** Whether the validation passed */
-	valid: boolean;
-	/** Error message if validation failed */
-	error?: string;
-}
 
 /**
  * Sanitizable value types
