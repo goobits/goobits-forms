@@ -17,57 +17,57 @@ import type { RequestEvent, Handle, Cookies } from '@sveltejs/kit';
  * Configuration options for CSRF protection middleware
  */
 interface CsrfProtectionOptions {
-  /** Name of the token field in forms and cookies */
-  tokenName?: string;
-  /** Name of the HTTP header containing the CSRF token */
-  headerName?: string;
-  /** Paths to exclude from CSRF protection */
-  excludePaths?: string[];
-  /** HTTP methods to exclude from CSRF protection */
-  excludeMethods?: string[];
-  /** HTTP status code to return for invalid tokens */
-  errorStatus?: number;
-  /** Error message to return for invalid tokens */
-  errorMessage?: string;
+	/** Name of the token field in forms and cookies */
+	tokenName?: string;
+	/** Name of the HTTP header containing the CSRF token */
+	headerName?: string;
+	/** Paths to exclude from CSRF protection */
+	excludePaths?: string[];
+	/** HTTP methods to exclude from CSRF protection */
+	excludeMethods?: string[];
+	/** HTTP status code to return for invalid tokens */
+	errorStatus?: number;
+	/** Error message to return for invalid tokens */
+	errorMessage?: string;
 }
 
 /**
  * Configuration options for CSRF token manager
  */
 interface CsrfManagerOptions {
-  /** Name for CSRF cookie */
-  cookieName?: string;
-  /** Name for CSRF form field */
-  formFieldName?: string;
-  /** Name for CSRF HTTP header */
-  headerName?: string;
-  /** Whether to use secure cookies */
-  secure?: boolean;
-  /** Cookie path */
-  path?: string;
-  /** Cookie SameSite attribute */
-  sameSite?: 'strict' | 'lax' | 'none';
+	/** Name for CSRF cookie */
+	cookieName?: string;
+	/** Name for CSRF form field */
+	formFieldName?: string;
+	/** Name for CSRF HTTP header */
+	headerName?: string;
+	/** Whether to use secure cookies */
+	secure?: boolean;
+	/** Cookie path */
+	path?: string;
+	/** Cookie SameSite attribute */
+	sameSite?: 'strict' | 'lax' | 'none';
 }
 
 /**
  * CSRF token manager interface
  */
 interface CsrfManager {
-  /** Generate a new CSRF token and store it in cookies */
-  generateToken(cookies: Cookies): Promise<string>;
-  /** Validate a CSRF token from a request */
-  validateRequest(request: Request, cookies: Cookies): Promise<boolean>;
+	/** Generate a new CSRF token and store it in cookies */
+	generateToken(cookies: Cookies): Promise<string>;
+	/** Validate a CSRF token from a request */
+	validateRequest(request: Request, cookies: Cookies): Promise<boolean>;
 }
 
 /**
  * Token storage entry with expiration time
  */
-interface TokenEntry {
-  expires: number;
-}
+/* interface TokenEntry {
+	expires: number;
+} */
 
 // Check if we're in a browser or server environment
-const isBrowser: boolean = typeof window !== "undefined";
+const isBrowser: boolean = typeof window !== 'undefined';
 
 // Simple in-memory token store (in production, use Redis or database)
 const tokenStore: Map<string, number> = new Map();
@@ -86,23 +86,23 @@ const TOKEN_EXPIRY_MS: number = 60 * 60 * 1000; // 1 hour
  * ```
  */
 async function generateSecureToken(): Promise<string> {
-  if (isBrowser) {
-    // Browser implementation using Web Crypto API
-    if (!window.crypto || !window.crypto.getRandomValues) {
-      throw new Error('Web Crypto API not available');
-    }
+	if (isBrowser) {
+		// Browser implementation using Web Crypto API
+		if (!window.crypto || !window.crypto.getRandomValues) {
+			throw new Error('Web Crypto API not available');
+		}
 
-    const array = new Uint8Array(32);
-    window.crypto.getRandomValues(array);
-    return btoa(String.fromCharCode.apply(null, Array.from(array)))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-  } else {
-    // Server implementation using Node.js crypto module
-    const crypto = await import("crypto");
-    return crypto.randomBytes(32).toString("base64url");
-  }
+		const array = new Uint8Array(32);
+		window.crypto.getRandomValues(array);
+		return btoa(String.fromCharCode.apply(null, Array.from(array)))
+			.replace(/\+/g, '-')
+			.replace(/\//g, '_')
+			.replace(/=/g, '');
+	} else {
+		// Server implementation using Node.js crypto module
+		const crypto = await import('crypto');
+		return crypto.randomBytes(32).toString('base64url');
+	}
 }
 
 /**
@@ -118,22 +118,22 @@ async function generateSecureToken(): Promise<string> {
  * ```
  */
 export async function generateCsrfToken(): Promise<string> {
-  const token = await generateSecureToken();
-  const expires = Date.now() + TOKEN_EXPIRY_MS;
+	const token = await generateSecureToken();
+	const expires = Date.now() + TOKEN_EXPIRY_MS;
 
-  tokenStore.set(token, expires);
+	tokenStore.set(token, expires);
 
-  // Clean up expired tokens periodically using crypto-secure random
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    const randomBytes = new Uint8Array(1);
-    crypto.getRandomValues(randomBytes);
-    if (randomBytes[0] < 25) {
-      // ~10% chance (25/256)
-      cleanupExpiredTokens();
-    }
-  }
+	// Clean up expired tokens periodically using crypto-secure random
+	if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+		const randomBytes = new Uint8Array(1);
+		crypto.getRandomValues(randomBytes);
+		if (randomBytes[0] < 25) {
+			// ~10% chance (25/256)
+			cleanupExpiredTokens();
+		}
+	}
 
-  return token;
+	return token;
 }
 
 /**
@@ -151,23 +151,23 @@ export async function generateCsrfToken(): Promise<string> {
  * ```
  */
 export function validateCsrfToken(token: string | null | undefined): boolean {
-  if (!token || typeof token !== "string") {
-    return false;
-  }
+	if (!token || typeof token !== 'string') {
+		return false;
+	}
 
-  const expires = tokenStore.get(token);
-  if (!expires) {
-    return false;
-  }
+	const expires = tokenStore.get(token);
+	if (!expires) {
+		return false;
+	}
 
-  if (Date.now() > expires) {
-    tokenStore.delete(token);
-    return false;
-  }
+	if (Date.now() > expires) {
+		tokenStore.delete(token);
+		return false;
+	}
 
-  // Token is valid - remove it to prevent reuse (single-use tokens)
-  tokenStore.delete(token);
-  return true;
+	// Token is valid - remove it to prevent reuse (single-use tokens)
+	tokenStore.delete(token);
+	return true;
 }
 
 /**
@@ -176,12 +176,12 @@ export function validateCsrfToken(token: string | null | undefined): boolean {
  * @internal
  */
 function cleanupExpiredTokens(): void {
-  const now = Date.now();
-  for (const [token, expires] of tokenStore.entries()) {
-    if (now > expires) {
-      tokenStore.delete(token);
-    }
-  }
+	const now = Date.now();
+	for (const [token, expires] of tokenStore.entries()) {
+		if (now > expires) {
+			tokenStore.delete(token);
+		}
+	}
 }
 
 /**
@@ -207,77 +207,77 @@ function cleanupExpiredTokens(): void {
  * ```
  */
 export function createCsrfProtection(options: CsrfProtectionOptions = {}): Handle {
-  const {
-    tokenName = "csrf",
-    headerName = "x-csrf-token",
-    excludePaths = ["/api/health"],
-    excludeMethods = ["GET", "HEAD", "OPTIONS"],
-    errorStatus = 403,
-    errorMessage = "Invalid CSRF token",
-  } = options;
+	const {
+		tokenName = 'csrf',
+		headerName = 'x-csrf-token',
+		excludePaths = ['/api/health'],
+		excludeMethods = ['GET', 'HEAD', 'OPTIONS'],
+		errorStatus = 403,
+		errorMessage = 'Invalid CSRF token'
+	} = options;
 
-  return async ({ event, resolve }: { event: RequestEvent; resolve: (event: RequestEvent) => Response | Promise<Response> }) => {
-    const path = event.url.pathname;
-    const method = event.request.method;
+	return async ({
+		event,
+		resolve
+	}: {
+		event: RequestEvent;
+		resolve: (event: RequestEvent) => Response | Promise<Response>;
+	}) => {
+		const path = event.url.pathname;
+		const method = event.request.method;
 
-    // Skip CSRF check for excluded paths and methods
-    if (
-      excludePaths.some((p) => path.startsWith(p)) ||
-      excludeMethods.includes(method)
-    ) {
-      return resolve(event);
-    }
+		// Skip CSRF check for excluded paths and methods
+		if (excludePaths.some((p) => path.startsWith(p)) || excludeMethods.includes(method)) {
+			return resolve(event);
+		}
 
-    // Check for token in headers, body, or cookies
-    const headerToken = event.request.headers.get(headerName);
+		// Check for token in headers, body, or cookies
+		const headerToken = event.request.headers.get(headerName);
 
-    // For non-GET requests, validate CSRF token
-    let isValid = false;
+		// For non-GET requests, validate CSRF token
+		let isValid = false;
 
-    // Try header token first
-    if (headerToken) {
-      isValid = validateCsrfToken(headerToken);
-    }
+		// Try header token first
+		if (headerToken) {
+			isValid = validateCsrfToken(headerToken);
+		}
 
-    // If not valid and it's a form submission, try form data
-    if (
-      !isValid &&
-      event.request.headers.get("content-type")?.includes("form")
-    ) {
-      try {
-        const formData = await event.request.formData();
-        const formToken = formData.get(tokenName);
-        if (formToken && typeof formToken === 'string') {
-          isValid = validateCsrfToken(formToken);
-          // Re-create the request since we consumed the body
-          event.request = new Request(event.request.url, {
-            method: event.request.method,
-            headers: event.request.headers,
-            body: formData,
-          });
-        }
-      } catch (error) {
-        // Form parsing failed, continue with other methods
-      }
-    }
+		// If not valid and it's a form submission, try form data
+		if (!isValid && event.request.headers.get('content-type')?.includes('form')) {
+			try {
+				const formData = await event.request.formData();
+				const formToken = formData.get(tokenName);
+				if (formToken && typeof formToken === 'string') {
+					isValid = validateCsrfToken(formToken);
+					// Re-create the request since we consumed the body
+					event.request = new Request(event.request.url, {
+						method: event.request.method,
+						headers: event.request.headers,
+						body: formData
+					});
+				}
+			} catch {
+				// Form parsing failed, continue with other methods
+			}
+		}
 
-    // If still not valid, check for token in cookies
-    if (!isValid) {
-      const cookieToken = event.cookies.get(tokenName);
-      if (cookieToken) {
-        isValid = validateCsrfToken(cookieToken);
-      }
-    }
+		// If still not valid, check for token in cookies
+		if (!isValid) {
+			const cookieToken = event.cookies.get(tokenName);
+			if (cookieToken) {
+				isValid = validateCsrfToken(cookieToken);
+			}
+		}
 
-    // If no valid token found, return error
-    if (!isValid) {
-      return new Response(errorMessage, {
-        status: errorStatus,
-      });
-    }
+		// If no valid token found, return error
+		if (!isValid) {
+			return new Response(errorMessage, {
+				status: errorStatus
+			});
+		}
 
-    return resolve(event);
-  };
+		return resolve(event);
+	};
 }
 
 /**
@@ -304,68 +304,68 @@ export function createCsrfProtection(options: CsrfProtectionOptions = {}): Handl
  * ```
  */
 export function createCsrfManager(options: CsrfManagerOptions = {}): CsrfManager {
-  const {
-    cookieName = "csrf",
-    formFieldName = "csrf",
-    headerName = "X-CSRF-Token",
-    secure = true,
-    path = "/",
-    sameSite = "lax",
-  } = options;
+	const {
+		cookieName = 'csrf',
+		formFieldName = 'csrf',
+		headerName = 'X-CSRF-Token',
+		secure = true,
+		path = '/',
+		sameSite = 'lax'
+	} = options;
 
-  return {
-    /**
-     * Generate token and store in cookie
-     *
-     * @param cookies - SvelteKit cookies object
-     * @returns Promise resolving to the generated token
-     */
-    async generateToken(cookies: Cookies): Promise<string> {
-      const token = await generateCsrfToken();
-      cookies.set(cookieName, token, {
-        path,
-        secure,
-        sameSite,
-        httpOnly: true,
-        maxAge: 60 * 60, // 1 hour
-      });
-      return token;
-    },
+	return {
+		/**
+		 * Generate token and store in cookie
+		 *
+		 * @param cookies - SvelteKit cookies object
+		 * @returns Promise resolving to the generated token
+		 */
+		async generateToken(cookies: Cookies): Promise<string> {
+			const token = await generateCsrfToken();
+			cookies.set(cookieName, token, {
+				path,
+				secure,
+				sameSite,
+				httpOnly: true,
+				maxAge: 60 * 60 // 1 hour
+			});
+			return token;
+		},
 
-    /**
-     * Validate token from request using multiple sources
-     *
-     * @param request - HTTP request object
-     * @param cookies - SvelteKit cookies object
-     * @returns Promise resolving to true if token is valid
-     */
-    async validateRequest(request: Request, cookies: Cookies): Promise<boolean> {
-      // Try header first
-      const headerToken = request.headers.get(headerName);
-      if (headerToken && validateCsrfToken(headerToken)) {
-        return true;
-      }
+		/**
+		 * Validate token from request using multiple sources
+		 *
+		 * @param request - HTTP request object
+		 * @param cookies - SvelteKit cookies object
+		 * @returns Promise resolving to true if token is valid
+		 */
+		async validateRequest(request: Request, cookies: Cookies): Promise<boolean> {
+			// Try header first
+			const headerToken = request.headers.get(headerName);
+			if (headerToken && validateCsrfToken(headerToken)) {
+				return true;
+			}
 
-      // Try cookie
-      const cookieToken = cookies.get(cookieName);
-      if (cookieToken && validateCsrfToken(cookieToken)) {
-        return true;
-      }
+			// Try cookie
+			const cookieToken = cookies.get(cookieName);
+			if (cookieToken && validateCsrfToken(cookieToken)) {
+				return true;
+			}
 
-      // Try form data if appropriate content type
-      if (request.headers.get("content-type")?.includes("form")) {
-        try {
-          const formData = await request.formData();
-          const formToken = formData.get(formFieldName);
-          if (formToken && typeof formToken === 'string' && validateCsrfToken(formToken)) {
-            return true;
-          }
-        } catch (error) {
-          // Form parsing failed
-        }
-      }
+			// Try form data if appropriate content type
+			if (request.headers.get('content-type')?.includes('form')) {
+				try {
+					const formData = await request.formData();
+					const formToken = formData.get(formFieldName);
+					if (formToken && typeof formToken === 'string' && validateCsrfToken(formToken)) {
+						return true;
+					}
+				} catch {
+					// Form parsing failed
+				}
+			}
 
-      return false;
-    },
-  };
+			return false;
+		}
+	};
 }

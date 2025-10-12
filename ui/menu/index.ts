@@ -6,40 +6,40 @@
  */
 
 // Main components
-export { default as Menu } from "./Menu.svelte";
-export { default as ContextMenu } from "./ContextMenu.svelte";
+export { default as Menu } from './Menu.svelte';
+export { default as ContextMenu } from './ContextMenu.svelte';
 // Types
 export type {
-  MenuPlacement,
-  MenuVariant,
-  MenuItemSize,
-  MenuPosition,
-  MenuDimensions,
-  MenuItemAction,
-  MenuItemToggle,
-  MenuItemDestructive,
-  MenuItemSubmenu,
-  MenuItemCustom,
-  MenuItemSeparator,
-  MenuItemLabel,
-  MenuItem,
-  MenuConfig,
-  MenuProps,
-  ContextMenuState,
-  ContextMenuConfig,
-  ContextMenuProps,
-} from "./types";
+	MenuPlacement,
+	MenuVariant,
+	MenuItemSize,
+	MenuPosition,
+	MenuDimensions,
+	MenuItemAction,
+	MenuItemToggle,
+	MenuItemDestructive,
+	MenuItemSubmenu,
+	MenuItemCustom,
+	MenuItemSeparator,
+	MenuItemLabel,
+	MenuItem,
+	MenuConfig,
+	MenuProps,
+	ContextMenuState,
+	ContextMenuConfig,
+	ContextMenuProps
+} from './types';
 
 // Utilities
 export {
-  calculateMenuPosition,
-  getMenuPositionStyles,
-  createKeyboardNavigation,
-  getMenuAriaAttributes,
-  getMenuItemAriaAttributes,
-  createContextMenuState,
-  contextMenuAction,
-} from "./utils";
+	calculateMenuPosition,
+	getMenuPositionStyles,
+	createKeyboardNavigation,
+	getMenuAriaAttributes,
+	getMenuItemAriaAttributes,
+	createContextMenuState,
+	contextMenuAction
+} from './utils';
 
 /**
  * Usage Examples:

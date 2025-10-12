@@ -11,26 +11,26 @@ import type * as NodemailerType from 'nodemailer';
  * AWS dependencies interface
  */
 export interface AwsDependencies {
-  /** AWS SDK v3 SES client */
-  aws: {
-    SES: typeof SES;
-  };
-  /** Nodemailer module for email transport */
-  nodemailer: typeof NodemailerType;
+	/** AWS SDK v3 SES client */
+	aws: {
+		SES: typeof SES;
+	};
+	/** Nodemailer module for email transport */
+	nodemailer: typeof NodemailerType;
 }
 
 /**
  * AWS service object with optional SES client
  */
 export interface AwsService {
-  SES: typeof SES | null;
+	SES: typeof SES | null;
 }
 
 /**
  * Nodemailer service object with optional createTransport function
  */
 export interface NodemailerService {
-  createTransport: typeof NodemailerType.createTransport | null;
+	createTransport: typeof NodemailerType.createTransport | null;
 }
 
 /**
@@ -51,21 +51,21 @@ export interface NodemailerService {
  * ```
  */
 export async function getAwsDependencies(): Promise<AwsDependencies> {
-  try {
-    // Import the AWS SDK v3 and nodemailer
-    const { SES } = await import("@aws-sdk/client-ses");
-    const nodemailerModule = await import("nodemailer");
+	try {
+		// Import the AWS SDK v3 and nodemailer
+		const { SES } = await import('@aws-sdk/client-ses');
+		const nodemailerModule = await import('nodemailer');
 
-    return {
-      aws: { SES },
-      nodemailer: nodemailerModule.default || nodemailerModule,
-    };
-  } catch (error) {
-    console.error("Failed to import AWS dependencies:", error);
-    throw new Error(
-      "Missing AWS dependencies. Please install @aws-sdk/client-ses and nodemailer to use AWS SES email provider.",
-    );
-  }
+		return {
+			aws: { SES },
+			nodemailer: nodemailerModule.default || nodemailerModule
+		};
+	} catch (error) {
+		console.error('Failed to import AWS dependencies:', error);
+		throw new Error(
+			'Missing AWS dependencies. Please install @aws-sdk/client-ses and nodemailer to use AWS SES email provider.'
+		);
+	}
 }
 
 /**
@@ -80,10 +80,10 @@ export const nodemailer: NodemailerService = { createTransport: null };
  * This runs immediately when the module is imported but doesn't block
  */
 getAwsDependencies()
-  .then((deps) => {
-    Object.assign(aws, deps.aws);
-    Object.assign(nodemailer, deps.nodemailer);
-  })
-  .catch((err) => {
-    console.warn("AWS dependencies not available:", err.message);
-  });
+	.then((deps) => {
+		Object.assign(aws, deps.aws);
+		Object.assign(nodemailer, deps.nodemailer);
+	})
+	.catch((err) => {
+		console.warn('AWS dependencies not available:', err.message);
+	});

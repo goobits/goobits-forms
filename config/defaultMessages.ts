@@ -6,7 +6,7 @@
  * These are used as fallbacks when no custom messages are provided.
  */
 
-import type { MessageObject } from "./types";
+import type { MessageObject } from './types';
 
 /**
  * Message function type for dynamic messages with parameters
@@ -17,57 +17,57 @@ type MessageFunction = (...args: any[]) => string;
  * Complete default message configuration interface
  */
 export interface DefaultMessageConfig extends MessageObject {
-  // Form labels and UI
-  howCanWeHelp: string;
-  sendMessage: string;
-  sending: string;
+	// Form labels and UI
+	howCanWeHelp: string;
+	sendMessage: string;
+	sending: string;
 
-  // Status messages
-  uploadingFiles: string;
-  submittingForm: string;
-  formSubmitted: string;
-  fileUploadError: string;
+	// Status messages
+	uploadingFiles: string;
+	submittingForm: string;
+	formSubmitted: string;
+	fileUploadError: string;
 
-  // Error messages
-  validationError: string;
-  formError: string;
-  networkError: string;
-  rateLimit: MessageFunction;
+	// Error messages
+	validationError: string;
+	formError: string;
+	networkError: string;
+	rateLimit: MessageFunction;
 
-  // Form validation
-  required: MessageFunction;
-  invalid: MessageFunction;
-  select: MessageFunction;
-  maxLength: MessageFunction;
+	// Form validation
+	required: MessageFunction;
+	invalid: MessageFunction;
+	select: MessageFunction;
+	maxLength: MessageFunction;
 
-  // File validation
-  fileSize: string;
-  fileType: string;
-  maxFiles: string;
+	// File validation
+	fileSize: string;
+	fileType: string;
+	maxFiles: string;
 
-  // Privacy
-  privacyText: string;
-  privacyLink: string;
+	// Privacy
+	privacyText: string;
+	privacyLink: string;
 
-  // Thank you page
-  thankYouTitle: string;
-  thankYouMessage: string;
-  thankYouSubMessage: string;
-  returnToHome: string;
+	// Thank you page
+	thankYouTitle: string;
+	thankYouMessage: string;
+	thankYouSubMessage: string;
+	returnToHome: string;
 
-  // Field labels (common)
-  name: string;
-  email: string;
-  message: string;
-  phone: string;
-  company: string;
+	// Field labels (common)
+	name: string;
+	email: string;
+	message: string;
+	phone: string;
+	company: string;
 
-  // Form categories
-  generalInquiry: string;
-  supportRequest: string;
-  feedback: string;
-  booking: string;
-  businessInquiry: string;
+	// Form categories
+	generalInquiry: string;
+	supportRequest: string;
+	feedback: string;
+	booking: string;
+	businessInquiry: string;
 }
 
 /**
@@ -97,58 +97,58 @@ export interface DefaultMessageConfig extends MessageObject {
  * ```
  */
 export const defaultMessages: DefaultMessageConfig = {
-  // Form labels and UI
-  howCanWeHelp: "How can we help?",
-  sendMessage: "Send Message",
-  sending: "Sending...",
+	// Form labels and UI
+	howCanWeHelp: 'How can we help?',
+	sendMessage: 'Send Message',
+	sending: 'Sending...',
 
-  // Status messages
-  uploadingFiles: "Uploading files...",
-  submittingForm: "Submitting your form...",
-  formSubmitted: "Your form has been submitted successfully!",
-  fileUploadError: "Could not upload files, continuing without attachments",
+	// Status messages
+	uploadingFiles: 'Uploading files...',
+	submittingForm: 'Submitting your form...',
+	formSubmitted: 'Your form has been submitted successfully!',
+	fileUploadError: 'Could not upload files, continuing without attachments',
 
-  // Error messages
-  validationError: "Please fix the validation errors before submitting.",
-  formError: "Form error:",
-  networkError: "An error occurred. Please try again later.",
-  rateLimit: (minutes: number): string =>
-    `Too many requests. Please try again in ${minutes} ${minutes === 1 ? "minute" : "minutes"}.`,
+	// Error messages
+	validationError: 'Please fix the validation errors before submitting.',
+	formError: 'Form error:',
+	networkError: 'An error occurred. Please try again later.',
+	rateLimit: (minutes: number): string =>
+		`Too many requests. Please try again in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}.`,
 
-  // Form validation
-  required: (field: string): string => `Please provide your ${field}`,
-  invalid: (field: string): string => `Please provide a valid ${field}`,
-  select: (field: string): string => `Please select ${field}`,
-  maxLength: (max: number): string => `Maximum ${max} characters`,
+	// Form validation
+	required: (field: string): string => `Please provide your ${field}`,
+	invalid: (field: string): string => `Please provide a valid ${field}`,
+	select: (field: string): string => `Please select ${field}`,
+	maxLength: (max: number): string => `Maximum ${max} characters`,
 
-  // File validation
-  fileSize: "File size must be less than 5MB",
-  fileType: "Only .jpg, .jpeg, .png, .webp and .gif files are accepted",
-  maxFiles: "Maximum 3 images allowed",
+	// File validation
+	fileSize: 'File size must be less than 5MB',
+	fileType: 'Only .jpg, .jpeg, .png, .webp and .gif files are accepted',
+	maxFiles: 'Maximum 3 images allowed',
 
-  // Privacy
-  privacyText: "By submitting this form, you agree to our",
-  privacyLink: "Privacy Policy",
+	// Privacy
+	privacyText: 'By submitting this form, you agree to our',
+	privacyLink: 'Privacy Policy',
 
-  // Thank you page
-  thankYouTitle: "Thank You!",
-  thankYouMessage: "Thank you for your message!",
-  thankYouSubMessage: "We'll get back to you as soon as possible 🌈",
-  returnToHome: "Return to Home",
+	// Thank you page
+	thankYouTitle: 'Thank You!',
+	thankYouMessage: 'Thank you for your message!',
+	thankYouSubMessage: "We'll get back to you as soon as possible 🌈",
+	returnToHome: 'Return to Home',
 
-  // Field labels (common)
-  name: "Name",
-  email: "Email",
-  message: "Message",
-  phone: "Phone",
-  company: "Company",
+	// Field labels (common)
+	name: 'Name',
+	email: 'Email',
+	message: 'Message',
+	phone: 'Phone',
+	company: 'Company',
 
-  // Form categories
-  generalInquiry: "General Inquiry",
-  supportRequest: "Support Request",
-  feedback: "Feedback",
-  booking: "Book an Appointment",
-  businessInquiry: "Business Inquiry",
+	// Form categories
+	generalInquiry: 'General Inquiry',
+	supportRequest: 'Support Request',
+	feedback: 'Feedback',
+	booking: 'Book an Appointment',
+	businessInquiry: 'Business Inquiry'
 };
 
 /**
@@ -168,17 +168,17 @@ export const defaultMessages: DefaultMessageConfig = {
  * // Returns: "Thank You!"
  * ```
  */
-function getMessage(
-  key: keyof DefaultMessageConfig,
-  customMessages?: Partial<DefaultMessageConfig>,
-  ...params: any[]
+/* function getMessage(
+	key: keyof DefaultMessageConfig,
+	customMessages?: Partial<DefaultMessageConfig>,
+	...params: any[]
 ): string {
-  const messageSource = customMessages || defaultMessages;
-  const message = messageSource[key] || defaultMessages[key];
+	const messageSource = customMessages || defaultMessages;
+	const message = messageSource[key] || defaultMessages[key];
 
-  if (typeof message === "function") {
-    return message(...params);
-  }
+	if (typeof message === 'function') {
+		return message(...params);
+	}
 
-  return message as string;
-}
+	return message as string;
+} */

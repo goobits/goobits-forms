@@ -4,43 +4,43 @@
 	 */
 	interface Props {
 		/** The size of the input */
-		size?: 'sm' | 'md' | 'lg'
+		size?: 'sm' | 'md' | 'lg';
 		/** The validation state of the input */
-		variant?: 'default' | 'error' | 'success'
+		variant?: 'default' | 'error' | 'success';
 		/** Text to display before the input value */
-		prefix?: string
+		prefix?: string;
 		/** Text to display after the input value */
-		suffix?: string
+		suffix?: string;
 		/** Additional CSS class names */
-		class?: string
+		class?: string;
 		/** The input value (for two-way binding) */
-		value?: string | number
+		value?: string | number;
 		/** Input type */
-		type?: string
+		type?: string;
 		/** Placeholder text */
-		placeholder?: string
+		placeholder?: string;
 		/** Whether the input is disabled */
-		disabled?: boolean
+		disabled?: boolean;
 		/** Whether the input is readonly */
-		readonly?: boolean
+		readonly?: boolean;
 		/** Input ID */
-		id?: string
+		id?: string;
 		/** Input name */
-		name?: string
+		name?: string;
 		/** Whether the input is required */
-		required?: boolean
+		required?: boolean;
 		/** Maximum length for text inputs */
-		maxlength?: number
+		maxlength?: number;
 		/** Minimum value for number inputs */
-		min?: number
+		min?: number;
 		/** Maximum value for number inputs */
-		max?: number
+		max?: number;
 		/** Step value for number inputs */
-		step?: number
+		step?: number;
 		/** Pattern for input validation */
-		pattern?: string
+		pattern?: string;
 		/** Autocomplete attribute */
-		autocomplete?: string
+		autocomplete?: string;
 	}
 	let {
 		size = 'md',
@@ -69,15 +69,19 @@
 	let inputElement: HTMLInputElement | undefined = $state();
 
 	// Combine CSS classes
-	const inputClasses = $derived([
-		'input',
-		`input-${size}`,
-		variant === 'error' && 'input-error',
-		variant === 'success' && 'input-success',
-		prefix && 'input-with-prefix',
-		suffix && 'input-with-suffix',
-		className
-	].filter(Boolean).join(' '));
+	const inputClasses = $derived(
+		[
+			'input',
+			`input-${size}`,
+			variant === 'error' && 'input-error',
+			variant === 'success' && 'input-success',
+			prefix && 'input-with-prefix',
+			suffix && 'input-with-suffix',
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
+	);
 
 	// Expose the input element for binding
 	export { inputElement as element };
@@ -113,7 +117,7 @@
 		{:else}
 			<input
 				bind:this={inputElement}
-				bind:value={value}
+				bind:value
 				class="{inputClasses} input-group-input"
 				{type}
 				{placeholder}
@@ -137,48 +141,46 @@
 			</span>
 		{/if}
 	</div>
+{:else if type === 'checkbox'}
+	<input
+		bind:this={inputElement}
+		bind:checked={value}
+		class={inputClasses}
+		type="checkbox"
+		{placeholder}
+		{disabled}
+		{readonly}
+		{id}
+		{name}
+		{required}
+		{maxlength}
+		{min}
+		{max}
+		{step}
+		{pattern}
+		{autocomplete}
+		{...restProps}
+	/>
 {:else}
-	{#if type === 'checkbox'}
-		<input
-			bind:this={inputElement}
-			bind:checked={value}
-			class={inputClasses}
-			type="checkbox"
-			{placeholder}
-			{disabled}
-			{readonly}
-			{id}
-			{name}
-			{required}
-			{maxlength}
-			{min}
-			{max}
-			{step}
-			{pattern}
-			{autocomplete}
-			{...restProps}
-		/>
-	{:else}
-		<input
-			bind:this={inputElement}
-			bind:value={value}
-			class={inputClasses}
-			{type}
-			{placeholder}
-			{disabled}
-			{readonly}
-			{id}
-			{name}
-			{required}
-			{maxlength}
-			{min}
-			{max}
-			{step}
-			{pattern}
-			{autocomplete}
-			{...restProps}
-		/>
-	{/if}
+	<input
+		bind:this={inputElement}
+		bind:value
+		class={inputClasses}
+		{type}
+		{placeholder}
+		{disabled}
+		{readonly}
+		{id}
+		{name}
+		{required}
+		{maxlength}
+		{min}
+		{max}
+		{step}
+		{pattern}
+		{autocomplete}
+		{...restProps}
+	/>
 {/if}
 
 <style>
