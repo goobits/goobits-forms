@@ -14,11 +14,6 @@ import type {
 } from './types';
 
 /**
- * @callback MessageFunction
- * @param {...any} args - Arguments for the message function.
- * @returns {string} The formatted message.
- */
-/**
  * Message function type for dynamic messages with parameters
  */
 type MessageFunction = (...args: any[]) => string;

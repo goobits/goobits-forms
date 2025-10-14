@@ -8,10 +8,6 @@ import { createLogger } from '../utils/logger';
 const logger = createLogger('SecureDeepMerge');
 
 /**
- * @typedef {Object.<string, any>} MergeableObject
- * @description Type for any object that can be safely merged.
- */
-/**
  * Type for any object that can be safely merged
  */
 type MergeableObject = Record<string, any>;

@@ -162,21 +162,10 @@ export interface ValidationError {
 }
 
 /**
- * @callback FormValidator
- * @param {FormData} data - The form data to validate.
- * @returns {ValidationError | Promise<ValidationError>} The validation result.
- */
-/**
  * Form data validator function type
  */
 type FormValidator = (data: FormData) => ValidationError | Promise<ValidationError>;
 
-/**
- * @callback SubmissionHandler
- * @param {FormData} data - The form data to handle.
- * @param {string} categorySlug - The slug of the category being submitted.
- * @returns {Promise<SubmissionResult>} The result of the submission.
- */
 /**
  * Submission handler function type
  */

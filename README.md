@@ -20,7 +20,6 @@ Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
   - [🎨 Styling](#-styling)
   - [♿ Accessibility](#-accessibility)
   - [📝 License](#-license)
-  - [🤖 For AI Agents](#-for-ai-agents)
 
 ## ✨ Key Features
 
@@ -276,7 +275,3 @@ WCAG 2.1 AA compliant with:
 ## 📝 License
 
 MIT - see [LICENSE](LICENSE) for details
-
-## 🤖 For AI Agents
-
-This project is AI-friendly and includes detailed JSDoc comments to assist with understanding the codebase. If an `AGENTS.md` file is present, please follow the instructions within it for any contributions or modifications. Your assistance in maintaining and improving this library is greatly appreciated.
