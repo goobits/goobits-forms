@@ -87,7 +87,7 @@
 			try {
 				const preview = await createPreview(file);
 				files = [...files, { file, preview }];
-			} catch (error) {
+			} catch {
 				onError('Failed to create preview for file: ' + file.name);
 				continue;
 			}

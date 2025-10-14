@@ -285,7 +285,7 @@ export function getDataExpiry(): Date | null {
 
 		const expiryTimestamp = parseInt(expiryTime, 10);
 		return new Date(expiryTimestamp);
-	} catch (error) {
+	} catch {
 		return null;
 	}
 }
@@ -402,7 +402,7 @@ export function sanitizeForStorage(formData: any): StorableFormData {
 		try {
 			JSON.stringify(value);
 			sanitized[key] = value;
-		} catch (error) {
+		} catch {
 			// Skip values that can't be serialized
 			logger.debug(`Skipping non-serializable field: ${key}`);
 		}

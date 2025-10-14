@@ -26,10 +26,10 @@
 
 	// Props - must be declared at top level with $props()
 	const {
-		feedbackType: propsType,
-		userComment: propsComment,
-		userName: propsName,
-		userEmail: propsEmail,
+		feedbackType: _propsType,
+		userComment: _propsComment,
+		userName: _propsName,
+		userEmail: _propsEmail,
 		messages = {},
 		isFormVisible: initialFormVisible = false,
 		isThankYouVisible: initialThankYouVisible = false,

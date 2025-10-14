@@ -416,7 +416,7 @@ export class NoopRecaptchaProvider extends RecaptchaProvider {
 	 * @param {string} [_action] - Action name (ignored)
 	 * @returns {Promise<string>} Always returns 'noop-token'
 	 */
-	async getToken(): Promise<string> {
+	async getToken(_action?: string): Promise<string> {
 		return 'noop-token';
 	}
 
@@ -426,7 +426,7 @@ export class NoopRecaptchaProvider extends RecaptchaProvider {
 	 * @param {string} _token - Token to verify (ignored)
 	 * @returns {Promise<boolean>} Always returns true
 	 */
-	async verify(): Promise<boolean> {
+	async verify(_token: string): Promise<boolean> {
 		return true;
 	}
 }
