@@ -16,7 +16,10 @@ const logger = createLogger('Config');
 let currentConfig: ContactFormConfig | null = null;
 
 /**
- * Deep merge utility to combine configuration objects
+ * Deep merge utility to combine configuration objects.
+ * @param target - The target object to merge into.
+ * @param source - The source object to merge from.
+ * @returns A new object with the merged properties.
  */
 function deepMerge(target: Record<string, any>, source: Record<string, any>): Record<string, any> {
 	const output = { ...target };
@@ -42,7 +45,9 @@ function deepMerge(target: Record<string, any>, source: Record<string, any>): Re
 }
 
 /**
- * Check if a value is an object
+ * Check if a value is an object.
+ * @param item - The value to check.
+ * @returns True if the value is an object, false otherwise.
  */
 function isObject(item: any): item is Record<string, any> {
 	return item && typeof item === 'object' && !Array.isArray(item);
@@ -73,7 +78,9 @@ export function initContactFormConfig(
 }
 
 /**
- * Create form data parser with validation
+ * Create form data parser with validation.
+ * @param config - The contact form configuration.
+ * @returns A function that parses and validates form data.
  */
 function createFormDataParser(config: ContactFormConfig) {
 	return async (formData: FormData, category: string = 'general'): Promise<ValidationResult> => {
@@ -106,7 +113,9 @@ function createFormDataParser(config: ContactFormConfig) {
 }
 
 /**
- * Create submission handler factory
+ * Create submission handler factory.
+ * @param config - The contact form configuration.
+ * @returns A function that creates a submission handler.
  */
 function createSubmissionHandlerFactory(config: ContactFormConfig) {
 	return (options: { recipient?: string; subject?: string } = {}) => {
@@ -181,7 +190,9 @@ export function getContactFormConfig(): ContactFormConfig {
 }
 
 /**
- * Build validation schemas from configuration
+ * Build validation schemas from configuration.
+ * @param config - The contact form configuration.
+ * @returns An object containing the validation schemas.
  */
 function buildValidationSchemas(config: ContactFormConfig) {
 	const { fieldConfigs, errorMessages } = config;
@@ -267,7 +278,9 @@ function buildValidationSchemas(config: ContactFormConfig) {
 }
 
 /**
- * Build category to field mapping
+ * Build category to field mapping.
+ * @param config - The contact form configuration.
+ * @returns A map of categories to their fields.
  */
 function buildCategoryFieldMap(config: ContactFormConfig): Record<string, string[]> {
 	const map: Record<string, string[]> = {};
@@ -280,7 +293,10 @@ function buildCategoryFieldMap(config: ContactFormConfig): Record<string, string
 }
 
 /**
- * Format submission email (HTML)
+ * Format submission email (HTML).
+ * @param data - The form data.
+ * @param category - The form category.
+ * @returns The HTML email body.
  */
 function formatSubmissionEmail(data: FormData, category: string): string {
 	// Implementation would format the data into HTML email
@@ -288,7 +304,10 @@ function formatSubmissionEmail(data: FormData, category: string): string {
 }
 
 /**
- * Format submission email (plain text)
+ * Format submission email (plain text).
+ * @param data - The form data.
+ * @param category - The form category.
+ * @returns The plain text email body.
  */
 function formatSubmissionEmailText(data: FormData, category: string): string {
 	// Implementation would format the data into plain text email

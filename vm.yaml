@@ -42,3 +42,7 @@ terminal:
   show_timestamp: false
   theme: dracula
   username: goobits-forms-dev
+aliases:
+  claudeyolo: claude --dangerously-skip-permissions
+  codexyolo: codex --dangerously-bypass-approvals-and-sandbox
+  geminiyolo: GEMINI_API_KEY=${GEMINI_API_KEY:-} gemini --approval-mode=yolo
