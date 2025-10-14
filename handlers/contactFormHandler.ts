@@ -24,12 +24,23 @@ export interface RateLimitResult {
 }
 
 /**
+ * @callback CustomValidation
+ * @param {Record<string, any>} data - The form data to validate.
+ * @returns {Promise<Record<string, string> | null>} A promise that resolves to an object of errors, or null if validation passes.
+ */
+/**
  * Custom validation function type
  */
 export type CustomValidation = (
 	data: Record<string, any>
 ) => Promise<Record<string, string> | null>;
 
+/**
+ * @callback CustomSuccessHandler
+ * @param {Record<string, any>} data - The form data.
+ * @param {string} clientAddress - The client's IP address.
+ * @returns {Promise<Record<string, any> | null>} A promise that resolves to an object of additional data to include in the success response, or null.
+ */
 /**
  * Custom success handler function type
  */

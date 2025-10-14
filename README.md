@@ -2,6 +2,26 @@
 
 Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
 
+## Table of Contents
+
+- [📝 @goobits/forms](#-goobitsforms)
+  - [Table of Contents](#table-of-contents)
+  - [✨ Key Features](#-key-features)
+  - [🔒 Security Notice](#-security-notice)
+  - [🚀 Quick Start](#-quick-start)
+  - [⚙️ Configuration](#️-configuration)
+  - [🌐 Internationalization](#-internationalization)
+    - [Component-Level Translation](#component-level-translation)
+    - [Server Integration](#server-integration)
+    - [Page Integration](#page-integration)
+    - [Paraglide Integration](#paraglide-integration)
+  - [🧩 Components](#-components)
+    - [🎮 Interactive Demo](#-interactive-demo)
+  - [🎨 Styling](#-styling)
+  - [♿ Accessibility](#-accessibility)
+  - [📝 License](#-license)
+  - [🤖 For AI Agents](#-for-ai-agents)
+
 ## ✨ Key Features
 
 - **🎨 Form Types** - Contact, support, feedback, booking, and business forms
@@ -62,6 +82,19 @@ initContactFormConfig(contactConfig);
 ```
 
 ## ⚙️ Configuration
+
+The `@goobits/forms` library is designed with a modular architecture to ensure flexibility and maintainability. Below is an overview of the main directories and their roles:
+
+- **`config/`**: Contains default configurations, type definitions, and schema validation for forms. This directory is crucial for customizing form behavior, fields, and messages.
+- **`handlers/`**: Includes SvelteKit route handlers for processing form submissions. These handlers manage server-side logic, such as validation, sending emails, and interacting with services.
+- **`i18n/`**: Provides internationalization support, allowing for multi-language form interfaces. It includes utilities for message handling and locale management.
+- **`security/`**: Implements security features, most notably CSRF (Cross-Site Request Forgery) protection, to ensure that form submissions are secure.
+- **`services/`**: Contains backend services for form processing, such as email delivery (e.g., via AWS SES), rate limiting to prevent abuse, and reCAPTCHA verification.
+- **`ui/`**: A rich library of Svelte components for building form interfaces. This includes everything from basic input fields to complex components like modals and menus.
+- **`utils/`**: A collection of general-purpose utility functions for tasks like input sanitization, logging, and error handling.
+- **`validation/`**: Houses form validation utilities and schemas, primarily using Zod for robust, type-safe validation on both the client and server.
+
+This modular structure allows developers to easily customize or extend the library's functionality by targeting specific areas of concern. For example, to add a new email service, you would primarily work within the `services/` directory.
 
 ```js
 // Complete configuration options
@@ -243,3 +276,7 @@ WCAG 2.1 AA compliant with:
 ## 📝 License
 
 MIT - see [LICENSE](LICENSE) for details
+
+## 🤖 For AI Agents
+
+This project is AI-friendly and includes detailed JSDoc comments to assist with understanding the codebase. If an `AGENTS.md` file is present, please follow the instructions within it for any contributions or modifications. Your assistance in maintaining and improving this library is greatly appreciated.

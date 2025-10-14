@@ -13,15 +13,30 @@ import { getValidatorForCategory } from '../validation/index.ts';
 export * from './contactFormHandler.ts';
 
 /**
+ * @callback CategoryExtractor
+ * @param {URL} url - The URL to extract the category from.
+ * @returns {string} The category.
+ */
+/**
  * URL category extractor function type
  */
 export type CategoryExtractor = (url: URL) => string;
 
 /**
+ * @callback RateLimiter
+ * @param {any} locals - The SvelteKit locals object.
+ * @returns {Promise<{ allowed: boolean; retryAfter?: number }>} A promise that resolves to an object indicating whether the request is allowed.
+ */
+/**
  * Rate limiter function type
  */
 export type RateLimiter = (locals: any) => Promise<{ allowed: boolean; retryAfter?: number }>;
 
+/**
+ * @callback DataSanitizer
+ * @param {Record<string, any>} data - The data to sanitize.
+ * @returns {Promise<Record<string, any>> | Record<string, any>} The sanitized data.
+ */
 /**
  * Data sanitizer function type
  */
@@ -29,6 +44,11 @@ export type DataSanitizer = (
 	data: Record<string, any>
 ) => Promise<Record<string, any>> | Record<string, any>;
 
+/**
+ * @callback RecaptchaVerifier
+ * @param {string} token - The reCAPTCHA token to verify.
+ * @returns {Promise<boolean>} A promise that resolves to true if the token is valid, false otherwise.
+ */
 /**
  * reCAPTCHA verifier function type
  */
@@ -49,6 +69,11 @@ export interface SuccessHandlerContext {
 }
 
 /**
+ * @callback SuccessHandler
+ * @param {SuccessHandlerContext} context - The success handler context.
+ * @returns {Promise<{ message?: string; [key: string]: any }>} A promise that resolves to an object containing a success message and any additional data.
+ */
+/**
  * Success handler function type
  */
 export type SuccessHandler = (context: SuccessHandlerContext) => Promise<{
@@ -56,6 +81,11 @@ export type SuccessHandler = (context: SuccessHandlerContext) => Promise<{
 	[key: string]: any;
 }>;
 
+/**
+ * @callback ErrorHandler
+ * @param {Error} error - The error to handle.
+ * @returns {Promise<{ status?: number; [key: string]: any }>} A promise that resolves to an object containing an error status and any additional data.
+ */
 /**
  * Error handler function type
  */
