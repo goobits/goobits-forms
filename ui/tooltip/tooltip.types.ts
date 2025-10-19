@@ -55,8 +55,6 @@ export interface TooltipState {
 	position: TooltipPosition;
 	/** The content being displayed */
 	content: string | HTMLElement;
-	/** @deprecated Use content instead */
-	text?: string;
 	/** Target element the tooltip is attached to */
 	targetElement: HTMLElement | null;
 	/** Calculated position preference after auto-adjustment */

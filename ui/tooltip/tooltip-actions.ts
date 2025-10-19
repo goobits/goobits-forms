@@ -18,7 +18,7 @@ let globalTooltipState: TooltipState = {
 	visible: false,
 	transitioning: false,
 	position: { x: 0, y: 0 },
-	text: '',
+	content: '',
 	targetElement: null,
 	finalPosition: 'top',
 	arrowPosition: { x: 0, y: 0 },
@@ -27,7 +27,11 @@ let globalTooltipState: TooltipState = {
 	disableTransition: false,
 	allowPointerEvents: false,
 	arrowVisible: true,
-	arrowRotation: undefined
+	arrowRotation: undefined,
+	showMode: 'hover',
+	hideCallbacks: [],
+	stickToEdge: false,
+	rotation: 0
 };
 
 // Global tooltip callbacks for the Svelte component to subscribe to
@@ -46,14 +50,21 @@ const TRANSFORM_DISTANCE_THRESHOLD = 100; // Within this distance, transform pos
 const FADE_DISTANCE_THRESHOLD = 200; // Beyond this distance, fade out/in
 
 // Default tooltip options
-const DEFAULT_OPTIONS: Required<TooltipOptions> = {
-	text: '',
+const DEFAULT_OPTIONS: Required<Omit<TooltipOptions, 'content' | 'text'>> & Pick<TooltipOptions, 'content'> = {
+	content: '',
 	position: 'auto',
 	offset: 8,
 	showDelay: 500,
 	hideDelay: 150,
 	disableOnTouch: true,
-	className: ''
+	className: '',
+	allowPointerEvents: false,
+	stickToEdge: false,
+	pointBasedPosition: null,
+	showOnClick: false,
+	showOnHover: true,
+	autoHideAfter: 0,
+	rotation: 0
 };
 
 // Reference to current tooltip element for dimension measurement
@@ -64,6 +75,27 @@ let currentTooltipElement: HTMLElement | null = null;
  */
 export function setTooltipElement(element: HTMLElement | null): void {
 	currentTooltipElement = element;
+}
+
+/**
+ * Process tooltip content - supports content or text (for backward compatibility)
+ */
+function getTooltipContent(options: TooltipOptions): string {
+	// Prefer content over text, with text as fallback for backward compatibility
+	const content = options.content || options.text || '';
+
+	// If content is a function, call it to get the actual content
+	if (typeof content === 'function') {
+		const result = content();
+		return typeof result === 'string' ? result : '';
+	}
+
+	// If content is an HTMLElement, convert to string (simple implementation)
+	if (typeof content === 'object' && content !== null) {
+		return ''; // HTMLElement not fully supported in this implementation yet
+	}
+
+	return String(content);
 }
 
 /**
@@ -135,6 +167,9 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 		lastPosition: globalTooltipState.position
 	});
 
+	// Get tooltip content (supports both content and text properties)
+	const content = getTooltipContent(options);
+
 	// If tooltip is already visible, handle transition based on distance (Sketchpad-style)
 	if (globalTooltipState.visible) {
 		const transitionType = calculateTransitionType(
@@ -142,7 +177,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 			positionCalculation.position
 		);
 
-		if (globalTooltipState.text === options.text && transitionType === 'transform') {
+		if (String(globalTooltipState.content) === content && transitionType === 'transform') {
 			// Same content, close position - smooth transform
 			globalTooltipState.position = positionCalculation.position;
 			globalTooltipState.finalPosition = positionCalculation.finalPosition;
@@ -167,7 +202,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 					visible: true,
 					transitioning: true,
 					position: positionCalculation.position,
-					text: options.text,
+					content,
 					targetElement: element,
 					finalPosition: positionCalculation.finalPosition,
 					arrowPosition: positionCalculation.arrowPosition,
@@ -176,7 +211,11 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 					disableTransition: false,
 					allowPointerEvents: options.allowPointerEvents || false,
 					arrowVisible: positionCalculation.arrowVisible,
-					arrowRotation: positionCalculation.arrowRotation
+					arrowRotation: positionCalculation.arrowRotation,
+					showMode: 'hover',
+					hideCallbacks: [],
+					stickToEdge: options.stickToEdge || false,
+					rotation: options.rotation || 0
 				};
 				globalTooltipCallbacks.forEach((callback) => callback());
 
@@ -198,7 +237,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 		visible: true,
 		transitioning: true,
 		position: positionCalculation.position,
-		text: options.text,
+		content,
 		targetElement: element,
 		finalPosition: positionCalculation.finalPosition,
 		arrowPosition: positionCalculation.arrowPosition,
@@ -207,7 +246,11 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 		disableTransition: positionCalculation.disableTransition,
 		allowPointerEvents: options.allowPointerEvents || false,
 		arrowVisible: positionCalculation.arrowVisible,
-		arrowRotation: positionCalculation.arrowRotation
+		arrowRotation: positionCalculation.arrowRotation,
+		showMode: 'hover',
+		hideCallbacks: [],
+		stickToEdge: options.stickToEdge || false,
+		rotation: options.rotation || 0
 	};
 
 	// Notify subscribers immediately
@@ -243,7 +286,7 @@ function hideTooltipImmediate(): void {
 		visible: false,
 		transitioning: false,
 		position: { x: 0, y: 0 },
-		text: '',
+		content: '',
 		targetElement: null,
 		finalPosition: 'top',
 		arrowPosition: { x: 0, y: 0 },
@@ -252,7 +295,11 @@ function hideTooltipImmediate(): void {
 		disableTransition: false,
 		allowPointerEvents: false,
 		arrowVisible: true,
-		arrowRotation: undefined
+		arrowRotation: undefined,
+		showMode: 'hover',
+		hideCallbacks: [],
+		stickToEdge: false,
+		rotation: 0
 	};
 
 	// Notify subscribers
@@ -391,9 +438,9 @@ export function useTooltip(
 		}
 
 		showTimeout = window.setTimeout(() => {
-			const text = mergedOptions.text || node.getAttribute('aria-label') || '';
-			if (text.trim()) {
-				showTooltip(node, { ...mergedOptions, text });
+			const content = mergedOptions.content || mergedOptions.text || node.getAttribute('aria-label') || '';
+			if (String(content).trim()) {
+				showTooltip(node, { ...mergedOptions, content });
 			}
 			showTimeout = undefined;
 		}, mergedOptions.showDelay);
