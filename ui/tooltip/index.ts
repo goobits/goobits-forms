@@ -36,10 +36,6 @@
 // Component exports - Global portal component
 export { default as TooltipPortal } from './TooltipPortalGlobal.svelte';
 
-// Legacy components for backward compatibility
-export { default as TooltipPortalLegacy } from './TooltipPortal.svelte';
-export { default as TooltipManagerComponent } from './TooltipManager.svelte';
-
 // Global manager and action exports
 export {
 	TooltipManager as TooltipAPI,
@@ -48,7 +44,7 @@ export {
 	setTooltipElement
 } from './tooltip-manager.js';
 
-// Legacy action exports for backward compatibility
+// Alternative action and utility exports
 export {
 	useTooltip,
 	tooltipManager,
