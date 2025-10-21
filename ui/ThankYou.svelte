@@ -56,7 +56,6 @@
 		>
 	</h3>
 	<div class="thank-you__actions">
-		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href={homeUrl} class="thank-you__button" data-sveltekit-reload
 			>{getMessage('returnToHome', 'Return to Home')}</a
 		>
