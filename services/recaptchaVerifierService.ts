@@ -3,7 +3,7 @@
  * Handles verification of reCAPTCHA tokens with Google's API including score validation
  */
 
-import { createLogger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('RecaptchaVerifier');
 
@@ -19,6 +19,8 @@ export interface RecaptchaVerificationOptions {
 	minScore?: number;
 	/** Allow requests in development without reCAPTCHA */
 	allowInDevelopment?: boolean;
+	/** Force recalculation (don't use existing verifier) */
+	force?: boolean;
 }
 
 /**

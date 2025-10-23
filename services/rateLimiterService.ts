@@ -53,6 +53,8 @@ export interface RateLimiterConfig {
 	windowMs?: number;
 	/** Custom rate limit message */
 	message?: string;
+	/** Force recalculation (don't use existing rate limiter) */
+	force?: boolean;
 }
 
 /**
@@ -529,4 +531,169 @@ export function isRateLimitResult(obj: any): obj is RateLimitResult {
 		(obj.retryAfter === undefined || typeof obj.retryAfter === 'number') &&
 		(obj.message === undefined || typeof obj.message === 'string')
 	);
+}
+
+// ============================================================================
+// Simple Rate Limiter for Authentication/Authorization
+// ============================================================================
+
+/**
+ * Rate limit entry for simple rate limiter
+ */
+interface SimpleRateLimitEntry {
+	count: number;
+	firstAttempt: number;
+	resetAt: number;
+}
+
+/**
+ * Simple in-memory rate limiter for authentication and authorization
+ * Provides a basic check/increment/reset API suitable for login flows
+ *
+ * @example
+ * ```typescript
+ * const loginLimiter = createSimpleRateLimiter({
+ *   maxAttempts: 5,
+ *   windowMs: 15 * 60 * 1000, // 15 minutes
+ *   message: 'Too many login attempts. Please try again in 15 minutes.'
+ * });
+ *
+ * // Check if request is allowed
+ * const result = loginLimiter.check(clientIp);
+ * if (!result.allowed) {
+ *   return json({ error: result.message }, { status: 429 });
+ * }
+ *
+ * // Increment on failed attempt
+ * loginLimiter.increment(clientIp);
+ *
+ * // Reset on successful login
+ * loginLimiter.reset(clientIp);
+ * ```
+ */
+export class SimpleRateLimiter {
+	private attempts = new Map<string, SimpleRateLimitEntry>();
+	private readonly maxAttempts: number;
+	private readonly windowMs: number;
+	private readonly message: string;
+	private cleanupInterval: NodeJS.Timeout | null = null;
+
+	constructor(options: {
+		maxAttempts: number;
+		windowMs: number;
+		message: string;
+	}) {
+		this.maxAttempts = options.maxAttempts;
+		this.windowMs = options.windowMs;
+		this.message = options.message;
+
+		// Clean up expired entries every minute (only in environments with setInterval)
+		if (typeof setInterval !== 'undefined') {
+			this.cleanupInterval = setInterval(() => {
+				this.cleanup();
+			}, 60000);
+		}
+	}
+
+	/**
+	 * Check if a request should be rate limited
+	 * Does not increment the counter - use increment() for that
+	 */
+	check(key: string): { allowed: boolean; message?: string } {
+		const now = Date.now();
+		const entry = this.attempts.get(key);
+
+		// No previous attempts or window expired
+		if (!entry || now > entry.resetAt) {
+			return { allowed: true };
+		}
+
+		// Check if over limit
+		if (entry.count >= this.maxAttempts) {
+			return {
+				allowed: false,
+				message: this.message
+			};
+		}
+
+		return { allowed: true };
+	}
+
+	/**
+	 * Increment the attempt counter for a key
+	 * Call this after a failed login attempt
+	 */
+	increment(key: string): void {
+		const now = Date.now();
+		const entry = this.attempts.get(key);
+
+		if (!entry || now > entry.resetAt) {
+			// Start new window
+			this.attempts.set(key, {
+				count: 1,
+				firstAttempt: now,
+				resetAt: now + this.windowMs
+			});
+		} else {
+			// Increment existing window
+			entry.count++;
+		}
+	}
+
+	/**
+	 * Reset the counter for a key
+	 * Call this after successful login to clear failed attempts
+	 */
+	reset(key: string): void {
+		this.attempts.delete(key);
+	}
+
+	/**
+	 * Clean up expired entries to prevent memory leaks
+	 */
+	private cleanup(): void {
+		const now = Date.now();
+		for (const [key, entry] of this.attempts.entries()) {
+			if (now > entry.resetAt) {
+				this.attempts.delete(key);
+			}
+		}
+	}
+
+	/**
+	 * Stop the cleanup interval
+	 * Call this during shutdown or in tests
+	 */
+	destroy(): void {
+		if (this.cleanupInterval) {
+			clearInterval(this.cleanupInterval);
+			this.cleanupInterval = null;
+		}
+	}
+}
+
+/**
+ * Create a simple rate limiter instance for authentication/authorization
+ *
+ * @param {object} options - Rate limiter options
+ * @param {number} options.maxAttempts - Maximum attempts allowed in the time window
+ * @param {number} options.windowMs - Time window in milliseconds
+ * @param {string} options.message - Error message to return when rate limited
+ * @returns {SimpleRateLimiter} Rate limiter instance with check/increment/reset methods
+ *
+ * @example
+ * ```typescript
+ * const loginLimiter = createSimpleRateLimiter({
+ *   maxAttempts: 5,
+ *   windowMs: 15 * 60 * 1000,
+ *   message: 'Too many login attempts. Please try again in 15 minutes.'
+ * });
+ * ```
+ */
+export function createSimpleRateLimiter(options: {
+	maxAttempts: number;
+	windowMs: number;
+	message: string;
+}): SimpleRateLimiter {
+	return new SimpleRateLimiter(options);
 }
