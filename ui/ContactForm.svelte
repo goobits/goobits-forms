@@ -23,7 +23,7 @@
 		handleFieldTouch,
 		initializeForm,
 		initializeFormState
-	} from '../services/formService.js'
+	} from '../services/formService.ts'
 
 	// Import enhanced screen reader announcements
 	import {

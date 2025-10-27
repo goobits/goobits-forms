@@ -13,7 +13,7 @@
 		initializeForm,
 		initializeFormState,
 		resetForm as resetFormService
-	} from '../services/formService.js';
+	} from '../services/formService.ts';
 
 	// Import logger utility
 	// import { createLogger } from '../utils/logger.ts';
