@@ -32,7 +32,7 @@
 		announceFormErrors,
 		announceFormStatus,
 		cleanupAllAnnouncements
-	} from '../services/screenReaderService.js'
+	} from '../services/screenReaderService.ts'
 
 	// Import reCAPTCHA provider
 	import { createRecaptchaProvider } from '../services/recaptcha/index.ts'
