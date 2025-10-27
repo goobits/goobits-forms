@@ -1,22 +1,20 @@
-<script lang="ts">
-	import './ContactForm.css';
-	import FormErrors from './FormErrors.svelte';
-	import ThankYou from './ThankYou.svelte';
-	import UploadImage from './UploadImage.svelte';
-	import SelectMenu from './SelectMenu.svelte';
-	import Input from './Input.svelte';
-	import Textarea from './Textarea.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { z } from 'zod';
+<script>
+	import './ContactForm.css'
+	import FormErrors from './FormErrors.svelte'
+	import ThankYou from './ThankYou.svelte'
+	import CategorySelector from './ContactFormParts/CategorySelector.svelte'
+	import FieldRenderer from './ContactFormParts/FieldRenderer.svelte'
+	import SubmitButton from './ContactFormParts/SubmitButton.svelte'
+	import FormFooter from './ContactFormParts/FormFooter.svelte'
+	import { onDestroy, onMount } from 'svelte'
+	import { z } from 'zod'
+	import { AlertCircle } from '@lucide/svelte'
 
-	import { getContactFormConfig } from '../config/index.ts';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { hydrateForm } from '../services/formHydration.ts';
-	import { Loader2, AlertCircle, CheckCircle } from '@lucide/svelte';
-	import { getValidationClasses } from '../validation/index.ts';
-	import { debounce } from '../utils/debounce.ts';
-	import { saveFormData, clearFormData } from '../services/formStorage.ts';
-	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts';
+	import { getContactFormConfig } from '../config/index.ts'
+	import { hydrateForm } from '../services/formHydration.ts'
+	import { debounce } from '../utils/debounce.ts'
+	import { saveFormData, clearFormData } from '../services/formStorage.ts'
+	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts'
 
 	// Import shared form service functions
 	import {
@@ -25,7 +23,7 @@
 		handleFieldTouch,
 		initializeForm,
 		initializeFormState
-	} from '../services/formService.js';
+	} from '../services/formService.js'
 
 	// Import enhanced screen reader announcements
 	import {
@@ -34,17 +32,17 @@
 		announceFormErrors,
 		announceFormStatus,
 		cleanupAllAnnouncements
-	} from '../services/screenReaderService.js';
+	} from '../services/screenReaderService.js'
 
 	// Import reCAPTCHA provider
-	import { createRecaptchaProvider } from '../services/recaptcha/index.ts';
-	import { createLogger } from '../utils/logger.ts';
+	import { createRecaptchaProvider } from '../services/recaptcha/index.ts'
+	import { createLogger } from '../utils/logger.ts'
 
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.ts';
-	import { defaultMessages } from '../config/defaultMessages';
+	import { createMessageGetter } from '../utils/messages.ts'
+	import { defaultMessages } from '../config/defaultMessages'
 
-	const logger = createLogger('ContactForm');
+	const logger = createLogger('ContactForm')
 
 	// Get configuration
 	const config = getContactFormConfig();
@@ -61,83 +59,49 @@
 
 	// Props
 	let {
-		/**
-		 * API endpoint for form submission
-		 */
 		apiEndpoint = '/api/contact',
-		/**
-		 * Initial form data
-		 */
 		initialData: providedInitialData = {},
-		/**
-		 * Localization messages
-		 */
 		messages = {},
-		/**
-		 * Function to submit contact form data
-		 */
-		submitContactForm = async (data: any, endpoint: string) => {
+		submitContactForm = async (data, endpoint) => {
 			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			});
-			if (!response.ok) throw new Error('Form submission failed');
-			return response.json();
+			})
+			if (!response.ok) throw new Error('Form submission failed')
+			return response.json()
 		},
-		/**
-		 * Function to upload file attachments
-		 */
 		uploadAttachments = async () => {
-			// Default implementation - can be overridden
-			logger.warn('No uploadAttachments function provided');
-			return [];
+			logger.warn('No uploadAttachments function provided')
+			return []
 		},
-		/**
-		 * URL to privacy policy page
-		 */
 		privacyPolicyUrl = '/legal/privacy-policy',
-		/**
-		 * URL to thank you image
-		 */
 		thankYouImageUrl = '/images/contact-thank-you.svg',
-		/**
-		 * URL to home page
-		 */
 		homeUrl = '/'
-	}: {
-		apiEndpoint?: string;
-		initialData?: Record<string, any>;
-		messages?: Record<string, string>;
-		submitContactForm?: (data: any, endpoint: string) => Promise<any>;
-		uploadAttachments?: (files: Array<{ file: File; preview: string }>) => Promise<any[]>;
-		privacyPolicyUrl?: string;
-		thankYouImageUrl?: string;
-		homeUrl?: string;
-	} = $props();
+	} = $props()
 
 	// Initialize all possible form fields to ensure they're never undefined
-	const initializeAllFormFields = (data: Record<string, any> = {}): Record<string, any> => {
+	const initializeAllFormFields = (data = {}) => {
 		const baseFields = {
 			category: data.category || 'product-feedback',
 			name: data.name || '',
 			email: data.email || '',
 			message: data.message || '',
 			coppa: data.coppa || false
-		};
+		}
 
 		// Add all possible fields from all categories with empty string defaults
 		Object.keys(fieldConfigs).forEach((fieldName) => {
 			if (!(fieldName in baseFields)) {
-				baseFields[fieldName] = data[fieldName] || '';
+				baseFields[fieldName] = data[fieldName] || ''
 			}
-		});
+		})
 
-		return baseFields;
-	};
+		return baseFields
+	}
 
 	// Ensure all fields are initialized
-	const initialData: Record<string, any> = initializeAllFormFields(providedInitialData);
+	const initialData = initializeAllFormFields(providedInitialData)
 
 	// Create message getter
 	const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
@@ -163,19 +127,19 @@
 	const formState = initializeFormState({
 		attachments: [],
 		selectedCategory: initialData.category
-	});
+	})
 
-	let attachments: Array<{ file: File; preview: string }> = $state(formState.attachments);
-	let recaptcha: any = $state(formState.recaptcha);
-	let selectedCategory: string = $state(formState.selectedCategory);
-	let showThankYou: boolean = $state(formState.showThankYou);
-	let submissionError: string | null = $state(formState.submissionError);
-	let submitting: boolean = $state(false);
-	let touched: Record<string, boolean> = $state(formState.touched);
-	let statusMessage: string | null = $state(null);
+	let attachments = $state(formState.attachments)
+	let recaptcha = $state(formState.recaptcha)
+	let selectedCategory = $state(formState.selectedCategory)
+	let showThankYou = $state(formState.showThankYou)
+	let submissionError = $state(formState.submissionError)
+	let submitting = $state(false)
+	let touched = $state(formState.touched)
+	let statusMessage = $state(null)
 
 	// Define the submit handler using shared function
-	const handleSubmit = async (formData: FormData): Promise<void> => {
+	const handleSubmit = async (formData) => {
 		const submitHandler = createFormSubmitHandler({
 			validateForm: () => !Object.values(formErrors).some((v) => v),
 			recaptcha,
@@ -357,11 +321,7 @@
 		}
 	});
 
-	/**
-	 * Handle beforeunload event to warn about unsaved form data
-	 * @param {BeforeUnloadEvent} event - The beforeunload event
-	 */
-	function handleBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+	function handleBeforeUnload(event) {
 		// Check if the form has unsaved data
 		if (!showThankYou && Object.keys(touched).length > 0) {
 			// Save form data before unloading
@@ -378,7 +338,7 @@
 	}
 
 	// Handler for force update events
-	function handleForceUpdate(event: CustomEvent): void {
+	function handleForceUpdate(event) {
 		if (event.detail && event.detail.category) {
 			showThankYou = false;
 			selectedCategory = event.detail.category;
@@ -395,11 +355,7 @@
 		}
 	}
 
-	/**
-	 * Set the selected category
-	 * @param {string} value - The selected category
-	 */
-	function handleCategorySelect(value: string): void {
+	function handleCategorySelect(value) {
 		showThankYou = false;
 		selectedCategory = value;
 
@@ -439,11 +395,7 @@
 		}
 	}
 
-	/**
-	 * Handle field blur event using shared function
-	 * @param {string} fieldName
-	 */
-	function handleBlur(fieldName: string): void {
+	function handleBlur(fieldName) {
 		touched = handleFieldTouch(touched, fieldName);
 
 		// Validate on blur for immediate feedback
@@ -463,11 +415,7 @@
 		}
 	}
 
-	/**
-	 * Handle field input event using shared function
-	 * @param {string} fieldName
-	 */
-	function handleInput(fieldName: string): void {
+	function handleInput(fieldName) {
 		handleFieldInput(touched, fieldName, validate);
 
 		// Manual auto-save functionality (avoiding reactive effects)
@@ -481,11 +429,7 @@
 		}
 	}
 
-	/**
-	 * Handle file change event
-	 * @param {Array<{file: File, preview: string}>} files
-	 */
-	function handleFileChange(files: Array<{ file: File; preview: string }>): void {
+	function handleFileChange(files) {
 		attachments = files;
 
 		// Manually update form data with attachments (avoiding reactive effects)
@@ -496,11 +440,7 @@
 		validate('attachments');
 	}
 
-	/**
-	 * Handle file error event
-	 * @param {string} error
-	 */
-	function handleFileError(error: string): void {
+	function handleFileError(error) {
 		validate('attachments');
 		logger.error(error);
 
@@ -513,18 +453,6 @@
 		}
 	}
 
-	/**
-	 * Get CSS classes for a field based on validation state
-	 * @param {string} fieldName - The field name
-	 * @returns {string} CSS classes
-	 */
-	function getFieldClasses(fieldName: string): string {
-		const hasError = !!$errors[fieldName];
-		const isTouched = touched[fieldName];
-		const value = $formData[fieldName];
-
-		return getValidationClasses(hasError, isTouched, value);
-	}
 </script>
 
 {#if showThankYou}
@@ -560,175 +488,35 @@
 		{/if}
 
 		<div class="contact-form__fields">
-			<!-- Category Selector -->
-			<div class="contact-form__field-group">
-				<div class="contact-form__label">
-					{getMessage('howCanWeHelp', 'How can we help?')}
-				</div>
-				<SelectMenu
-					bind:value={selectedCategory}
-					options={Object.entries(contactCategories).map(([value, { label }]) => ({
-						value,
-						label
-					}))}
-					placeholder="Select a category"
-					onchange={(value) => handleCategorySelect(value)}
-					class="contact-form__select contact-form__category-select"
-				/>
-			</div>
+			<CategorySelector
+				bind:value={selectedCategory}
+				categories={contactCategories}
+				onChange={handleCategorySelect}
+				{getMessage}
+			/>
 
 			{#each categoryToFieldMap[selectedCategory] || [] as fieldName (fieldName)}
 				{#if fieldConfigs[fieldName] && fieldName !== 'category'}
-					<Field {form} name={fieldName}>
-						{#snippet children({ errors })}
-							<Control>
-								{#snippet children({ props })}
-									<Label class="contact-form__label" data-name={fieldName}>
-										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-										{@html fieldConfigs[fieldName].label}
-										{#if fieldName === 'attachments'}
-											<UploadImage
-												accept={fieldConfigs.attachments.accept}
-												error={errors?.attachments}
-												files={attachments}
-												maxFiles={fieldConfigs.attachments.maxFiles}
-												maxSize={fieldConfigs.attachments.maxSize}
-												onChange={handleFileChange}
-												onError={handleFileError}
-											/>
-										{:else if fieldConfigs[fieldName].type === 'select'}
-											<div class="contact-form__validation-container">
-												<SelectMenu
-													bind:value={$formData[fieldName]}
-													options={fieldConfigs[fieldName].options.map((option) =>
-														typeof option === 'object' ? option : { value: option, label: option }
-													)}
-													placeholder="Select {fieldConfigs[fieldName].label.replace(
-														'(optional)',
-														''
-													)}"
-													onchange={() => {
-														handleInput(fieldName);
-														handleBlur(fieldName);
-													}}
-													class="contact-form__select {getFieldClasses(fieldName)}"
-												/>
-
-												<!-- Validation icon -->
-												<span class="contact-form__validation-icon" aria-hidden="true">
-													{#if !errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<CheckCircle
-															size={16}
-															class="contact-form__validation-icon--state-valid"
-														/>
-													{:else if errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<AlertCircle
-															size={16}
-															class="contact-form__validation-icon--state-invalid"
-														/>
-													{/if}
-												</span>
-											</div>
-										{:else if fieldConfigs[fieldName].type === 'textarea'}
-											<div class="contact-form__validation-container">
-												<Textarea
-													bind:value={$formData[fieldName]}
-													variant={touched[fieldName] && errors?.[fieldName]
-														? 'error'
-														: !errors?.[fieldName] && touched[fieldName] && $formData[fieldName]
-															? 'success'
-															: 'default'}
-													class="contact-form__textarea {getFieldClasses(fieldName)}"
-													placeholder={fieldConfigs[fieldName].placeholder}
-													rows={4}
-													autoResize={true}
-												/>
-
-												<!-- Validation icon -->
-												<span class="contact-form__validation-icon" aria-hidden="true">
-													{#if !errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<CheckCircle
-															size={16}
-															class="contact-form__validation-icon--state-valid"
-														/>
-													{:else if errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<AlertCircle
-															size={16}
-															class="contact-form__validation-icon--state-invalid"
-														/>
-													{/if}
-												</span>
-											</div>
-										{:else if fieldConfigs[fieldName].type === 'checkbox'}
-											<input
-												{...props}
-												bind:checked={$formData[fieldName]}
-												class:contact-form__field--error={touched[fieldName] && errors?.[fieldName]}
-												class="contact-form__checkbox"
-												onblur={() => handleBlur(fieldName)}
-												oninput={() => handleInput(fieldName)}
-												type="checkbox"
-											/>
-										{:else}
-											<div class="contact-form__validation-container">
-												<Input
-													bind:value={$formData[fieldName]}
-													variant={touched[fieldName] && errors?.[fieldName]
-														? 'error'
-														: !errors?.[fieldName] && touched[fieldName] && $formData[fieldName]
-															? 'success'
-															: 'default'}
-													class="contact-form__input {getFieldClasses(fieldName)}"
-													placeholder={fieldConfigs[fieldName].placeholder}
-													type={fieldConfigs[fieldName].type}
-												/>
-
-												<!-- Validation icon -->
-												<span class="contact-form__validation-icon" aria-hidden="true">
-													{#if !errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<CheckCircle
-															size={16}
-															class="contact-form__validation-icon--state-valid"
-														/>
-													{:else if errors?.[fieldName] && touched[fieldName] && $formData[fieldName]}
-														<AlertCircle
-															size={16}
-															class="contact-form__validation-icon--state-invalid"
-														/>
-													{/if}
-												</span>
-											</div>
-										{/if}
-									</Label>
-									{#if touched[fieldName] && errors?.[fieldName]}
-										<FieldErrors />
-									{/if}
-								{/snippet}
-							</Control>
-						{/snippet}
-					</Field>
+					<FieldRenderer
+						{form}
+						{fieldName}
+						fieldConfig={fieldConfigs[fieldName]}
+						formData={$formData}
+						errors={$errors}
+						{touched}
+						{attachments}
+						onBlur={handleBlur}
+						onInput={handleInput}
+						onFileChange={handleFileChange}
+						onFileError={handleFileError}
+					/>
 				{/if}
 			{/each}
 		</div>
-		<div class="contact-form__button-container">
-			<button class="contact-form__submit-button" disabled={submitting} aria-busy={submitting}>
-				{#if submitting}
-					<Loader2 class="animate-spin" size={18} />
-					<span>{getMessage('sending', 'Sending...')}</span>
-				{:else}
-					<span>{getMessage('sendMessage', 'Send Message')}</span>
-					<i class="fa fa-paper-plane contact-form__icon"></i>
-				{/if}
-			</button>
-		</div>
-		<hr class="contact-form__divider contact-form__divider--top-spacing" />
-		<p class="contact-form__footer-text">
-			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-			{@html getMessage(
-				'privacyText',
-				`By submitting this form, you agree to our <a href="${privacyPolicyUrl}" target="_blank">Privacy Policy</a>.`
-			)}
-		</p>
+
+		<SubmitButton {submitting} {getMessage} />
+
+		<FormFooter {privacyPolicyUrl} {getMessage} />
 	</form>
 {/if}
 
@@ -750,25 +538,11 @@
 		display: none !important;
 	}
 
-	.contact-form__field-group {
-		margin-bottom: 1.5rem;
-	}
-
-	.contact-form__field-group .contact-form__label {
-		display: block;
-		margin-bottom: 0.5rem;
-	}
-
-	:global(.animate-spin) {
-		animation: spin 1.5s linear infinite;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
+	.contact-form__status-region {
+		position: absolute;
+		left: -10000px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
 	}
 </style>
