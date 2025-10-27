@@ -6,26 +6,32 @@
 	import Input from './Input.svelte';
 	import Textarea from './Textarea.svelte';
 
-	/**
-	 * Configuration object for forms
-	 */
-	export let config: Record<string, any> = {};
+	interface Props {
+		/**
+		 * Configuration object for forms
+		 */
+		config?: Record<string, any>;
+		/**
+		 * API endpoints for form submissions
+		 */
+		apiEndpoints?: {
+			contact: string;
+			feedback: string;
+		};
+		/**
+		 * External components from the main app (like ToggleSwitch, SelectMenu)
+		 */
+		externalComponents?: Record<string, any> | null;
+	}
 
-	/**
-	 * API endpoints for form submissions
-	 */
-	export let apiEndpoints: {
-		contact: string;
-		feedback: string;
-	} = {
-		contact: '/api/contact',
-		feedback: '/api/feedback'
-	};
-
-	/**
-	 * External components from the main app (like ToggleSwitch, SelectMenu)
-	 */
-	export let externalComponents: Record<string, any> | null = null;
+	let {
+		config = {},
+		apiEndpoints = {
+			contact: '/api/contact',
+			feedback: '/api/feedback'
+		},
+		externalComponents = null
+	}: Props = $props();
 
 	// Demo state
 	let selectedCategory: string = 'general';

@@ -4,77 +4,83 @@
 	import { getValidationClasses } from '../validation/index.ts';
 	import FormErrors from './FormErrors.svelte';
 
-	/**
-	 * Configuration object containing categories, field configurations, and UI settings
-	 */
-	export let config: {
-		categories?: Record<string, { fields: string[] }>;
-		fieldConfigs?: Record<
-			string,
-			{
-				type?: string;
-				label: string;
-				placeholder?: string;
-				required?: boolean;
-				rows?: number;
-				maxlength?: number;
-				min?: string | number;
-				max?: string | number;
-				pattern?: string;
-				accept?: string;
-				multiple?: boolean;
-				options?: Array<{ value: string; label: string }>;
-			}
-		>;
-		ui?: {
-			submitButtonText?: string;
-			submittingButtonText?: string;
+	interface Props {
+		/**
+		 * Configuration object containing categories, field configurations, and UI settings
+		 */
+		config?: {
+			categories?: Record<string, { fields: string[] }>;
+			fieldConfigs?: Record<
+				string,
+				{
+					type?: string;
+					label: string;
+					placeholder?: string;
+					required?: boolean;
+					rows?: number;
+					maxlength?: number;
+					min?: string | number;
+					max?: string | number;
+					pattern?: string;
+					accept?: string;
+					multiple?: boolean;
+					options?: Array<{ value: string; label: string }>;
+				}
+			>;
+			ui?: {
+				submitButtonText?: string;
+				submittingButtonText?: string;
+			};
 		};
-	} = {};
+		/**
+		 * The category slug to determine which fields to display
+		 */
+		categorySlug?: string;
+		/**
+		 * Form state object containing data, errors, and submission status
+		 */
+		form?: {
+			data: Record<string, any>;
+			errors: Record<string, string>;
+			isSubmitted: boolean;
+		};
+		/**
+		 * Localization messages for form labels and validation
+		 */
+		messages?: Record<string, string>;
+		/**
+		 * Whether to show the required fields label
+		 */
+		showRequiredLabel?: boolean;
+		/**
+		 * Custom text for the submit button
+		 */
+		submitButtonText?: string | undefined;
+		/**
+		 * Custom text for the submit button when submitting
+		 */
+		submittingButtonText?: string | undefined;
+		/**
+		 * Whether to reset form after successful submission
+		 */
+		resetAfterSubmit?: boolean;
+		/**
+		 * Whether to hide field labels
+		 */
+		hideLabels?: boolean;
+	}
 
-	/**
-	 * The category slug to determine which fields to display
-	 */
-	export let categorySlug: string = 'general';
-
-	/**
-	 * Form state object containing data, errors, and submission status
-	 */
-	export let form: {
-		data: Record<string, any>;
-		errors: Record<string, string>;
-		isSubmitted: boolean;
-	} = { data: {}, errors: {}, isSubmitted: false };
-
-	/**
-	 * Localization messages for form labels and validation
-	 */
-	export let messages: Record<string, string> = {};
-
-	/**
-	 * Whether to show the required fields label
-	 */
-	export let showRequiredLabel: boolean = true;
-
-	/**
-	 * Custom text for the submit button
-	 */
-	export let submitButtonText: string | undefined = undefined;
-
-	/**
-	 * Custom text for the submit button when submitting
-	 */
-	export let submittingButtonText: string | undefined = undefined;
-
-	/**
-	 * Whether to reset form after successful submission
-	 */
-	export let resetAfterSubmit: boolean = true;
-
-	/**
-	 * Whether to hide field labels
-	 */
-	export let hideLabels: boolean = false;
+	let {
+		config = {},
+		categorySlug = 'general',
+		form = { data: {}, errors: {}, isSubmitted: false },
+		messages = {},
+		showRequiredLabel = true,
+		submitButtonText = undefined,
+		submittingButtonText = undefined,
+		resetAfterSubmit = true,
+		hideLabels = false
+	}: Props = $props();
 
 	// Extract form configuration
 	const { categories = {}, fieldConfigs = {}, ui = {} } = config;
