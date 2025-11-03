@@ -40,8 +40,8 @@ This package handles user input. Always validate and sanitize data server-side. 
 # Install package and peer dependencies
 npm install @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
 
-# Alternative with bun
-bun add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
+# Alternative with pnpm
+pnpm add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
 ```
 
 ```js
