@@ -257,9 +257,8 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 				origin: url.origin
 			});
 
-			// CSRF validation
-			const csrfToken = formData.get('csrf') as string;
-			if (!validateCsrfToken(csrfToken)) {
+			// CSRF validation - validateCsrfToken expects Request object
+			if (!validateCsrfToken(request)) {
 				logger.error('CSRF validation failed');
 				return {
 					form: {

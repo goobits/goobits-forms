@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { generateCsrfToken } from '@goobits/security/csrf';
 	import { getValidationClasses } from '../validation/index.ts';
 	import FormErrors from './FormErrors.svelte';
 
 	interface Props {
+		/**
+		 * CSRF token for form security (generated server-side)
+		 */
+		csrfToken: string;
 		/**
 		 * Configuration object containing categories, field configurations, and UI settings
 		 */
@@ -71,6 +74,7 @@
 	}
 
 	let {
+		csrfToken,
 		config = {},
 		categorySlug = 'general',
 		form = { data: {}, errors: {}, isSubmitted: false },
@@ -92,9 +96,6 @@
 	// Use configuration or props for button text
 	const _submitButtonText = submitButtonText || ui.submitButtonText || 'Send Message';
 	const _submittingButtonText = submittingButtonText || ui.submittingButtonText || 'Sending...';
-
-	// Generate CSRF token for form security (synchronous)
-	let csrfToken: string = generateCsrfToken();
 
 	// Track form submission state
 	let isSubmitting: boolean = false;
