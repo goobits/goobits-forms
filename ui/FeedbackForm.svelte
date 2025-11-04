@@ -110,6 +110,7 @@
 	let submitting: boolean = $state(false);
 	let touched: Record<string, boolean> = $state(formState.touched);
 	let thankYouRef: HTMLElement | null = $state(null);
+	let csrfToken: string = $state('');
 
 	// Define the submit handler using shared function
 	const handleSubmit = async (formData: FormData): Promise<void> => {
@@ -188,6 +189,22 @@
 			currentPagePath = $page.url.pathname;
 		}
 
+		// Fetch CSRF token for progressive enhancement
+		if (browser) {
+			try {
+				const response = await fetch('/api/csrf', {
+					method: 'GET',
+					credentials: 'include'
+				});
+				if (response.ok) {
+					const data = await response.json();
+					csrfToken = data.csrfToken || '';
+				}
+			} catch (error) {
+				console.error('Failed to fetch CSRF token:', error);
+			}
+		}
+
 		// ReCAPTCHA setup would go here if needed
 	});
 
@@ -253,6 +270,11 @@
 				</p>
 			{:else}
 				<form class="feedback__form" method="POST" use:enhance onreset={resetForm} name="feedback">
+					<!-- Hidden CSRF token for progressive enhancement -->
+					{#if csrfToken}
+						<input type="hidden" name="csrf" value={csrfToken} />
+					{/if}
+
 					<h3 class="feedback__title">Was this help page useful?</h3>
 
 					{#if submissionError}
