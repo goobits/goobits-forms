@@ -44,10 +44,18 @@ export interface RecaptchaApiResponse {
 	scorePassed?: boolean;
 	/** Action name for v3 */
 	action?: string;
-	/** Whether the action matched the expected action */
-	actionMatched?: boolean;
+	/** Whether the action passed validation (matches expected action) */
+	actionPassed?: boolean;
+	/** Expected action name for v3 verification */
+	expectedAction?: string | null;
 	/** Error codes from Google's API if verification failed */
 	'error-codes'?: string[];
+	/** Error codes in camelCase format */
+	errorCodes?: string[];
+	/** Full response data from Google's reCAPTCHA API */
+	data?: any;
+	/** Error stack trace (only in development) */
+	stack?: string;
 }
 
 /**
