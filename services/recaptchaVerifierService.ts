@@ -23,40 +23,10 @@ export interface RecaptchaVerificationOptions {
 }
 
 /**
- * reCAPTCHA API detailed response interface (matches @goobits/security/recaptcha)
+ * reCAPTCHA API detailed response interface
+ * Automatically derived from @goobits/security/recaptcha to prevent drift
  */
-export interface RecaptchaApiResponse {
-	/** Whether the verification was successful */
-	success: boolean;
-	/** Error message if verification failed */
-	error?: string;
-	/** HTTP status code from reCAPTCHA API */
-	statusCode?: number;
-	/** Development mode bypass flag */
-	devBypass?: boolean;
-	/** Timestamp of the challenge load */
-	challenge_ts?: string;
-	/** Hostname of the site where the reCAPTCHA was solved */
-	hostname?: string;
-	/** Score for v3 (0.0 to 1.0, where 1.0 is very likely a human) */
-	score?: number;
-	/** Whether the score passed the minimum threshold */
-	scorePassed?: boolean;
-	/** Action name for v3 */
-	action?: string;
-	/** Whether the action passed validation (matches expected action) */
-	actionPassed?: boolean;
-	/** Expected action name for v3 verification */
-	expectedAction?: string | null;
-	/** Error codes from Google's API if verification failed */
-	'error-codes'?: string[];
-	/** Error codes in camelCase format */
-	errorCodes?: string[];
-	/** Full response data from Google's reCAPTCHA API */
-	data?: any;
-	/** Error stack trace (only in development) */
-	stack?: string;
-}
+export type RecaptchaApiResponse = Awaited<ReturnType<typeof verifyRecaptchaTokenWithDetailsCore>>
 
 /**
  * Verify a reCAPTCHA token with Google's API
