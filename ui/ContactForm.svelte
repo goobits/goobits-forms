@@ -60,12 +60,28 @@
 	// Props
 	let {
 		apiEndpoint = '/api/contact',
+		csrfToken = '',
 		initialData: providedInitialData = {},
 		messages = {},
 		submitContactForm = async (data, endpoint) => {
+			// Fetch CSRF token from the server
+			const csrfResponse = await fetch('/api/csrf', {
+				method: 'GET',
+				credentials: 'include'
+			})
+			if (!csrfResponse.ok) {
+				throw new Error('Failed to fetch CSRF token')
+			}
+			const { csrfToken } = await csrfResponse.json()
+
+			// Submit form with CSRF token in header
 			const response = await fetch(endpoint, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-Token': csrfToken
+				},
+				credentials: 'include',
 				body: JSON.stringify(data)
 			})
 			if (!response.ok) throw new Error('Form submission failed')
@@ -479,6 +495,11 @@
 		enctype="multipart/form-data"
 		data-redirect="true"
 	>
+		<!-- CSRF token for server action submissions -->
+		{#if csrfToken}
+			<input type="hidden" name="csrf" value={csrfToken} />
+		{/if}
+
 		{#if $errors}
 			<FormErrors
 				errors={$errors}
