@@ -8,7 +8,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { ActionResult } from '@sveltejs/kit';
 import { createLogger } from '../utils/logger.ts';
-import { validateCsrfToken } from '../security/csrf.ts';
+import { validateCsrfToken } from '@goobits/security/csrf';
 
 const logger = createLogger('CategoryRouter');
 

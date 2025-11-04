@@ -39,8 +39,15 @@ export * from './handlers/index.js';
 /**
  * @module security
  * @description Security utilities including CSRF token generation and validation.
+ * Re-exported from @goobits/security for convenience.
  */
-export * from './security/csrf.ts';
+export {
+	generateCsrfToken,
+	validateCsrfToken,
+	setCsrfCookie,
+	getCsrfToken,
+	createCsrfProtectedResponse
+} from '@goobits/security/csrf';
 
 /**
  * @module utils
