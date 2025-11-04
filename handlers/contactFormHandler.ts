@@ -218,6 +218,16 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 			// Sanitize form data
 			const sanitizedData = sanitizeFormData(formData);
 
+			// Check if sanitization failed
+			if (!sanitizedData) {
+				logger.error('Form data sanitization failed');
+				const errorResponse: ApiErrorResponse = {
+					success: false,
+					error: 'Invalid form data'
+				};
+				return json(errorResponse, { status: 400 });
+			}
+
 			// Verify reCAPTCHA if token provided
 			if (sanitizedData.recaptchaToken) {
 				const isValidRecaptcha = await verifyRecaptchaToken(sanitizedData.recaptchaToken, {

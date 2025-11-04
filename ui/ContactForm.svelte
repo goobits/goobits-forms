@@ -204,8 +204,20 @@
 			onSuccess: (response) => {
 				// Check if the server returned a redirect URL
 				if (response && response.redirectUrl) {
-					// Navigate to the redirect URL
-					window.location.href = response.redirectUrl;
+					// Validate redirect URL to prevent open redirect attacks
+					try {
+						const redirectUrl = new URL(response.redirectUrl, window.location.origin);
+						// Only allow same-origin or relative URLs
+						if (redirectUrl.origin === window.location.origin) {
+							window.location.href = redirectUrl.href;
+						} else {
+							logger.warn('Rejected cross-origin redirect:', response.redirectUrl);
+							// Fall through to normal success handling
+						}
+					} catch (error) {
+						logger.error('Invalid redirect URL:', response.redirectUrl, error);
+						// Fall through to normal success handling
+					}
 					return;
 				}
 
