@@ -34,9 +34,24 @@
 		isFormVisible: initialFormVisible = false,
 		isThankYouVisible: initialThankYouVisible = false,
 		submitContactForm = async (data: any) => {
+			// Fetch CSRF token from the server
+			const csrfResponse = await fetch('/api/csrf', {
+				method: 'GET',
+				credentials: 'include'
+			});
+			if (!csrfResponse.ok) {
+				throw new Error('Failed to fetch CSRF token');
+			}
+			const { csrfToken } = await csrfResponse.json();
+
+			// Submit form with CSRF token in header
 			const response = await fetch('/api/contact', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-Token': csrfToken
+				},
+				credentials: 'include',
 				body: JSON.stringify(data)
 			});
 			if (!response.ok) throw new Error('Form submission failed');

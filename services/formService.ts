@@ -346,6 +346,17 @@ export function createFormSubmitHandler(options: FormSubmitHandlerOptions) {
 			// Get reCAPTCHA token if available
 			const recaptchaToken = await getRecaptchaToken(recaptcha);
 
+			// If reCAPTCHA is enabled but token is null, fail the submission
+			if (recaptcha && !recaptchaToken) {
+				const error = handleError(
+					'reCAPTCHA verification failed. Please try again.',
+					'RecaptchaRequired',
+					{ recaptchaEnabled: true }
+				);
+				onError(error);
+				return { success: false, error };
+			}
+
 			// Prepare, sanitize and submit
 			const preparedData = await prepareFormData(formData, recaptchaToken);
 			const sanitizedData = sanitizeFormData(preparedData);
