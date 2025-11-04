@@ -476,6 +476,7 @@
 	<div
 		class="submenu__portal"
 		role="menu"
+		tabindex="-1"
 		style="position: fixed; left: {submenuPosition.x}px; top: {submenuPosition.y}px; z-index: 1001;"
 		onmouseenter={() => {
 			if (submenuTimeout) {

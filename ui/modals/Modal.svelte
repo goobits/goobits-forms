@@ -248,7 +248,14 @@
 		data-testid={dataTestId}
 		tabindex="-1"
 	>
-		<div bind:this={modalRef} class={contentClasses} onclick={handleContentClick} role="document">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div
+			bind:this={modalRef}
+			class={contentClasses}
+			onclick={handleContentClick}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div bind:this={contentRef} class="modal-dialog__inner">
 				{#if title || showCloseButton}
 					<div class="modal-dialog__header">

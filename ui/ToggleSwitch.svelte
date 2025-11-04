@@ -15,6 +15,8 @@
 		size?: 'small' | 'medium' | 'large';
 		/** Additional CSS class names */
 		class?: string;
+		/** Accessible label for the toggle */
+		'aria-label'?: string;
 	}
 	const {
 		checked = false,
@@ -22,7 +24,8 @@
 		onchange,
 		variant = 'ios',
 		size = 'medium',
-		class: className = ''
+		class: className = '',
+		'aria-label': ariaLabel = 'Toggle'
 	}: ToggleSwitchProps = $props();
 
 	function handleToggle(): void {
@@ -41,6 +44,7 @@
 	role="switch"
 	aria-checked={checked}
 	aria-disabled={disabled}
+	aria-label={ariaLabel}
 >
 	<span class="toggle-handle"></span>
 </button>
