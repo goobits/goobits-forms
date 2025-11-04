@@ -9,6 +9,7 @@ import { createLogger } from '../utils/logger.ts';
 import { sanitizeFormData } from '../utils/sanitizeInput.ts';
 import { rateLimitFormSubmission } from '../services/rateLimiterService.ts';
 import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.ts';
+import { validateCsrfToken } from '@goobits/security/csrf';
 import sendEmail from '../services/emailService.ts';
 
 const logger = createLogger('ContactFormHandler');
@@ -189,6 +190,16 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 					retryAfter
 				};
 				return json(errorResponse, { status: 429 });
+			}
+
+			// Validate CSRF token
+			if (!validateCsrfToken(request)) {
+				logger.error('CSRF validation failed for API request');
+				const errorResponse: ApiErrorResponse = {
+					success: false,
+					error: 'Invalid security token. Please try again.'
+				};
+				return json(errorResponse, { status: 403 });
 			}
 
 			// Parse request body
