@@ -23,20 +23,30 @@ export interface RecaptchaVerificationOptions {
 }
 
 /**
- * reCAPTCHA API response interface
+ * reCAPTCHA API detailed response interface (matches @goobits/security/recaptcha)
  */
 export interface RecaptchaApiResponse {
 	/** Whether the verification was successful */
 	success: boolean;
+	/** Error message if verification failed */
+	error?: string;
+	/** HTTP status code from reCAPTCHA API */
+	statusCode?: number;
+	/** Development mode bypass flag */
+	devBypass?: boolean;
 	/** Timestamp of the challenge load */
 	challenge_ts?: string;
 	/** Hostname of the site where the reCAPTCHA was solved */
 	hostname?: string;
 	/** Score for v3 (0.0 to 1.0, where 1.0 is very likely a human) */
 	score?: number;
+	/** Whether the score passed the minimum threshold */
+	scorePassed?: boolean;
 	/** Action name for v3 */
 	action?: string;
-	/** Error codes if verification failed */
+	/** Whether the action matched the expected action */
+	actionMatched?: boolean;
+	/** Error codes from Google's API if verification failed */
 	'error-codes'?: string[];
 }
 
@@ -71,21 +81,27 @@ export async function verifyRecaptchaToken(
  *
  * @param {string} token - The reCAPTCHA token to verify
  * @param {RecaptchaVerificationOptions} [options] - Verification configuration options
- * @returns {Promise<RecaptchaApiResponse | null>} Detailed response or null on error
+ * @returns {Promise<RecaptchaApiResponse>} Detailed response object (never null)
  *
  * @example
  * ```typescript
  * const details = await verifyRecaptchaTokenWithDetails('token_here', {
  *   secretKey: 'your_secret_key'
  * });
+ *
+ * if (details.success) {
+ *   console.log(`Score: ${details.score}, Action: ${details.action}`);
+ * } else {
+ *   console.error(`Error: ${details.error}`);
+ * }
  * ```
  */
 export async function verifyRecaptchaTokenWithDetails(
 	token: string,
 	options: RecaptchaVerificationOptions = {}
-): Promise<RecaptchaApiResponse | null> {
+): Promise<RecaptchaApiResponse> {
 	// Delegate to @goobits/security/recaptcha
-	return verifyRecaptchaTokenWithDetailsCore(token, options) as Promise<RecaptchaApiResponse | null>;
+	return verifyRecaptchaTokenWithDetailsCore(token, options) as Promise<RecaptchaApiResponse>;
 }
 
 /**

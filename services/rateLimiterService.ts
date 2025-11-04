@@ -45,11 +45,11 @@ export interface FormRateLimitOptions {
  * @param {string | null} email - User's email address (optional)
  * @param {string} formType - Type of form being submitted
  * @param {FormRateLimitOptions} [options] - Rate limiting options
- * @returns {Promise<RateLimitResult>} Rate limit result with allowed flag
+ * @returns {RateLimitResult} Rate limit result with allowed flag
  *
  * @example
  * ```typescript
- * const result = await rateLimitFormSubmission('127.0.0.1', 'user@example.com', 'contact', {
+ * const result = rateLimitFormSubmission('127.0.0.1', 'user@example.com', 'contact', {
  *   maxRequests: 5,
  *   windowMs: 60000
  * });
@@ -59,13 +59,13 @@ export interface FormRateLimitOptions {
  * }
  * ```
  */
-export async function rateLimitFormSubmission(
+export function rateLimitFormSubmission(
 	ipAddress: string,
 	email: string | null,
 	formType: string = 'contact',
 	options: FormRateLimitOptions = {}
-): Promise<RateLimitResult> {
-	// Delegate to @goobits/security/rateLimiter
+): RateLimitResult {
+	// Delegate to @goobits/security/rateLimiter (synchronous)
 	const securityResult = rateLimitFormSubmissionCore(ipAddress, email, formType, options);
 
 	// Adapt { isLimited } to { allowed } interface
