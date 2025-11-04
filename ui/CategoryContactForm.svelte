@@ -93,11 +93,8 @@
 	const _submitButtonText = submitButtonText || ui.submitButtonText || 'Send Message';
 	const _submittingButtonText = submittingButtonText || ui.submittingButtonText || 'Sending...';
 
-	// Generate CSRF token for form security
-	let csrfToken: string = '';
-	generateCsrfToken().then((token: string) => {
-		csrfToken = token;
-	});
+	// Generate CSRF token for form security (synchronous)
+	let csrfToken: string = generateCsrfToken();
 
 	// Track form submission state
 	let isSubmitting: boolean = false;
