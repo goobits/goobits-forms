@@ -1,13 +1,4 @@
-/* Animation for loading spinner */
-@keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-
+/* Animation for loading spinner - now using global animations.css */
 :global(.animate-spin) {
 	animation: spin 1.5s linear infinite;
 }

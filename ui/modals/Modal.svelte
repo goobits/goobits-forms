@@ -384,7 +384,7 @@
 		max-height: 90vh; /* Viewport-relative - intentional */
 		overflow: hidden;
 		border: 1px solid var(--color-border);
-		animation: slideIn var(--duration-300) ease;
+		animation: scale-in var(--duration-300) ease;
 		display: flex;
 		flex-direction: column;
 	}
@@ -427,17 +427,7 @@
 			opacity var(--duration-200) var(--ease-in-out);
 	}
 
-	/* Animations */
-	@keyframes slideIn {
-		from {
-			opacity: 0;
-			transform: scale(0.95) translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1) translateY(0);
-		}
-	}
+	/* Animations - Modal uses global scale-in from animations.css */
 
 	.modal-content {
 		background-color: var(--color-surface);

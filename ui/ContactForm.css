@@ -198,24 +198,12 @@
 
 /* Dark theme error states handled via CSS variables */
 
-/* Animation for validation errors */
-@keyframes errorShake {
-	0%,
-	100% {
-		transform: translateX(0);
-	}
-	20%,
-	60% {
-		transform: translateX(-5px);
-	}
-	40%,
-	80% {
-		transform: translateX(5px);
-	}
+/* Animation for validation errors - now using global animations.css */
+/* errorShake keyframe moved to /workspace/sveltekit/src/styles/animations.css as error-shake */
 }
 
 .field-shake {
-	animation: errorShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	animation: error-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 /* Accessible status alert region */

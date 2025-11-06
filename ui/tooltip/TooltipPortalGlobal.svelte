@@ -261,12 +261,12 @@
 
 	.tooltip--state-appearing {
 		opacity: 0;
-		animation: tooltipFadeIn var(--transition-normal) ease-out forwards;
+		animation: tooltip-fade-in var(--transition-normal) ease-out forwards;
 	}
 
 	.tooltip--state-hiding {
 		opacity: 0;
-		animation: tooltipFadeOut var(--transition-normal) ease-out;
+		animation: tooltip-fade-out var(--transition-normal) ease-out;
 	}
 
 	.tooltip--no-transition {
@@ -355,28 +355,7 @@
 	}
 
 	/* ===== ANIMATIONS ===== */
-
-	@keyframes tooltipFadeIn {
-		from {
-			opacity: 0;
-			transform: scale(0.95);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	@keyframes tooltipFadeOut {
-		from {
-			opacity: 1;
-			transform: scale(1);
-		}
-		to {
-			opacity: 0;
-			transform: scale(0.95);
-		}
-	}
+	/* Tooltip animations now using global animations.css (tooltip-fade-in, tooltip-fade-out) */
 
 	/* ===== DARK MODE SUPPORT ===== */
 

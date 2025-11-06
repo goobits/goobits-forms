@@ -656,12 +656,7 @@
 		background-color: var(--color-background-secondary);
 	}
 
-	@keyframes submenu-enter {
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
+	/* Submenu animation now using global animations.css (submenu-enter) */
 
 	/* Section label styles (for menu categories) */
 	.menu-item__section-label {
