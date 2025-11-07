@@ -328,7 +328,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: var(--space-4);
-		z-index: var(--z-modal);
+		z-index: var(--z-index-modal);
 		transition: opacity var(--duration-200) var(--ease-in-out);
 	}
 
@@ -340,14 +340,14 @@
 		align-items: center;
 		justify-content: center;
 		padding: var(--space-4);
-		z-index: var(--z-modal);
+		z-index: var(--z-index-modal);
 		transition: opacity var(--duration-200) var(--ease-in-out);
 	}
 
 	.modal-dialog--fullscreen {
 		padding: 0; /* Reset for fullscreen */
 		background-color: var(--color-background-secondary);
-		z-index: var(--z-modal);
+		z-index: var(--z-index-modal);
 	}
 
 	.modal-dialog--closing {
@@ -357,7 +357,7 @@
 	.modal.fullscreen {
 		padding: 0; /* Reset for fullscreen */
 		background-color: var(--color-background-secondary);
-		z-index: var(--z-modal);
+		z-index: var(--z-index-modal);
 	}
 
 	/* Ensure fullscreen modal content fills viewport */
@@ -706,7 +706,7 @@
 	/* Form variant modal backdrop - matches PromptForm */
 	.modal-dialog--variant-form {
 		background-color: var(--color-overlay-dark); /* 50% opacity black */
-		z-index: var(--z-modal);
+		z-index: var(--z-index-modal);
 	}
 
 	/* Form variant content - dual-tone background like PromptForm */
