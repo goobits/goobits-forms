@@ -3,35 +3,35 @@
  * Handles form data initialization, auto-detection of browser info, and test data management
  */
 
-import { getContactFormConfig } from "../config/index.ts";
-import { loadFormData } from "./formStorage.ts";
-import { createLogger } from "../utils/logger.ts";
-import { IS_BROWSER, IS_DEV } from "../utils/constants.ts";
+import { getContactFormConfig } from '../config/index.ts';
+import { loadFormData } from './formStorage.ts';
+import { createLogger } from '../utils/logger.ts';
+import { IS_BROWSER, IS_DEV } from '../utils/constants.ts';
 
-const logger = createLogger("FormHydration");
+const logger = createLogger('FormHydration');
 
 /**
  * Form hydration configuration parameters
  */
 export interface FormHydrationParams {
-  /** The currently selected form category */
-  selectedCategory: string;
-  /** The current form data object */
-  formData: Record<string, any>;
-  /** Whether to prefer cached data over existing form data */
-  preferCache?: boolean;
+	/** The currently selected form category */
+	selectedCategory: string;
+	/** The current form data object */
+	formData: Record<string, any>;
+	/** Whether to prefer cached data over existing form data */
+	preferCache?: boolean;
 }
 
 /**
  * Browser and OS detection result
  */
 export interface BrowserInfo {
-  /** Detected browser name (e.g., "Chrome", "Firefox") */
-  browser: string;
-  /** Browser version string */
-  version: string;
-  /** Operating system name (e.g., "Windows", "macOS") */
-  os: string;
+	/** Detected browser name (e.g., "Chrome", "Firefox") */
+	browser: string;
+	/** Browser version string */
+	version: string;
+	/** Operating system name (e.g., "Windows", "macOS") */
+	os: string;
 }
 
 /**
@@ -46,7 +46,7 @@ export type TestDataFunction = (category?: string) => Record<string, any>;
  * @param {string} [_category] - The form category (unused in default implementation)
  * @returns {Record<string, any>} Empty test data object
  */
-const getTestData: TestDataFunction = (_category?: string): Record<string, any> => ({});
+const getTestData: TestDataFunction = (): Record<string, any> => ({});
 
 /**
  * Updates the form state and URL based on the selected category
@@ -68,71 +68,71 @@ const getTestData: TestDataFunction = (_category?: string): Record<string, any> 
  * ```
  */
 export function hydrateForm({
-  selectedCategory,
-  formData,
-  preferCache = true,
+	selectedCategory,
+	formData,
+	preferCache = true
 }: FormHydrationParams): Record<string, any> {
-  // Get configuration
-  const config = getContactFormConfig();
-  const { fieldConfigs } = config;
+	// Get configuration
+	const config = getContactFormConfig();
+	const { fieldConfigs } = config;
 
-  // Get browser and OS info
-  const detectedInfo = detectBrowserInfo();
+	// Get browser and OS info
+	const detectedInfo = detectBrowserInfo();
 
-  // Auto-detectable field values map
-  const autoDetectValues: Record<string, any> = {
-    browser: detectedInfo.browser,
-    browserVersion: detectedInfo.version,
-    operatingSystem: detectedInfo.os,
-  };
+	// Auto-detectable field values map
+	const autoDetectValues: Record<string, any> = {
+		browser: detectedInfo.browser,
+		browserVersion: detectedInfo.version,
+		operatingSystem: detectedInfo.os
+	};
 
-  // In development, use test data
-  if (IS_DEV) {
-    const testFormData = getTestData(selectedCategory);
+	// In development, use test data
+	if (IS_DEV) {
+		const testFormData = getTestData(selectedCategory);
 
-    // Merge test data with auto-detected values
-    return {
-      ...testFormData,
-      ...Object.fromEntries(
-        Object.keys(fieldConfigs)
-          .filter((key) => fieldConfigs[key].autoDetect)
-          .map((key) => [key, autoDetectValues[key] || testFormData[key]]),
-      ),
-    };
-  }
+		// Merge test data with auto-detected values
+		return {
+			...testFormData,
+			...Object.fromEntries(
+				Object.keys(fieldConfigs)
+					.filter((key) => fieldConfigs[key].autoDetect)
+					.map((key) => [key, autoDetectValues[key] || testFormData[key]])
+			)
+		};
+	}
 
-  // Try to load cached form data if available
-  let cachedData: Record<string, any> = {};
-  if (preferCache && IS_BROWSER) {
-    try {
-      const savedData = loadFormData(selectedCategory);
-      if (savedData) {
-        logger.debug(`Restored saved data for category: ${selectedCategory}`);
-        cachedData = savedData;
-      }
-    } catch (error) {
-      logger.error("Failed to load cached form data:", error);
-    }
-  }
+	// Try to load cached form data if available
+	let cachedData: Record<string, any> = {};
+	if (preferCache && IS_BROWSER) {
+		try {
+			const savedData = loadFormData(selectedCategory);
+			if (savedData) {
+				logger.debug(`Restored saved data for category: ${selectedCategory}`);
+				cachedData = savedData;
+			}
+		} catch (error) {
+			logger.error('Failed to load cached form data:', error);
+		}
+	}
 
-  // For production: combine auto-detected values with existing form data and cached data
-  return {
-    // Auto-detected browser info for fields that support it
-    ...Object.fromEntries(
-      Object.keys(fieldConfigs)
-        .filter((key) => fieldConfigs[key].autoDetect)
-        .map((key) => [key, autoDetectValues[key]]),
-    ),
+	// For production: combine auto-detected values with existing form data and cached data
+	return {
+		// Auto-detected browser info for fields that support it
+		...Object.fromEntries(
+			Object.keys(fieldConfigs)
+				.filter((key) => fieldConfigs[key].autoDetect)
+				.map((key) => [key, autoDetectValues[key]])
+		),
 
-    // Cached form data (if available and preferred)
-    ...(preferCache ? cachedData : {}),
+		// Cached form data (if available and preferred)
+		...(preferCache ? cachedData : {}),
 
-    // Existing form data takes precedence if we're not preferring cache
-    ...(preferCache ? {} : formData),
+		// Existing form data takes precedence if we're not preferring cache
+		...(preferCache ? {} : formData),
 
-    // Always set the selected category
-    category: selectedCategory,
-  };
+		// Always set the selected category
+		category: selectedCategory
+	};
 }
 
 /**
@@ -149,53 +149,53 @@ export function hydrateForm({
  * ```
  */
 function detectBrowserInfo(): BrowserInfo {
-  if (!IS_BROWSER) {
-    return {
-      browser: "",
-      version: "",
-      os: "",
-    };
-  }
+	if (!IS_BROWSER) {
+		return {
+			browser: '',
+			version: '',
+			os: ''
+		};
+	}
 
-  const userAgent = window.navigator.userAgent;
-  const platform = window.navigator.platform;
-  let browser = "";
-  let version = "";
-  let os = "";
+	const userAgent = window.navigator.userAgent;
+	const platform = window.navigator.platform;
+	let browser = '';
+	let version = '';
+	let os = '';
 
-  // Detect OS based on platform and user agent
-  if (/Windows/.test(platform)) {
-    os = "Windows";
-  } else if (/Mac/.test(platform)) {
-    os = "macOS";
-  } else if (/Linux/.test(platform)) {
-    os = "Linux";
-  } else if (/iPhone/.test(userAgent)) {
-    os = "iOS";
-  } else if (/Android/.test(userAgent)) {
-    os = "Android";
-  }
+	// Detect OS based on platform and user agent
+	if (/Windows/.test(platform)) {
+		os = 'Windows';
+	} else if (/Mac/.test(platform)) {
+		os = 'macOS';
+	} else if (/Linux/.test(platform)) {
+		os = 'Linux';
+	} else if (/iPhone/.test(userAgent)) {
+		os = 'iOS';
+	} else if (/Android/.test(userAgent)) {
+		os = 'Android';
+	}
 
-  // Detect browser and version with priority order (more specific first)
-  if (/Firefox\/([0-9.]+)/.test(userAgent)) {
-    browser = "Firefox";
-    const match = userAgent.match(/Firefox\/([0-9.]+)/);
-    version = match ? match[1] : "";
-  } else if (/Chrome\/([0-9.]+)/.test(userAgent)) {
-    browser = "Chrome";
-    const match = userAgent.match(/Chrome\/([0-9.]+)/);
-    version = match ? match[1] : "";
-  } else if (/Safari\/([0-9.]+)/.test(userAgent)) {
-    browser = "Safari";
-    const match = userAgent.match(/Version\/([0-9.]+)/);
-    version = match ? match[1] : "";
-  } else if (/Edge\/([0-9.]+)/.test(userAgent)) {
-    browser = "Edge";
-    const match = userAgent.match(/Edge\/([0-9.]+)/);
-    version = match ? match[1] : "";
-  }
+	// Detect browser and version with priority order (more specific first)
+	if (/Firefox\/([0-9.]+)/.test(userAgent)) {
+		browser = 'Firefox';
+		const match = userAgent.match(/Firefox\/([0-9.]+)/);
+		version = match ? match[1] : '';
+	} else if (/Chrome\/([0-9.]+)/.test(userAgent)) {
+		browser = 'Chrome';
+		const match = userAgent.match(/Chrome\/([0-9.]+)/);
+		version = match ? match[1] : '';
+	} else if (/Safari\/([0-9.]+)/.test(userAgent)) {
+		browser = 'Safari';
+		const match = userAgent.match(/Version\/([0-9.]+)/);
+		version = match ? match[1] : '';
+	} else if (/Edge\/([0-9.]+)/.test(userAgent)) {
+		browser = 'Edge';
+		const match = userAgent.match(/Edge\/([0-9.]+)/);
+		version = match ? match[1] : '';
+	}
 
-  return { browser, version, os };
+	return { browser, version, os };
 }
 
 /**
@@ -214,7 +214,7 @@ function detectBrowserInfo(): BrowserInfo {
  * ```
  */
 export function isTestDataFunction(fn: any): fn is TestDataFunction {
-  return typeof fn === 'function';
+	return typeof fn === 'function';
 }
 
 /**
@@ -240,11 +240,11 @@ export function isTestDataFunction(fn: any): fn is TestDataFunction {
  * ```
  */
 export function setTestDataFunction(testDataFn: TestDataFunction): void {
-  if (IS_DEV && isTestDataFunction(testDataFn)) {
-    // In a real implementation, this would override the getTestData function
-    // For now, we log a warning that this needs to be implemented
-    logger.warn('setTestDataFunction called but override mechanism not implemented');
-  }
+	if (IS_DEV && isTestDataFunction(testDataFn)) {
+		// In a real implementation, this would override the getTestData function
+		// For now, we log a warning that this needs to be implemented
+		logger.warn('setTestDataFunction called but override mechanism not implemented');
+	}
 }
 
 /**
@@ -263,11 +263,11 @@ export function setTestDataFunction(testDataFn: TestDataFunction): void {
  * ```
  */
 export function getTestDataForCategory(category: string): Record<string, any> {
-  if (!IS_DEV) {
-    return {};
-  }
+	if (!IS_DEV) {
+		return {};
+	}
 
-  return getTestData(category);
+	return getTestData(category);
 }
 
 /**
@@ -284,9 +284,9 @@ export function getTestDataForCategory(category: string): Record<string, any> {
  * ```
  */
 export function resetFormHydration(selectedCategory: string): Record<string, any> {
-  return hydrateForm({
-    selectedCategory,
-    formData: {},
-    preferCache: false,
-  });
+	return hydrateForm({
+		selectedCategory,
+		formData: {},
+		preferCache: false
+	});
 }

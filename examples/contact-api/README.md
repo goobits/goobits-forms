@@ -13,24 +13,24 @@ This example demonstrates how to create a contact form API endpoint using the `@
 
 ```javascript
 // /api/contact/+server.js
-import { createContactApiHandler } from "@goobits/forms/handlers/contactFormHandler";
+import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
-  // Email configuration
-  adminEmail: process.env.ADMIN_EMAIL,
-  fromEmail: process.env.FROM_EMAIL,
+	// Email configuration
+	adminEmail: process.env.ADMIN_EMAIL,
+	fromEmail: process.env.FROM_EMAIL,
 
-  // Security configuration
-  recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
+	// Security configuration
+	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
 
-  // Custom handlers
-  customSuccessHandler: async (data) => {
-    // Store in database, send notifications, etc.
-    return {
-      message: "Thank you for your message!",
-      reference: `REF-${Date.now().toString(36)}`,
-    };
-  },
+	// Custom handlers
+	customSuccessHandler: async (data) => {
+		// Store in database, send notifications, etc.
+		return {
+			message: 'Thank you for your message!',
+			reference: `REF-${Date.now().toString(36)}`
+		};
+	}
 });
 ```
 
@@ -72,7 +72,7 @@ emailServiceConfig: {
 
 ```javascript
 emailServiceConfig: {
-  provider: "mock";
+	provider: 'mock';
 }
 ```
 
@@ -82,13 +82,13 @@ emailServiceConfig: {
 
 ```javascript
 customValidation: (data) => {
-  const errors = {};
+	const errors = {};
 
-  if (data.phone && !/^\+?[\d\s()-]{7,}$/.test(data.phone)) {
-    errors.phone = "Please enter a valid phone number";
-  }
+	if (data.phone && !/^\+?[\d\s()-]{7,}$/.test(data.phone)) {
+		errors.phone = 'Please enter a valid phone number';
+	}
 
-  return errors;
+	return errors;
 };
 ```
 
@@ -96,17 +96,17 @@ customValidation: (data) => {
 
 ```javascript
 customSuccessHandler: async (data, clientAddress) => {
-  // Store in database
-  const id = await db.insertContactSubmission({
-    ...data,
-    ip: clientAddress,
-    timestamp: new Date(),
-  });
+	// Store in database
+	const id = await db.insertContactSubmission({
+		...data,
+		ip: clientAddress,
+		timestamp: new Date()
+	});
 
-  // Return custom response
-  return {
-    message: "Thank you for your message!",
-    reference: `REF-${id}`,
-  };
+	// Return custom response
+	return {
+		message: 'Thank you for your message!',
+		reference: `REF-${id}`
+	};
 };
 ```

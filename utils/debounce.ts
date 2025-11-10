@@ -7,21 +7,21 @@
  * @throws TypeError If fn is not a function or delay is not a number
  */
 export function debounce<T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number = 300
+	fn: T,
+	delay: number = 300
 ): (...args: Parameters<T>) => void {
-  if (typeof fn !== "function") {
-    throw new TypeError("First argument must be a function");
-  }
+	if (typeof fn !== 'function') {
+		throw new TypeError('First argument must be a function');
+	}
 
-  if (typeof delay !== "number" || isNaN(delay)) {
-    throw new TypeError("Delay must be a number");
-  }
+	if (typeof delay !== 'number' || isNaN(delay)) {
+		throw new TypeError('Delay must be a number');
+	}
 
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+	let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), delay);
-  };
+	return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
+		clearTimeout(timeoutId);
+		timeoutId = setTimeout(() => fn.apply(this, args), delay);
+	};
 }

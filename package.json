@@ -1,91 +1,108 @@
 {
-  "name": "@goobits/forms",
-  "version": "1.0.0",
-  "description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
-  "type": "module",
-  "main": "index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "echo 'No tests configured'"
-  },
-  "exports": {
-    ".": "./index.ts",
-    "./ui": "./ui/index.js",
-    "./ui/*": "./ui/*",
-    "./ui/index.css": "./ui/index.css",
-    "./ui/menu": "./ui/menu/index.ts",
-    "./ui/menu/*": "./ui/menu/*",
-    "./ui/modals": "./ui/modals/index.ts",
-    "./ui/modals/*": "./ui/modals/*",
-    "./config": "./config/index.js",
-    "./validation": "./validation/index.ts",
-    "./services": "./services/index.js",
-    "./handlers": "./handlers/index.js",
-    "./handlers/contactFormHandler": "./handlers/contactFormHandler.js",
-    "./utils": "./utils/index.js"
-  },
-  "files": [
-    "index.ts",
-    "ui",
-    "config",
-    "validation",
-    "services",
-    "utils",
-    "handlers",
-    "examples",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
-  "dependencies": {
-    "@lucide/svelte": "^0.543.0",
-    "@sveltejs/kit": "^2.38.0",
-    "formsnap": "^2.0.1",
-    "svelte": "^5.38.8",
-    "sveltekit-superforms": "^2.27.1",
-    "zod": "^4.1.5"
-  },
-  "peerDependencies": {
-    "nodemailer": "^6.9.0",
-    "@aws-sdk/client-ses": "^3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "nodemailer": {
-      "optional": true
-    },
-    "@aws-sdk/client-ses": {
-      "optional": true
-    }
-  },
-  "keywords": [
-    "svelte",
-    "sveltekit",
-    "forms",
-    "form",
-    "contact-form",
-    "validation",
-    "recaptcha",
-    "i18n",
-    "internationalization",
-    "form-builder",
-    "form-components",
-    "email-service",
-    "rate-limiting"
-  ],
-  "license": "MIT",
-  "author": "GooBits",
-  "homepage": "https://github.com/goobits/forms#readme",
-  "bugs": {
-    "url": "https://github.com/goobits/forms/issues"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/goobits/forms.git"
-  }
+	"name": "@goobits/forms",
+	"version": "1.1.0",
+	"description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
+	"type": "module",
+	"main": "index.ts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "echo 'No tests configured'",
+		"lint": "eslint . --ext .js,.ts,.svelte",
+		"format": "prettier --write ."
+	},
+	"exports": {
+		".": "./index.ts",
+		"./ui": "./ui/index.js",
+		"./ui/*": "./ui/*",
+		"./ui/index.css": "./ui/index.css",
+		"./ui/menu": "./ui/menu/index.ts",
+		"./ui/menu/*": "./ui/menu/*",
+		"./ui/modals": "./ui/modals/index.ts",
+		"./ui/modals/*": "./ui/modals/*",
+		"./config": "./config/index.js",
+		"./validation": "./validation/index.ts",
+		"./services": "./services/index.js",
+		"./security": "./security/csrf.ts",
+		"./security/csrf": "./security/csrf.ts",
+		"./handlers": "./handlers/index.js",
+		"./handlers/contactFormHandler": "./handlers/contactFormHandler.js",
+		"./utils": "./utils/index.js"
+	},
+	"files": [
+		"index.ts",
+		"ui",
+		"config",
+		"validation",
+		"services",
+		"security",
+		"utils",
+		"handlers",
+		"examples",
+		"README.md",
+		"LICENSE",
+		"CHANGELOG.md"
+	],
+	"dependencies": {
+		"@lucide/svelte": "^0.543.0",
+		"@sveltejs/kit": "^2.38.0",
+		"formsnap": "^2.0.1",
+		"nanoid": "^5.0.0",
+		"svelte": "^5.38.8",
+		"sveltekit-superforms": "^2.27.1",
+		"zod": "^4.1.12"
+	},
+	"peerDependencies": {
+		"nodemailer": "^6.9.0",
+		"@aws-sdk/client-ses": "^3.0.0"
+	},
+	"peerDependenciesMeta": {
+		"nodemailer": {
+			"optional": true
+		},
+		"@aws-sdk/client-ses": {
+			"optional": true
+		}
+	},
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"forms",
+		"form",
+		"contact-form",
+		"validation",
+		"recaptcha",
+		"i18n",
+		"internationalization",
+		"form-builder",
+		"form-components",
+		"email-service",
+		"rate-limiting"
+	],
+	"license": "MIT",
+	"author": "GooBits",
+	"homepage": "https://github.com/goobits/forms#readme",
+	"bugs": {
+		"url": "https://github.com/goobits/forms/issues"
+	},
+	"engines": {
+		"node": ">=18.0.0",
+		"pnpm": ">=9.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/goobits/forms.git"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.37.0",
+		"@typescript-eslint/eslint-plugin": "^8.46.0",
+		"@typescript-eslint/parser": "^8.46.0",
+		"eslint": "^9.37.0",
+		"eslint-plugin-svelte": "^3.12.4",
+		"globals": "^16.4.0",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"typescript-eslint": "^8.46.0"
+	}
 }

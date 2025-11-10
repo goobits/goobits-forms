@@ -29,7 +29,7 @@
  * }
  * ```
  */
-export const IS_BROWSER: boolean = typeof window !== "undefined";
+export const IS_BROWSER: boolean = typeof window !== 'undefined';
 
 /**
  * Indicates if code is running in a server environment
@@ -117,7 +117,7 @@ export const SAVE_DEBOUNCE_DELAY: number = 500;
  * const savedData = localStorage.getItem(STORAGE_KEY);
  * ```
  */
-export const STORAGE_KEY: string = "goo_contact_form_data";
+export const STORAGE_KEY: string = 'goo_contact_form_data';
 
 /**
  * Local storage key for saving form data expiration time
@@ -132,7 +132,7 @@ export const STORAGE_KEY: string = "goo_contact_form_data";
  * localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
  * ```
  */
-export const STORAGE_EXPIRY_KEY: string = "goo_contact_form_expiry";
+export const STORAGE_EXPIRY_KEY: string = 'goo_contact_form_expiry';
 
 /**
  * Default number of hours before form data in storage expires

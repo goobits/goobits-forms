@@ -103,14 +103,6 @@
   --color-border-strong: var(--color-border-strong, #cbd5e1);
   --color-border-subtle: var(--color-border-subtle, #f1f5f9);
 
-  /* Legacy semantic aliases for backwards compatibility */
-  --color-primary: var(--color-primary-500);
-  --color-primary-dark: var(--color-primary-600);
-  --color-primary-light: var(--color-primary-400);
-  --color-success: var(--color-success-500);
-  --color-danger: var(--color-error-500);
-  --color-info: var(--color-info-500);
-
   /* ========================================
    * SPACING SYSTEM
    * ======================================== */
@@ -128,14 +120,6 @@
   --space-16: var(--space-16, 4rem); /* 64px */
   --space-20: var(--space-20, 5rem); /* 80px */
   --space-24: var(--space-24, 6rem); /* 96px */
-
-  /* Legacy spacing aliases */
-  --spacing-xsmall: var(--space-1);
-  --spacing-small: var(--space-2);
-  --spacing-medium: var(--space-4);
-  --spacing-large: var(--space-6);
-  --spacing-xlarge: var(--space-10);
-  --spacing-xxlarge: var(--space-16);
 
   /* ========================================
    * TYPOGRAPHY SYSTEM
@@ -221,14 +205,4 @@
   --transition-base: var(--transition-all, all 0.15s ease);
   --transition-fast: var(--transition-fast, 0.15s);
   --transition-normal: var(--transition-normal, 0.2s);
-
-  /* ========================================
-   * LEGACY COLOR COMPATIBILITY
-   * ======================================== */
-
-  /* Green colors for older components */
-  --green-50: var(--color-success-50);
-  --green-200: var(--color-success-200);
-  --green-600: var(--color-success-600);
-  --green-700: var(--color-success-700);
 }

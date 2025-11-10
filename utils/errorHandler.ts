@@ -19,9 +19,9 @@
  * ```
  */
 
-import { createLogger } from "./logger.ts";
+import { createLogger } from './logger.ts';
 
-const logger = createLogger("ErrorHandler");
+const logger = createLogger('ErrorHandler');
 
 /**
  * Error types for better error categorization
@@ -38,56 +38,56 @@ const logger = createLogger("ErrorHandler");
  * ```
  */
 export const ErrorTypes = {
-  /** Form validation errors (invalid input, missing required fields) */
-  VALIDATION: "VALIDATION",
-  /** Network connectivity or request failures */
-  NETWORK: "NETWORK",
-  /** Rate limiting errors (too many requests) */
-  RATE_LIMIT: "RATE_LIMIT",
-  /** reCAPTCHA verification failures */
-  RECAPTCHA: "RECAPTCHA",
-  /** Server-side errors (5xx status codes) */
-  SERVER: "SERVER",
-  /** Unclassified or unexpected errors */
-  UNKNOWN: "UNKNOWN",
+	/** Form validation errors (invalid input, missing required fields) */
+	VALIDATION: 'VALIDATION',
+	/** Network connectivity or request failures */
+	NETWORK: 'NETWORK',
+	/** Rate limiting errors (too many requests) */
+	RATE_LIMIT: 'RATE_LIMIT',
+	/** reCAPTCHA verification failures */
+	RECAPTCHA: 'RECAPTCHA',
+	/** Server-side errors (5xx status codes) */
+	SERVER: 'SERVER',
+	/** Unclassified or unexpected errors */
+	UNKNOWN: 'UNKNOWN'
 } as const;
 
 /**
  * Type definition for error types
  */
-export type ErrorType = typeof ErrorTypes[keyof typeof ErrorTypes];
+export type ErrorType = (typeof ErrorTypes)[keyof typeof ErrorTypes];
 
 /**
  * Additional error details interface
  */
 export interface ErrorDetails {
-  /** HTTP status code if applicable */
-  statusCode?: number;
-  /** Field-specific validation errors */
-  fieldErrors?: Record<string, string>;
-  /** Request/response metadata */
-  metadata?: Record<string, unknown>;
-  /** Stack trace or debug information */
-  debug?: string;
+	/** HTTP status code if applicable */
+	statusCode?: number;
+	/** Field-specific validation errors */
+	fieldErrors?: Record<string, string>;
+	/** Request/response metadata */
+	metadata?: Record<string, unknown>;
+	/** Stack trace or debug information */
+	debug?: string;
 }
 
 /**
  * Standardized error response interface
  */
 export interface ErrorResponse {
-  /** Always false for error responses */
-  success: false;
-  /** Error details object */
-  error: {
-    /** Human-readable error message */
-    message: string;
-    /** Categorized error type */
-    type: ErrorType;
-    /** Additional error context */
-    details: ErrorDetails;
-    /** ISO timestamp when error occurred */
-    timestamp: string;
-  };
+	/** Always false for error responses */
+	success: false;
+	/** Error details object */
+	error: {
+		/** Human-readable error message */
+		message: string;
+		/** Categorized error type */
+		type: ErrorType;
+		/** Additional error context */
+		details: ErrorDetails;
+		/** ISO timestamp when error occurred */
+		timestamp: string;
+	};
 }
 
 /**
@@ -106,34 +106,30 @@ export interface ErrorResponse {
  * ```
  */
 export class ContactFormError extends Error {
-  /** Error category type */
-  public readonly type: ErrorType;
-  /** Additional error context */
-  public readonly details: ErrorDetails;
-  /** ISO timestamp when error was created */
-  public readonly timestamp: string;
+	/** Error category type */
+	public readonly type: ErrorType;
+	/** Additional error context */
+	public readonly details: ErrorDetails;
+	/** ISO timestamp when error was created */
+	public readonly timestamp: string;
 
-  /**
-   * Creates a new ContactFormError instance
-   *
-   * @param message - Human-readable error message
-   * @param type - Error category from ErrorTypes
-   * @param details - Additional error context and metadata
-   */
-  constructor(
-    message: string,
-    type: ErrorType = ErrorTypes.UNKNOWN,
-    details: ErrorDetails = {}
-  ) {
-    super(message);
-    this.name = "ContactFormError";
-    this.type = type;
-    this.details = details;
-    this.timestamp = new Date().toISOString();
+	/**
+	 * Creates a new ContactFormError instance
+	 *
+	 * @param message - Human-readable error message
+	 * @param type - Error category from ErrorTypes
+	 * @param details - Additional error context and metadata
+	 */
+	constructor(message: string, type: ErrorType = ErrorTypes.UNKNOWN, details: ErrorDetails = {}) {
+		super(message);
+		this.name = 'ContactFormError';
+		this.type = type;
+		this.details = details;
+		this.timestamp = new Date().toISOString();
 
-    // Ensure proper prototype chain for instanceof checks
-    Object.setPrototypeOf(this, ContactFormError.prototype);
-  }
+		// Ensure proper prototype chain for instanceof checks
+		Object.setPrototypeOf(this, ContactFormError.prototype);
+	}
 }
 
 /**
@@ -158,21 +154,21 @@ export class ContactFormError extends Error {
  * ```
  */
 export function createErrorResponse(
-  error: Error | string,
-  type: ErrorType = ErrorTypes.UNKNOWN,
-  details: ErrorDetails = {}
+	error: Error | string,
+	type: ErrorType = ErrorTypes.UNKNOWN,
+	details: ErrorDetails = {}
 ): ErrorResponse {
-  const message = error instanceof Error ? error.message : String(error);
+	const message = error instanceof Error ? error.message : String(error);
 
-  return {
-    success: false,
-    error: {
-      message,
-      type,
-      details,
-      timestamp: new Date().toISOString(),
-    },
-  };
+	return {
+		success: false,
+		error: {
+			message,
+			type,
+			details,
+			timestamp: new Date().toISOString()
+		}
+	};
 }
 
 /**
@@ -197,39 +193,39 @@ export function createErrorResponse(
  * ```
  */
 export function handleError(
-  error: Error | string,
-  context: string,
-  metadata: Record<string, unknown> = {}
+	error: Error | string,
+	context: string,
+	metadata: Record<string, unknown> = {}
 ): ContactFormError {
-  // Determine error type based on error content
-  let errorType: ErrorType = ErrorTypes.UNKNOWN;
-  const message = error instanceof Error ? error.message : String(error);
-  const lowerMessage = message.toLowerCase();
+	// Determine error type based on error content
+	let errorType: ErrorType = ErrorTypes.UNKNOWN;
+	const message = error instanceof Error ? error.message : String(error);
+	const lowerMessage = message.toLowerCase();
 
-  // Categorize error based on message content
-  if (lowerMessage.includes("validation") || lowerMessage.includes("invalid")) {
-    errorType = ErrorTypes.VALIDATION;
-  } else if (lowerMessage.includes("network") || lowerMessage.includes("fetch")) {
-    errorType = ErrorTypes.NETWORK;
-  } else if (lowerMessage.includes("rate") || lowerMessage.includes("429")) {
-    errorType = ErrorTypes.RATE_LIMIT;
-  } else if (lowerMessage.includes("recaptcha") || lowerMessage.includes("captcha")) {
-    errorType = ErrorTypes.RECAPTCHA;
-  } else if (lowerMessage.includes("server") || lowerMessage.includes("500")) {
-    errorType = ErrorTypes.SERVER;
-  }
+	// Categorize error based on message content
+	if (lowerMessage.includes('validation') || lowerMessage.includes('invalid')) {
+		errorType = ErrorTypes.VALIDATION;
+	} else if (lowerMessage.includes('network') || lowerMessage.includes('fetch')) {
+		errorType = ErrorTypes.NETWORK;
+	} else if (lowerMessage.includes('rate') || lowerMessage.includes('429')) {
+		errorType = ErrorTypes.RATE_LIMIT;
+	} else if (lowerMessage.includes('recaptcha') || lowerMessage.includes('captcha')) {
+		errorType = ErrorTypes.RECAPTCHA;
+	} else if (lowerMessage.includes('server') || lowerMessage.includes('500')) {
+		errorType = ErrorTypes.SERVER;
+	}
 
-  // Extract additional details from Error instance
-  const details: ErrorDetails = {
-    metadata,
-    ...(error instanceof Error && error.stack && { debug: error.stack }),
-  };
+	// Extract additional details from Error instance
+	const details: ErrorDetails = {
+		metadata,
+		...(error instanceof Error && error.stack && { debug: error.stack })
+	};
 
-  // Log error with context
-  logger.error(`[${context}] ${message}`, { errorType, metadata });
+	// Log error with context
+	logger.error(`[${context}] ${message}`, { errorType, metadata });
 
-  // Return standardized error
-  return new ContactFormError(message, errorType, details);
+	// Return standardized error
+	return new ContactFormError(message, errorType, details);
 }
 
 /**
@@ -248,39 +244,39 @@ export function handleError(
  * ```
  */
 export function getUserFriendlyMessage(error: unknown): string {
-  if (error instanceof ContactFormError) {
-    switch (error.type) {
-      case ErrorTypes.VALIDATION:
-        return "Please check the form for errors and try again.";
-      case ErrorTypes.NETWORK:
-        return "Network error. Please check your connection and try again.";
-      case ErrorTypes.RATE_LIMIT:
-        return "Too many requests. Please wait a moment and try again.";
-      case ErrorTypes.RECAPTCHA:
-        return "Security verification failed. Please try again.";
-      case ErrorTypes.SERVER:
-        return "Server error. Please try again later.";
-      default:
-        return "An unexpected error occurred. Please try again.";
-    }
-  }
+	if (error instanceof ContactFormError) {
+		switch (error.type) {
+			case ErrorTypes.VALIDATION:
+				return 'Please check the form for errors and try again.';
+			case ErrorTypes.NETWORK:
+				return 'Network error. Please check your connection and try again.';
+			case ErrorTypes.RATE_LIMIT:
+				return 'Too many requests. Please wait a moment and try again.';
+			case ErrorTypes.RECAPTCHA:
+				return 'Security verification failed. Please try again.';
+			case ErrorTypes.SERVER:
+				return 'Server error. Please try again later.';
+			default:
+				return 'An unexpected error occurred. Please try again.';
+		}
+	}
 
-  // Handle generic Error instances
-  if (error instanceof Error) {
-    const message = error.message.toLowerCase();
-    if (message.includes("rate") || message.includes("429")) {
-      return "Too many requests. Please wait a moment and try again.";
-    }
-    if (message.includes("network") || message.includes("fetch")) {
-      return "Network error. Please check your connection and try again.";
-    }
-  }
+	// Handle generic Error instances
+	if (error instanceof Error) {
+		const message = error.message.toLowerCase();
+		if (message.includes('rate') || message.includes('429')) {
+			return 'Too many requests. Please wait a moment and try again.';
+		}
+		if (message.includes('network') || message.includes('fetch')) {
+			return 'Network error. Please check your connection and try again.';
+		}
+	}
 
-  // Fallback for objects with message property
-  const errorObj = error as { message?: string };
-  if (errorObj?.message?.includes("rate")) {
-    return "Too many requests. Please wait a moment and try again.";
-  }
+	// Fallback for objects with message property
+	const errorObj = error as { message?: string };
+	if (errorObj?.message?.includes('rate')) {
+		return 'Too many requests. Please wait a moment and try again.';
+	}
 
-  return errorObj?.message || "An unexpected error occurred.";
+	return errorObj?.message || 'An unexpected error occurred.';
 }

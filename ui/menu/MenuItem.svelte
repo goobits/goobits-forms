@@ -43,20 +43,20 @@
 		Archive,
 		Clock
 	} from '@lucide/svelte';
+	import type { MenuItem as MenuItemType, MenuItemSize } from './types';
 
-	/**
-	 * @typedef {Object} Props
-	 * @property {import('./types').MenuItem} item - The menu item configuration
-	 * @property {string} menuId - Unique menu identifier
-	 * @property {number} index - Item index within menu
-	 * @property {import('./types').MenuItemSize} [size] - Size variant
-	 * @property {boolean} [showIcon] - Whether to show icons
-	 * @property {boolean} [showShortcut] - Whether to show keyboard shortcuts
-	 * @property {boolean} [isFocused] - Whether item is focused
-	 * @property {boolean} [isNested] - Whether item is in a nested menu
-	 * @property {function} [onClose] - Callback to close the menu
-	 * @property {function} [confirmationHandler] - Handler for confirmation dialogs
-	 */
+	interface Props {
+		item: MenuItemType;
+		menuId: string;
+		index: number;
+		size?: MenuItemSize;
+		showIcon?: boolean;
+		showShortcut?: boolean;
+		isFocused?: boolean;
+		isNested?: boolean;
+		onClose?: () => void;
+		confirmationHandler?: (message: string) => Promise<boolean>;
+	}
 
 	const {
 		item,
@@ -74,9 +74,7 @@
 	// Confirmation now handled via optional prop
 
 	// Determine if this is a special styled action
-	const isSpecialAction = $derived(
-		item.type === 'action' && item.label === 'Clear All Filters'
-	);
+	const isSpecialAction = $derived(item.type === 'action' && item.label === 'Clear All Filters');
 
 	// Add submenu state management
 	let showSubmenu = $state(false);
@@ -161,24 +159,24 @@
 			const submenuWidth = 200; // Approximate submenu width
 			const submenuHeight = item.items.length * 36; // Approximate item height
 			const padding = 8;
-			
+
 			let x = rect.right + padding;
 			let y = rect.top;
-			
+
 			// Check if submenu would overflow right edge
 			if (x + submenuWidth > window.innerWidth) {
 				x = rect.left - submenuWidth - padding;
 			}
-			
+
 			// Check if submenu would overflow bottom edge
 			if (y + submenuHeight > window.innerHeight) {
 				y = window.innerHeight - submenuHeight - padding;
 			}
-			
+
 			// Ensure submenu stays within viewport
 			x = Math.max(padding, Math.min(x, window.innerWidth - submenuWidth - padding));
 			y = Math.max(padding, y);
-			
+
 			submenuPosition = { x, y };
 		}
 	}
@@ -222,36 +220,36 @@
 	// Map icon names to icon components
 	function getIconComponent(iconName: string) {
 		const iconMap = {
-			'type': Type,
-			'calendar': Calendar,
+			type: Type,
+			calendar: Calendar,
 			'trending-up': TrendingUp,
 			'trending-down': TrendingDown,
-			'edit': Edit,
-			'copy': Copy,
-			'heart': Heart,
-			'download': Download,
-			'play': Play,
-			'trash': Trash,
+			edit: Edit,
+			copy: Copy,
+			heart: Heart,
+			download: Download,
+			play: Play,
+			trash: Trash,
 			'trash-2': Trash2,
-			'plus': Plus,
-			'settings': Settings,
-			'palette': Palette,
-			'upload': Upload,
-			'logout': LogOut,
-			'log-out': LogOut, // Add kebab-case variant for consistency
-			'search': Search,
-			'eye': Eye,
-			'wand': Wand,
+			plus: Plus,
+			settings: Settings,
+			palette: Palette,
+			upload: Upload,
+			logout: LogOut,
+			'log-out': LogOut,
+			search: Search,
+			eye: Eye,
+			wand: Wand,
 			'folder-plus': FolderPlus,
-			'command': Command,
-			'x': X,
-			'layers': Layers,
-			'folder': Folder,
-			'sort': SortAsc,
-			'compare': ArrowUpDown,
-			'hash': Hash,
-			'archive': Archive,
-			'clock': Clock
+			command: Command,
+			x: X,
+			layers: Layers,
+			folder: Folder,
+			sort: SortAsc,
+			compare: ArrowUpDown,
+			hash: Hash,
+			archive: Archive,
+			clock: Clock
 		};
 		return iconMap[iconName as keyof typeof iconMap];
 	}
@@ -293,11 +291,10 @@
 	// Determine if this is a special item (Save As Command/Agent)
 	const isSpecialItem = $derived(
 		item.type === 'toggle' &&
-		('label' in item) &&
-		(item.label?.includes('Save As') || item.label?.includes('Agent'))
+			'label' in item &&
+			(item.label?.includes('Save As') || item.label?.includes('Agent'))
 	);
 </script>
-
 
 {#if item.type === 'separator'}
 	<!-- Separators are handled by parent component -->
@@ -307,11 +304,8 @@
 	</div>
 {:else if item.type === 'custom'}
 	{@const CustomComponent = item.component}
-	<div
-		class="menu-item menu-item--custom menu-item--{size}"
-		{...ariaAttributes}
-	>
-		<CustomComponent {...(item.props || {})} />
+	<div class="menu-item menu-item--custom menu-item--{size}" {...ariaAttributes}>
+		<CustomComponent {...item.props || {}} />
 	</div>
 {:else if item.type !== 'separator'}
 	{#if isSpecialAction}
@@ -322,62 +316,78 @@
 					bind:this={buttonRef}
 					type="button"
 					class="menu-item menu-item--{item.type} menu-item--{size}"
-			class:menu-item--disabled={isDisabled}
-			class:menu-item--focused={isFocused}
-			class:menu-item--nested={isNested}
-			class:menu-item--checked={item.type === 'toggle' && item.checked}
-			class:menu-item--has-submenu={item.type === 'submenu'}
-			class:menu-item--special-action={isSpecialAction}
-			class:menu-item--flashing={isFlashing && item.type !== 'toggle'}
-			class:menu-item--flashing-single={isFlashing && item.type === 'toggle'}
-			class:menu-item--special={isSpecialItem && isFlashing}
-			data-checked={item.type === 'toggle' ? item.checked : undefined}
-			disabled={isDisabled}
-			onclick={(e) => handleClick(e)}
-			onkeydown={handleKeydown}
-			onmouseenter={handleMouseEnter}
-			onmouseleave={handleMouseLeave}
-			{...ariaAttributes}
-		>
-		{#if hasIcon}
-			<span class="menu-item__icon" aria-hidden="true">
-				{#if item.type === 'toggle'}
-					{#if item.checked}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<polyline points="20,6 9,17 4,12"></polyline>
-						</svg>
-					{:else}
-						<div class="menu-item__checkbox"></div>
+					class:menu-item--disabled={isDisabled}
+					class:menu-item--focused={isFocused}
+					class:menu-item--nested={isNested}
+					class:menu-item--checked={item.type === 'toggle' && item.checked}
+					class:menu-item--has-submenu={item.type === 'submenu'}
+					class:menu-item--special-action={isSpecialAction}
+					class:menu-item--flashing={isFlashing && item.type !== 'toggle'}
+					class:menu-item--flashing-single={isFlashing && item.type === 'toggle'}
+					class:menu-item--special={isSpecialItem && isFlashing}
+					data-checked={item.type === 'toggle' ? item.checked : undefined}
+					disabled={isDisabled}
+					onclick={(e) => handleClick(e)}
+					onkeydown={handleKeydown}
+					onmouseenter={handleMouseEnter}
+					onmouseleave={handleMouseLeave}
+					{...ariaAttributes}
+				>
+					{#if hasIcon}
+						<span class="menu-item__icon" aria-hidden="true">
+							{#if item.type === 'toggle'}
+								{#if item.checked}
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
+										<polyline points="20,6 9,17 4,12"></polyline>
+									</svg>
+								{:else}
+									<div class="menu-item__checkbox"></div>
+								{/if}
+							{:else if IconComponent()}
+								{@const Icon = IconComponent()}
+								<Icon size="16" />
+							{:else}
+								<!-- Fallback for unknown icons -->
+								<span class="icon-placeholder"
+									>{typeof item.icon === 'string' ? item.icon : 'icon'}</span
+								>
+							{/if}
+						</span>
 					{/if}
-				{:else if IconComponent()}
-					{@const Icon = IconComponent()}
-					<Icon size="16" />
-				{:else}
-					<!-- Fallback for unknown icons -->
-					<span class="icon-placeholder">{typeof item.icon === 'string' ? item.icon : 'icon'}</span>
-				{/if}
-			</span>
-		{/if}
 
-		<span class="menu-item__label">
-			{#if 'label' in item}
-				{item.label}
-			{/if}
-		</span>
+					<span class="menu-item__label">
+						{#if 'label' in item}
+							{item.label}
+						{/if}
+					</span>
 
-		{#if hasShortcut}
-			<span class="menu-item__shortcut" aria-hidden="true">
-				{item.shortcut}
-			</span>
-		{/if}
+					{#if hasShortcut}
+						<span class="menu-item__shortcut" aria-hidden="true">
+							{item.shortcut}
+						</span>
+					{/if}
 
-		{#if item.type === 'submenu'}
-			<span class="menu-item__arrow" aria-hidden="true">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<polyline points="9,18 15,12 9,6"></polyline>
-				</svg>
-			</span>
-		{/if}
+					{#if item.type === 'submenu'}
+						<span class="menu-item__arrow" aria-hidden="true">
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<polyline points="9,18 15,12 9,6"></polyline>
+							</svg>
+						</span>
+					{/if}
 				</button>
 			</div>
 		</div>
@@ -408,7 +418,14 @@
 					<span class="menu-item__icon" aria-hidden="true">
 						{#if item.type === 'toggle'}
 							{#if item.checked}
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<polyline points="20,6 9,17 4,12"></polyline>
 								</svg>
 							{:else}
@@ -419,7 +436,9 @@
 							<Icon size="16" />
 						{:else}
 							<!-- Fallback for unknown icons -->
-							<span class="icon-placeholder">{typeof item.icon === 'string' ? item.icon : 'icon'}</span>
+							<span class="icon-placeholder"
+								>{typeof item.icon === 'string' ? item.icon : 'icon'}</span
+							>
 						{/if}
 					</span>
 				{/if}
@@ -438,7 +457,14 @@
 
 				{#if item.type === 'submenu'}
 					<span class="menu-item__arrow" aria-hidden="true">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<polyline points="9,18 15,12 9,6"></polyline>
 						</svg>
 					</span>
@@ -453,6 +479,7 @@
 	<div
 		class="submenu__portal"
 		role="menu"
+		tabindex="-1"
 		style="position: fixed; left: {submenuPosition.x}px; top: {submenuPosition.y}px; z-index: 1001;"
 		onmouseenter={() => {
 			if (submenuTimeout) {
@@ -462,11 +489,11 @@
 		}}
 		onmouseleave={handleMouseLeave}
 	>
-		{#each item.items as subItem, subIndex}
+		{#each item.items as subItem, subIndex (subItem.id || subIndex)}
 			{#if subItem.type === 'separator'}
 				<div class="submenu__separator"></div>
 			{:else}
-				<MenuItem
+				<svelte:self
 					item={subItem}
 					menuId="{menuId}-submenu"
 					index={subIndex}
@@ -474,7 +501,7 @@
 					{showIcon}
 					{showShortcut}
 					isNested={true}
-					onClose={onClose}
+					{onClose}
 				/>
 			{/if}
 		{/each}
@@ -632,12 +659,7 @@
 		background-color: var(--color-background-secondary);
 	}
 
-	@keyframes submenu-enter {
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
+	/* Submenu animation now using global animations.css (submenu-enter) */
 
 	/* Section label styles (for menu categories) */
 	.menu-item__section-label {

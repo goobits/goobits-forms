@@ -10,42 +10,42 @@
  * ======================================== */
 
 @keyframes menu-item-flash {
-  0% {
-    background-color: var(--flash-base-bg, transparent);
-    transform: scale(1);
-  }
-  25% {
-    background-color: var(--flash-highlight-bg, var(--color-primary-100));
-    transform: scale(0.98);
-  }
-  50% {
-    background-color: var(--flash-base-bg, transparent);
-    transform: scale(1);
-  }
-  75% {
-    background-color: var(--flash-highlight-bg, var(--color-primary-100));
-    transform: scale(0.98);
-  }
-  100% {
-    background-color: var(--flash-base-bg, transparent);
-    transform: scale(1);
-  }
+	0% {
+		background-color: var(--flash-base-bg, transparent);
+		transform: scale(1);
+	}
+	25% {
+		background-color: var(--flash-highlight-bg, var(--color-primary-100));
+		transform: scale(0.98);
+	}
+	50% {
+		background-color: var(--flash-base-bg, transparent);
+		transform: scale(1);
+	}
+	75% {
+		background-color: var(--flash-highlight-bg, var(--color-primary-100));
+		transform: scale(0.98);
+	}
+	100% {
+		background-color: var(--flash-base-bg, transparent);
+		transform: scale(1);
+	}
 }
 
 /* Single flash variant for toggles */
 @keyframes menu-item-flash-single {
-  0% {
-    background-color: var(--flash-base-bg, transparent);
-    transform: scale(1);
-  }
-  50% {
-    background-color: var(--flash-highlight-bg, var(--color-primary-100));
-    transform: scale(0.97);
-  }
-  100% {
-    background-color: var(--flash-base-bg, transparent);
-    transform: scale(1);
-  }
+	0% {
+		background-color: var(--flash-base-bg, transparent);
+		transform: scale(1);
+	}
+	50% {
+		background-color: var(--flash-highlight-bg, var(--color-primary-100));
+		transform: scale(0.97);
+	}
+	100% {
+		background-color: var(--flash-base-bg, transparent);
+		transform: scale(1);
+	}
 }
 
 /* ========================================
@@ -53,15 +53,15 @@
  * ======================================== */
 
 .menu-item--flashing {
-  animation: menu-item-flash var(--duration-flash, 250ms) var(--ease-elastic) 1;
-  position: relative;
-  z-index: 1;
+	animation: menu-item-flash var(--duration-flash, 250ms) var(--ease-elastic) 1;
+	position: relative;
+	z-index: 1;
 }
 
 .menu-item--flashing-single {
-  animation: menu-item-flash-single calc(var(--duration-flash, 250ms) * 0.6) var(--ease-out) 1;
-  position: relative;
-  z-index: 1;
+	animation: menu-item-flash-single calc(var(--duration-flash, 250ms) * 0.6) var(--ease-out) 1;
+	position: relative;
+	z-index: 1;
 }
 
 /* ========================================
@@ -70,32 +70,32 @@
 
 /* Default action flash - blue */
 .menu-item--action.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: var(--color-primary-100);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: var(--color-primary-100);
 }
 
 /* Toggle checked flash - green */
-.menu-item--toggle.menu-item--flashing[data-checked="true"] {
-  --flash-base-bg: var(--color-primary-50);
-  --flash-highlight-bg: var(--color-success-100);
+.menu-item--toggle.menu-item--flashing[data-checked='true'] {
+	--flash-base-bg: var(--color-primary-50);
+	--flash-highlight-bg: var(--color-success-100);
 }
 
 /* Toggle unchecked flash - subtle gray */
-.menu-item--toggle.menu-item--flashing[data-checked="false"] {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: var(--color-secondary-100);
+.menu-item--toggle.menu-item--flashing[data-checked='false'] {
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: var(--color-secondary-100);
 }
 
 /* Destructive action flash - red */
 .menu-item--destructive.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: var(--color-error-100);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: var(--color-error-100);
 }
 
 /* Special action (Save As Command/Agent) - purple */
 .menu-item--special.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: var(--color-purple-100);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: var(--color-purple-100);
 }
 
 /* ========================================
@@ -104,32 +104,32 @@
 
 :global(.theme-dark) .menu-item--action.menu-item--flashing,
 :global(.theme-system-dark) .menu-item--action.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: rgba(0, 122, 255, 0.2);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: rgba(0, 122, 255, 0.2);
 }
 
-:global(.theme-dark) .menu-item--toggle.menu-item--flashing[data-checked="true"],
-:global(.theme-system-dark) .menu-item--toggle.menu-item--flashing[data-checked="true"] {
-  --flash-base-bg: rgba(0, 122, 255, 0.1);
-  --flash-highlight-bg: rgba(50, 215, 75, 0.25);
+:global(.theme-dark) .menu-item--toggle.menu-item--flashing[data-checked='true'],
+:global(.theme-system-dark) .menu-item--toggle.menu-item--flashing[data-checked='true'] {
+	--flash-base-bg: rgba(0, 122, 255, 0.1);
+	--flash-highlight-bg: rgba(50, 215, 75, 0.25);
 }
 
-:global(.theme-dark) .menu-item--toggle.menu-item--flashing[data-checked="false"],
-:global(.theme-system-dark) .menu-item--toggle.menu-item--flashing[data-checked="false"] {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: rgba(255, 255, 255, 0.08);
+:global(.theme-dark) .menu-item--toggle.menu-item--flashing[data-checked='false'],
+:global(.theme-system-dark) .menu-item--toggle.menu-item--flashing[data-checked='false'] {
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: rgba(255, 255, 255, 0.08);
 }
 
 :global(.theme-dark) .menu-item--destructive.menu-item--flashing,
 :global(.theme-system-dark) .menu-item--destructive.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: rgba(255, 69, 58, 0.25);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: rgba(255, 69, 58, 0.25);
 }
 
 :global(.theme-dark) .menu-item--special.menu-item--flashing,
 :global(.theme-system-dark) .menu-item--special.menu-item--flashing {
-  --flash-base-bg: transparent;
-  --flash-highlight-bg: rgba(147, 51, 234, 0.25);
+	--flash-base-bg: transparent;
+	--flash-highlight-bg: rgba(147, 51, 234, 0.25);
 }
 
 /* ========================================
@@ -137,14 +137,14 @@
  * ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .menu-item--flashing,
-  .menu-item--flashing-single {
-    animation: none;
-  }
+	.menu-item--flashing,
+	.menu-item--flashing-single {
+		animation: none;
+	}
 
-  /* Still show visual feedback without animation */
-  .menu-item--flashing,
-  .menu-item--flashing-single {
-    background-color: var(--flash-highlight-bg, var(--color-primary-100));
-  }
+	/* Still show visual feedback without animation */
+	.menu-item--flashing,
+	.menu-item--flashing-single {
+		background-color: var(--flash-highlight-bg, var(--color-primary-100));
+	}
 }

@@ -11,12 +11,8 @@
  * @since 1.0.0
  */
 
-import { createMessageGetter, getMergedMessages } from "../utils/messages.ts";
-import {
-  handleFormI18n,
-  loadWithFormI18n,
-  layoutLoadWithFormI18n,
-} from "./hooks.ts";
+import { createMessageGetter, getMergedMessages } from '../utils/messages.ts';
+import { handleFormI18n, loadWithFormI18n, layoutLoadWithFormI18n } from './hooks.ts';
 
 /**
  * Re-exported internationalization utilities and hooks
@@ -36,33 +32,33 @@ import {
  * ```
  */
 export {
-  /**
-   * Creates a message getter function for retrieving localized strings
-   * @see {@link ../utils/messages.ts}
-   */
-  createMessageGetter,
+	/**
+	 * Creates a message getter function for retrieving localized strings
+	 * @see {@link ../utils/messages.ts}
+	 */
+	createMessageGetter,
 
-  /**
-   * Merges multiple message objects with proper locale handling
-   * @see {@link ../utils/messages.ts}
-   */
-  getMergedMessages,
+	/**
+	 * Merges multiple message objects with proper locale handling
+	 * @see {@link ../utils/messages.ts}
+	 */
+	getMergedMessages,
 
-  /**
-   * SvelteKit handle hook for processing internationalization requests
-   * @see {@link ./hooks.ts}
-   */
-  handleFormI18n,
+	/**
+	 * SvelteKit handle hook for processing internationalization requests
+	 * @see {@link ./hooks.ts}
+	 */
+	handleFormI18n,
 
-  /**
-   * SvelteKit load function wrapper with i18n support
-   * @see {@link ./hooks.ts}
-   */
-  loadWithFormI18n,
+	/**
+	 * SvelteKit load function wrapper with i18n support
+	 * @see {@link ./hooks.ts}
+	 */
+	loadWithFormI18n,
 
-  /**
-   * SvelteKit layout load function wrapper with i18n support
-   * @see {@link ./hooks.ts}
-   */
-  layoutLoadWithFormI18n,
+	/**
+	 * SvelteKit layout load function wrapper with i18n support
+	 * @see {@link ./hooks.ts}
+	 */
+	layoutLoadWithFormI18n
 };

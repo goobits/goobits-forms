@@ -5,52 +5,53 @@
  * including schema creation, field validation, and error management.
  */
 
-import { z } from "zod";
-import { zod4 } from "sveltekit-superforms/adapters";
-import { debounce } from "../utils/debounce.ts";
-import type { ContactFormConfig } from "../config/types";
+import { z } from 'zod';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { debounce } from '../utils/debounce.ts';
 
 /**
  * Represents a validation configuration object with schemas and field mappings
  */
 export interface ValidationConfig {
-  /** Available form categories */
-  categories: Record<string, any>;
-  /** Pre-built validation schemas */
-  schemas?: {
-    /** Complete schema with all fields */
-    complete?: z.ZodObject<any>;
-    /** Category-specific schemas */
-    categories?: Record<string, z.ZodObject<any>>;
-  };
-  /** Mapping of categories to their required fields */
-  categoryToFieldMap: Record<string, string[]>;
+	/** Available form categories */
+	categories: Record<string, any>;
+	/** Pre-built validation schemas */
+	schemas?: {
+		/** Complete schema with all fields */
+		complete?: z.ZodObject<any>;
+		/** Category-specific schemas */
+		categories?: Record<string, z.ZodObject<any>>;
+	};
+	/** Mapping of categories to their required fields */
+	categoryToFieldMap: Record<string, string[]>;
 }
 
 /**
  * Options for validation CSS class generation
  */
 export interface ValidationClassOptions {
-  /** Whether the field has a validation error */
-  hasError: boolean;
-  /** Whether the field has been touched/focused */
-  isTouched: boolean;
-  /** The current field value (optional, for additional validation states) */
-  value?: any;
+	/** Whether the field has a validation error */
+	hasError: boolean;
+	/** Whether the field has been touched/focused */
+	isTouched: boolean;
+	/** The current field value (optional, for additional validation states) */
+	value?: any;
 }
 
 /**
  * Represents validation errors structure from superforms
  */
 export interface ValidationErrors {
-  /** Field name to error message(s) mapping */
-  [fieldName: string]: string[] | undefined;
+	/** Field name to error message(s) mapping */
+	[fieldName: string]: string[] | undefined;
 }
 
 /**
  * A debounced validation function type
  */
-export type DebouncedValidator<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
+export type DebouncedValidator<T extends (...args: any[]) => any> = (
+	...args: Parameters<T>
+) => void;
 
 /**
  * Creates a validation schema for a specific contact category
@@ -78,28 +79,26 @@ export type DebouncedValidator<T extends (...args: any[]) => any> = (...args: Pa
  * ```
  */
 export function createValidationSchemaForCategory(
-  config: ValidationConfig,
-  category: string
+	config: ValidationConfig,
+	category: string
 ): z.ZodObject<any> {
-  if (!config.categories[category]) {
-    throw new Error(`Invalid category: ${category}`);
-  }
+	if (!config.categories[category]) {
+		throw new Error(`Invalid category: ${category}`);
+	}
 
-  // Use the pre-built category schema
-  if (config.schemas && config.schemas.categories && config.schemas.categories[category]) {
-    return config.schemas.categories[category];
-  }
+	// Use the pre-built category schema
+	if (config.schemas && config.schemas.categories && config.schemas.categories[category]) {
+		return config.schemas.categories[category];
+	}
 
-  // Fallback to creating from field map if schema not available
-  if (config.categoryToFieldMap[category] && config.schemas?.complete) {
-    return config.schemas.complete.pick(
-      Object.fromEntries(
-        config.categoryToFieldMap[category].map((field) => [field, true]),
-      ),
-    );
-  }
+	// Fallback to creating from field map if schema not available
+	if (config.categoryToFieldMap[category] && config.schemas?.complete) {
+		return config.schemas.complete.pick(
+			Object.fromEntries(config.categoryToFieldMap[category].map((field) => [field, true]))
+		);
+	}
 
-  throw new Error(`No schema found for category: ${category}`);
+	throw new Error(`No schema found for category: ${category}`);
 }
 
 /**
@@ -125,10 +124,10 @@ export function createValidationSchemaForCategory(
  * ```
  */
 export function getValidatorForCategory(
-  config: ValidationConfig,
-  category: string
+	config: ValidationConfig,
+	category: string
 ): ReturnType<typeof zod4> {
-  return zod4(createValidationSchemaForCategory(config, category));
+	return zod4(createValidationSchemaForCategory(config, category));
 }
 
 /**
@@ -158,14 +157,10 @@ export function getValidatorForCategory(
  * getValidationClasses(false, true, ''); // Returns: ""
  * ```
  */
-export function getValidationClasses(
-  hasError: boolean,
-  isTouched: boolean,
-  value?: any
-): string {
-  if (!isTouched) return "";
-  // Only show valid state if there's an actual value
-  return hasError ? "is-invalid has-error" : value ? "is-valid" : "";
+export function getValidationClasses(hasError: boolean, isTouched: boolean, value?: any): string {
+	if (!isTouched) return '';
+	// Only show valid state if there's an actual value
+	return hasError ? 'is-invalid has-error' : value ? 'is-valid' : '';
 }
 
 /**
@@ -195,10 +190,10 @@ export function getValidationClasses(
  * ```
  */
 export function createDebouncedValidator<T extends (...args: any[]) => any>(
-  validateFn: T,
-  delay: number = 300
+	validateFn: T,
+	delay: number = 300
 ): DebouncedValidator<T> {
-  return debounce(validateFn, delay);
+	return debounce(validateFn, delay);
 }
 
 /**
@@ -239,7 +234,7 @@ export { debounce };
  * ```
  */
 export function hasValidationErrors(errors: ValidationErrors): boolean {
-  return Object.values(errors).some((value) => value && value.length > 0);
+	return Object.values(errors).some((value) => value && value.length > 0);
 }
 
 /**
@@ -270,11 +265,8 @@ export function hasValidationErrors(errors: ValidationErrors): boolean {
  * console.log(updatedErrors.email); // undefined
  * ```
  */
-export function clearFieldError(
-  errors: ValidationErrors,
-  field: string
-): ValidationErrors {
-  const updatedErrors = { ...errors };
-  delete updatedErrors[field];
-  return updatedErrors;
+export function clearFieldError(errors: ValidationErrors, field: string): ValidationErrors {
+	const updatedErrors = { ...errors };
+	delete updatedErrors[field];
+	return updatedErrors;
 }

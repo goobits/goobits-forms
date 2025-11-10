@@ -5,51 +5,51 @@
  * using ARIA live regions and polite/assertive announcements.
  */
 
-import { IS_BROWSER } from "../utils/constants.ts";
-import { createLogger } from "../utils/logger.ts";
-import { createMessageGetter } from "../utils/messages.ts";
-import { defaultMessages } from "../config/defaultMessages";
+import { IS_BROWSER } from '../utils/constants.ts';
+import { createLogger } from '../utils/logger.ts';
+import { createMessageGetter } from '../utils/messages.ts';
+import { defaultMessages } from '../config/defaultMessages';
 
-const logger = createLogger("ScreenReader");
+const logger = createLogger('ScreenReader');
 
 /**
  * Announcement options interface
  */
 export interface AnnouncementOptions {
-  /** Announcement type determining the live region used */
-  type?: 'status' | 'alert' | 'form' | 'validation';
-  /** How long to keep the announcement in the DOM (milliseconds) */
-  duration?: number;
-  /** Whether to clear previous announcements in the same region */
-  clearPrevious?: boolean;
-  /** Override the default region ID */
-  regionId?: string | null;
+	/** Announcement type determining the live region used */
+	type?: 'status' | 'alert' | 'form' | 'validation';
+	/** How long to keep the announcement in the DOM (milliseconds) */
+	duration?: number;
+	/** Whether to clear previous announcements in the same region */
+	clearPrevious?: boolean;
+	/** Override the default region ID */
+	regionId?: string | null;
 }
 
 /**
  * Form errors object interface
  */
 export interface FormErrors {
-  /** Field name as key, error message as value */
-  [fieldName: string]: string;
+	/** Field name as key, error message as value */
+	[fieldName: string]: string;
 }
 
 /**
  * Form status options interface
  */
 export interface FormStatusOptions {
-  /** Custom error message for 'error' status */
-  errorMessage?: string;
-  /** Custom message strings to override defaults */
-  messages?: Record<string, string>;
+	/** Custom error message for 'error' status */
+	errorMessage?: string;
+	/** Custom message strings to override defaults */
+	messages?: Record<string, string>;
 }
 
 /**
  * Form errors announcement options interface
  */
 export interface FormErrorsOptions {
-  /** Custom message strings to override defaults */
-  messages?: Record<string, string>;
+	/** Custom message strings to override defaults */
+	messages?: Record<string, string>;
 }
 
 /**
@@ -61,10 +61,10 @@ export type CleanupFunction = () => void;
  * Active announcement tracking interface
  */
 interface AnnouncementInfo {
-  /** Region ID where the announcement is located */
-  regionId: string;
-  /** Cleanup function to remove the announcement */
-  cleanup: CleanupFunction;
+	/** Region ID where the announcement is located */
+	regionId: string;
+	/** Cleanup function to remove the announcement */
+	cleanup: CleanupFunction;
 }
 
 /**
@@ -76,10 +76,10 @@ const ANNOUNCEMENT_DURATION = 5000; // Time announcements remain in the DOM (ms)
  * ARIA live region identifiers
  */
 const REGIONS = {
-  STATUS: "status-region",        // For general status updates (aria-live="polite")
-  ALERT: "alert-region",          // For important alerts (aria-live="assertive")
-  FORM_STATUS: "form-status-region", // For form-specific status updates
-  VALIDATION: "validation-region",   // For form validation feedback
+	STATUS: 'status-region', // For general status updates (aria-live="polite")
+	ALERT: 'alert-region', // For important alerts (aria-live="assertive")
+	FORM_STATUS: 'form-status-region', // For form-specific status updates
+	VALIDATION: 'validation-region' // For form validation feedback
 } as const;
 
 /**
@@ -99,39 +99,39 @@ const activeAnnouncements = new Map<string, AnnouncementInfo>();
  * ```
  */
 export function initializeScreenReaderRegions(): void {
-  if (!IS_BROWSER) return;
+	if (!IS_BROWSER) return;
 
-  try {
-    // Create regions that don't already exist
-    Object.values(REGIONS).forEach((regionId) => {
-      if (!document.getElementById(regionId)) {
-        const region = document.createElement("div");
-        region.id = regionId;
-        region.className = "sr-only screen-reader-region";
-        region.setAttribute("aria-atomic", "true");
+	try {
+		// Create regions that don't already exist
+		Object.values(REGIONS).forEach((regionId) => {
+			if (!document.getElementById(regionId)) {
+				const region = document.createElement('div');
+				region.id = regionId;
+				region.className = 'sr-only screen-reader-region';
+				region.setAttribute('aria-atomic', 'true');
 
-        // Set appropriate live region properties based on type
-        if (regionId === REGIONS.ALERT) {
-          region.setAttribute("aria-live", "assertive");
-          region.setAttribute("role", "alert");
-        } else if (regionId === REGIONS.VALIDATION) {
-          region.setAttribute("aria-live", "assertive");
-          region.setAttribute("role", "alert");
-        } else {
-          region.setAttribute("aria-live", "polite");
-          region.setAttribute("role", "status");
-        }
+				// Set appropriate live region properties based on type
+				if (regionId === REGIONS.ALERT) {
+					region.setAttribute('aria-live', 'assertive');
+					region.setAttribute('role', 'alert');
+				} else if (regionId === REGIONS.VALIDATION) {
+					region.setAttribute('aria-live', 'assertive');
+					region.setAttribute('role', 'alert');
+				} else {
+					region.setAttribute('aria-live', 'polite');
+					region.setAttribute('role', 'status');
+				}
 
-        document.body.appendChild(region);
-      }
-    });
+				document.body.appendChild(region);
+			}
+		});
 
-    // Add global CSS for screen reader regions if not already present
-    const styleId = "screen-reader-styles";
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement("style");
-      style.id = styleId;
-      style.textContent = `
+		// Add global CSS for screen reader regions if not already present
+		const styleId = 'screen-reader-styles';
+		if (!document.getElementById(styleId)) {
+			const style = document.createElement('style');
+			style.id = styleId;
+			style.textContent = `
         .sr-only {
           position: absolute;
           width: 1px;
@@ -144,11 +144,11 @@ export function initializeScreenReaderRegions(): void {
           border-width: 0;
         }
       `;
-      document.head.appendChild(style);
-    }
-  } catch (error) {
-    logger.error("Failed to initialize screen reader regions:", error);
-  }
+			document.head.appendChild(style);
+		}
+	} catch (error) {
+		logger.error('Failed to initialize screen reader regions:', error);
+	}
 }
 
 /**
@@ -175,105 +175,105 @@ export function initializeScreenReaderRegions(): void {
  * ```
  */
 export function announce(
-  message: string,
-  {
-    type = "status",
-    duration = ANNOUNCEMENT_DURATION,
-    clearPrevious = true,
-    regionId = null,
-  }: AnnouncementOptions = {},
+	message: string,
+	{
+		type = 'status',
+		duration = ANNOUNCEMENT_DURATION,
+		clearPrevious = true,
+		regionId = null
+	}: AnnouncementOptions = {}
 ): CleanupFunction {
-  if (!IS_BROWSER || !message) return () => {};
+	if (!IS_BROWSER || !message) return () => {};
 
-  try {
-    // Determine which region to use
-    let targetRegionId: string;
-    switch (type) {
-      case "alert":
-        targetRegionId = REGIONS.ALERT;
-        break;
-      case "form":
-        targetRegionId = REGIONS.FORM_STATUS;
-        break;
-      case "validation":
-        targetRegionId = REGIONS.VALIDATION;
-        break;
-      case "status":
-      default:
-        targetRegionId = REGIONS.STATUS;
-    }
+	try {
+		// Determine which region to use
+		let targetRegionId: string;
+		switch (type) {
+			case 'alert':
+				targetRegionId = REGIONS.ALERT;
+				break;
+			case 'form':
+				targetRegionId = REGIONS.FORM_STATUS;
+				break;
+			case 'validation':
+				targetRegionId = REGIONS.VALIDATION;
+				break;
+			case 'status':
+			default:
+				targetRegionId = REGIONS.STATUS;
+		}
 
-    // Allow override of region ID
-    if (regionId) {
-      targetRegionId = regionId;
-    }
+		// Allow override of region ID
+		if (regionId) {
+			targetRegionId = regionId;
+		}
 
-    // Get or initialize the region
-    initializeScreenReaderRegions();
-    const region = document.getElementById(targetRegionId);
+		// Get or initialize the region
+		initializeScreenReaderRegions();
+		const region = document.getElementById(targetRegionId);
 
-    if (!region) {
-      logger.error(`Screen reader region "${targetRegionId}" not found`);
-      return () => {};
-    }
+		if (!region) {
+			logger.error(`Screen reader region "${targetRegionId}" not found`);
+			return () => {};
+		}
 
-    // Create a unique ID for this announcement
-    const announcementId = `announcement-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+		// Create a unique ID for this announcement
+		const announcementId = `announcement-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-    // Clear previous announcements in this region if requested
-    if (clearPrevious) {
-      const previousIds: string[] = [];
-      activeAnnouncements.forEach((info, id) => {
-        if (info.regionId === targetRegionId) {
-          previousIds.push(id);
-        }
-      });
+		// Clear previous announcements in this region if requested
+		if (clearPrevious) {
+			const previousIds: string[] = [];
+			activeAnnouncements.forEach((info, id) => {
+				if (info.regionId === targetRegionId) {
+					previousIds.push(id);
+				}
+			});
 
-      previousIds.forEach((id) => {
-        const cleanup = activeAnnouncements.get(id)?.cleanup;
-        if (typeof cleanup === "function") {
-          cleanup();
-        }
-        activeAnnouncements.delete(id);
-      });
-    }
+			previousIds.forEach((id) => {
+				const cleanup = activeAnnouncements.get(id)?.cleanup;
+				if (typeof cleanup === 'function') {
+					cleanup();
+				}
+				activeAnnouncements.delete(id);
+			});
+		}
 
-    // Create announcement element
-    const announcement = document.createElement("div");
-    announcement.id = announcementId;
-    announcement.textContent = message;
+		// Create announcement element
+		const announcement = document.createElement('div');
+		announcement.id = announcementId;
+		announcement.textContent = message;
 
-    // Add to the DOM
-    region.appendChild(announcement);
+		// Add to the DOM
+		region.appendChild(announcement);
 
-    // Set timeout to remove the announcement
-    const timeoutId = setTimeout(() => {
-      if (document.getElementById(announcementId)) {
-        announcement.remove();
-      }
-      activeAnnouncements.delete(announcementId);
-    }, duration);
+		// Set timeout to remove the announcement
+		const timeoutId = setTimeout(() => {
+			if (document.getElementById(announcementId)) {
+				announcement.remove();
+			}
+			activeAnnouncements.delete(announcementId);
+		}, duration);
 
-    // Store cleanup function
-    const cleanup: CleanupFunction = () => {
-      clearTimeout(timeoutId);
-      if (document.getElementById(announcementId)) {
-        announcement.remove();
-      }
-      activeAnnouncements.delete(announcementId);
-    };
+		// Store cleanup function
+		const cleanup: CleanupFunction = () => {
+			clearTimeout(timeoutId);
+			if (document.getElementById(announcementId)) {
+				announcement.remove();
+			}
+			activeAnnouncements.delete(announcementId);
+		};
 
-    // Track this announcement
-    activeAnnouncements.set(announcementId, {
-      regionId: targetRegionId,
-      cleanup,
-    });
+		// Track this announcement
+		activeAnnouncements.set(announcementId, {
+			regionId: targetRegionId,
+			cleanup
+		});
 
-    return cleanup;
-  } catch (error) {
-    logger.error("Failed to announce message:", error);
-    return () => {};
-  }
+		return cleanup;
+	} catch (error) {
+		logger.error('Failed to announce message:', error);
+		return () => {};
+	}
 }
 
 /**
@@ -298,29 +298,28 @@ export function announce(
  * });
  * ```
  */
-export function announceFormErrors(errors: FormErrors, { messages = {} }: FormErrorsOptions = {}): CleanupFunction {
-  if (!IS_BROWSER || !errors || Object.keys(errors).length === 0)
-    return () => {};
+export function announceFormErrors(
+	errors: FormErrors,
+	{ messages = {} }: FormErrorsOptions = {}
+): CleanupFunction {
+	if (!IS_BROWSER || !errors || Object.keys(errors).length === 0) return () => {};
 
-  const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
-  const errorCount = Object.keys(errors).length;
+	const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
+	const errorCount = Object.keys(errors).length;
 
-  let message: string;
-  if (errorCount === 1) {
-    const fieldName = Object.keys(errors)[0];
-    const errorMessage = errors[fieldName];
-    message = getMessage(
-      "formSingleError",
-      `Form has 1 error: ${fieldName} - ${errorMessage}`,
-    );
-  } else {
-    message = getMessage(
-      "formMultipleErrors",
-      `Form has ${errorCount} errors. Please review and correct the highlighted fields.`,
-    );
-  }
+	let message: string;
+	if (errorCount === 1) {
+		const fieldName = Object.keys(errors)[0];
+		const errorMessage = errors[fieldName];
+		message = getMessage('formSingleError', `Form has 1 error: ${fieldName} - ${errorMessage}`);
+	} else {
+		message = getMessage(
+			'formMultipleErrors',
+			`Form has ${errorCount} errors. Please review and correct the highlighted fields.`
+		);
+	}
 
-  return announce(message, { type: "validation" });
+	return announce(message, { type: 'validation' });
 }
 
 /**
@@ -346,37 +345,32 @@ export function announceFormErrors(errors: FormErrors, { messages = {} }: FormEr
  * ```
  */
 export function announceFormStatus(
-  status: string,
-  { errorMessage = "", messages = {} }: FormStatusOptions = {},
+	status: string,
+	{ errorMessage = '', messages = {} }: FormStatusOptions = {}
 ): CleanupFunction {
-  if (!IS_BROWSER) return () => {};
+	if (!IS_BROWSER) return () => {};
 
-  const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
+	const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
 
-  let message: string;
-  let type: AnnouncementOptions['type'] = "form";
+	let message: string;
+	let type: AnnouncementOptions['type'] = 'form';
 
-  switch (status) {
-    case "submitting":
-      message = getMessage(
-        "formSubmitting",
-        "Submitting your form. Please wait...",
-      );
-      break;
-    case "success":
-      message = getMessage("formSuccess", "Form submitted successfully!");
-      break;
-    case "error":
-      message =
-        errorMessage ||
-        getMessage("formError", "Error submitting form. Please try again.");
-      type = "alert";
-      break;
-    default:
-      message = status; // Use the status as the message if not recognized
-  }
+	switch (status) {
+		case 'submitting':
+			message = getMessage('formSubmitting', 'Submitting your form. Please wait...');
+			break;
+		case 'success':
+			message = getMessage('formSuccess', 'Form submitted successfully!');
+			break;
+		case 'error':
+			message = errorMessage || getMessage('formError', 'Error submitting form. Please try again.');
+			type = 'alert';
+			break;
+		default:
+			message = status; // Use the status as the message if not recognized
+	}
 
-  return announce(message, { type });
+	return announce(message, { type });
 }
 
 /**
@@ -402,21 +396,19 @@ export function announceFormStatus(
  * ```
  */
 export function announceFieldValidation(
-  fieldName: string,
-  validationMessage: string,
-  isValid: boolean = false,
+	fieldName: string,
+	validationMessage: string,
+	isValid: boolean = false
 ): CleanupFunction {
-  if (!IS_BROWSER || !fieldName) return () => {};
+	if (!IS_BROWSER || !fieldName) return () => {};
 
-  const message = isValid
-    ? `${fieldName}: Valid input`
-    : `${fieldName}: ${validationMessage}`;
+	const message = isValid ? `${fieldName}: Valid input` : `${fieldName}: ${validationMessage}`;
 
-  return announce(message, {
-    type: "validation",
-    duration: 3000,
-    clearPrevious: true,
-  });
+	return announce(message, {
+		type: 'validation',
+		duration: 3000,
+		clearPrevious: true
+	});
 }
 
 /**
@@ -431,16 +423,16 @@ export function announceFieldValidation(
  * ```
  */
 export function cleanupAllAnnouncements(): void {
-  if (!IS_BROWSER) return;
+	if (!IS_BROWSER) return;
 
-  // Clear all active announcements
-  activeAnnouncements.forEach(({ cleanup }) => {
-    if (typeof cleanup === "function") {
-      cleanup();
-    }
-  });
+	// Clear all active announcements
+	activeAnnouncements.forEach(({ cleanup }) => {
+		if (typeof cleanup === 'function') {
+			cleanup();
+		}
+	});
 
-  activeAnnouncements.clear();
+	activeAnnouncements.clear();
 }
 
 /**
@@ -455,18 +447,18 @@ export function cleanupAllAnnouncements(): void {
  * ```
  */
 export function cleanupScreenReaderRegions(): void {
-  if (!IS_BROWSER) return;
+	if (!IS_BROWSER) return;
 
-  // Clear all announcements first
-  cleanupAllAnnouncements();
+	// Clear all announcements first
+	cleanupAllAnnouncements();
 
-  // Remove regions
-  Object.values(REGIONS).forEach((regionId) => {
-    const region = document.getElementById(regionId);
-    if (region) {
-      region.remove();
-    }
-  });
+	// Remove regions
+	Object.values(REGIONS).forEach((regionId) => {
+		const region = document.getElementById(regionId);
+		if (region) {
+			region.remove();
+		}
+	});
 }
 
 /**
@@ -484,11 +476,9 @@ export function cleanupScreenReaderRegions(): void {
  * ```
  */
 export function areScreenReaderRegionsInitialized(): boolean {
-  if (!IS_BROWSER) return false;
+	if (!IS_BROWSER) return false;
 
-  return Object.values(REGIONS).every(regionId =>
-    document.getElementById(regionId) !== null
-  );
+	return Object.values(REGIONS).every((regionId) => document.getElementById(regionId) !== null);
 }
 
 /**
@@ -504,7 +494,7 @@ export function areScreenReaderRegionsInitialized(): boolean {
  * ```
  */
 export function getActiveAnnouncementCount(): number {
-  return activeAnnouncements.size;
+	return activeAnnouncements.size;
 }
 
 /**
@@ -522,12 +512,12 @@ export function getActiveAnnouncementCount(): number {
  * ```
  */
 export function isFormErrors(obj: any): obj is FormErrors {
-  return (
-    obj &&
-    typeof obj === 'object' &&
-    !Array.isArray(obj) &&
-    Object.values(obj).every(value => typeof value === 'string')
-  );
+	return (
+		obj &&
+		typeof obj === 'object' &&
+		!Array.isArray(obj) &&
+		Object.values(obj).every((value) => typeof value === 'string')
+	);
 }
 
 /**
@@ -550,7 +540,7 @@ export function isFormErrors(obj: any): obj is FormErrors {
  * ```
  */
 export function createAnnouncer(defaultOptions: Partial<AnnouncementOptions>) {
-  return (message: string, options: Partial<AnnouncementOptions> = {}): CleanupFunction => {
-    return announce(message, { ...defaultOptions, ...options });
-  };
+	return (message: string, options: Partial<AnnouncementOptions> = {}): CleanupFunction => {
+		return announce(message, { ...defaultOptions, ...options });
+	};
 }
