@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-10
+
+### Fixed
+- **Critical package.json corrections**:
+  - Fixed i18n subpath export configuration
+  - Corrected module extensions from `.js` to `.ts` for proper resolution
+  - Fixed incorrect dependency name: `lucide-svelte` → `@lucide/svelte`
+  - Added i18n directory to published files array
+- **Documentation accuracy improvements**:
+  - Fixed incorrect property names throughout examples (threshold → minScore, attachment → attachments)
+  - Corrected Python-style comments (#) to JavaScript (//) in code examples
+  - Fixed CSS variable examples to match actual implementation
+  - Corrected import paths and component exports
+
+### Changed
+- **Documentation restructure** - Comprehensive audit and rewrite for clarity and consistency
+  - Reduced documentation length by 40% while increasing information density
+  - Improved scannability with tables, clear hierarchy, and jump links
+  - Applied consistent "confident simplicity" voice (Apple-inspired minimalism)
+  - Reorganized configuration examples into progressive tiers (Minimal → Complete)
+  - Renamed i18n sections to use-case driven names
+  - Enhanced accessibility section with detailed WCAG compliance information
+- **Component documentation** - Added missing component documentation
+  - Documented Modal system (Modal, Alert, Confirm, AppleModal)
+  - Documented CategoryContactForm usage and comparison
+  - Added Menu and Tooltip system documentation
+  - Improved DemoPlayground usage instructions
+
+### Removed
+- Removed emoji clutter from documentation (retained only Security Notice indicator)
+- Cleaned verbose table of contents in favor of concise jump links
+
 ## [1.1.0] - 2025-11-09
 
 ### Added
@@ -79,6 +111,7 @@ Initial release of @goobits/forms - A comprehensive Svelte 5 forms library.
 - Screen reader accessibility features
 - Custom styling with CSS variables and BEM methodology
 
+[1.2.0]: https://github.com/goobits/forms/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/goobits/forms/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/goobits/forms/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/goobits/forms/releases/tag/v1.0.0
