@@ -251,21 +251,23 @@ See [Getting Started Guide](./docs/getting-started.md#internationalization) for 
 - **pnpm** ≥9.0.0 (or npm/yarn)
 - **SvelteKit** project
 
-### Peer Dependencies
+### Dependencies
+
+All required dependencies install automatically:
 
 ```bash
-npm install @sveltejs/kit svelte formsnap sveltekit-superforms zod
+npm install @goobits/forms
 ```
 
-### Optional Dependencies
+This includes: @sveltejs/kit, svelte, formsnap, sveltekit-superforms, zod, @lucide/svelte
+
+### Optional Email Service Dependencies
+
+Choose one if you need email delivery:
 
 ```bash
-# For email delivery
-npm install nodemailer          # SMTP
-npm install @aws-sdk/client-ses # AWS SES
-
-# For UI icons
-npm install @lucide/svelte
+npm install nodemailer          # For SMTP (Gmail, SendGrid, etc.)
+npm install @aws-sdk/client-ses # For AWS SES
 ```
 
 ---

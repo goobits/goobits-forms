@@ -8,29 +8,19 @@ Build your first form with @goobits/forms in 10 minutes.
 
 ## Installation
 
-Install the package and required dependencies:
+Install the package:
 
 ```bash
 npm install @goobits/forms
 ```
 
-**Required peer dependencies:**
-```bash
-npm install @sveltejs/kit svelte formsnap sveltekit-superforms zod
-```
+All required dependencies (@sveltejs/kit, svelte, formsnap, sveltekit-superforms, zod, @lucide/svelte) install automatically.
 
-**Optional dependencies** (for styling):
-```bash
-npm install @lucide/svelte clsx tailwind-merge
-```
+**Optional email service** (choose one if you need email delivery):
 
-**Email service dependencies** (choose one):
 ```bash
-# For Nodemailer (SMTP)
-npm install nodemailer
-
-# For AWS SES
-npm install @aws-sdk/client-ses
+npm install nodemailer          # For SMTP (Gmail, SendGrid, etc.)
+npm install @aws-sdk/client-ses # For AWS SES
 ```
 
 ---
