@@ -1,12 +1,7 @@
 /**
- * @fileoverview Thin TypeScript wrapper around @goobits/security/recaptcha
- * Re-exports security package functions with TypeScript types for forms package
+ * @fileoverview reCAPTCHA token verification service
+ * Inline implementation for standalone package publishing
  */
-
-import {
-	verifyRecaptchaToken as verifyRecaptchaTokenCore,
-	verifyRecaptchaTokenWithDetails as verifyRecaptchaTokenWithDetailsCore
-} from '@goobits/security/recaptcha';
 
 /**
  * reCAPTCHA verification options interface
@@ -23,14 +18,27 @@ export interface RecaptchaVerificationOptions {
 }
 
 /**
- * reCAPTCHA API detailed response interface
- * Automatically derived from @goobits/security/recaptcha to prevent drift
+ * reCAPTCHA API response interface
  */
-export type RecaptchaApiResponse = Awaited<ReturnType<typeof verifyRecaptchaTokenWithDetailsCore>>
+export interface RecaptchaApiResponse {
+	/** Whether verification was successful */
+	success: boolean;
+	/** Error codes if verification failed */
+	'error-codes'?: string[];
+	/** Hostname of the site where the reCAPTCHA was solved */
+	hostname?: string;
+	/** Timestamp of the challenge load (ISO format) */
+	challenge_ts?: string;
+	/** Score for v3 (0.0 to 1.0, where 1.0 is very likely a good interaction) */
+	score?: number;
+	/** Action name from the verify call (v3 only) */
+	action?: string;
+	/** Error message (only present when success is false) */
+	error?: string;
+}
 
 /**
  * Verify a reCAPTCHA token with Google's API
- * Delegates to @goobits/security/recaptcha with TypeScript types
  *
  * @param {string} token - The reCAPTCHA token to verify
  * @param {RecaptchaVerificationOptions} [options] - Verification configuration options
@@ -49,17 +57,16 @@ export async function verifyRecaptchaToken(
 	token: string,
 	options: RecaptchaVerificationOptions = {}
 ): Promise<boolean> {
-	// Delegate to @goobits/security/recaptcha
-	return verifyRecaptchaTokenCore(token, options);
+	const details = await verifyRecaptchaTokenWithDetails(token, options);
+	return details.success;
 }
 
 /**
  * Verify a reCAPTCHA token and get detailed response
- * Delegates to @goobits/security/recaptcha with TypeScript types
  *
  * @param {string} token - The reCAPTCHA token to verify
  * @param {RecaptchaVerificationOptions} [options] - Verification configuration options
- * @returns {Promise<RecaptchaApiResponse>} Detailed response object (never null)
+ * @returns {Promise<RecaptchaApiResponse>} Detailed response object
  *
  * @example
  * ```typescript
@@ -78,8 +85,96 @@ export async function verifyRecaptchaTokenWithDetails(
 	token: string,
 	options: RecaptchaVerificationOptions = {}
 ): Promise<RecaptchaApiResponse> {
-	// Delegate to @goobits/security/recaptcha
-	return verifyRecaptchaTokenWithDetailsCore(token, options) as Promise<RecaptchaApiResponse>;
+	const {
+		secretKey = process.env.RECAPTCHA_SECRET_KEY,
+		action = null,
+		minScore = 0.5,
+		allowInDevelopment = false
+	} = options;
+
+	// Allow bypass in development mode if configured
+	if (allowInDevelopment && process.env.NODE_ENV === 'development') {
+		return {
+			success: true,
+			score: 1.0,
+			action: action || 'development_bypass',
+			hostname: 'localhost'
+		};
+	}
+
+	// Validate required parameters
+	if (!token) {
+		return {
+			success: false,
+			error: 'Missing reCAPTCHA token'
+		};
+	}
+
+	if (!secretKey) {
+		return {
+			success: false,
+			error: 'Missing reCAPTCHA secret key'
+		};
+	}
+
+	try {
+		// Prepare request body
+		const params = new URLSearchParams({
+			secret: secretKey,
+			response: token
+		});
+
+		// Call Google's reCAPTCHA API
+		const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: params.toString()
+		});
+
+		if (!response.ok) {
+			return {
+				success: false,
+				error: `reCAPTCHA API returned status ${response.status}`
+			};
+		}
+
+		const data = (await response.json()) as RecaptchaApiResponse;
+
+		// Basic validation
+		if (!data.success) {
+			return {
+				...data,
+				error: data['error-codes']?.join(', ') || 'Verification failed'
+			};
+		}
+
+		// v3 score validation
+		if (typeof data.score === 'number' && data.score < minScore) {
+			return {
+				...data,
+				success: false,
+				error: `Score ${data.score} is below minimum threshold ${minScore}`
+			};
+		}
+
+		// v3 action validation
+		if (action && data.action !== action) {
+			return {
+				...data,
+				success: false,
+				error: `Action mismatch: expected '${action}', got '${data.action}'`
+			};
+		}
+
+		return data;
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : 'Unknown verification error'
+		};
+	}
 }
 
 /**

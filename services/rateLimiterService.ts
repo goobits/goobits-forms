@@ -1,12 +1,10 @@
 /**
- * @fileoverview Thin TypeScript adapter around @goobits/security/rateLimiter
- * Translates between forms package interface ({ allowed }) and security package interface ({ isLimited })
+ * @fileoverview In-memory rate limiting service for form submissions
+ * Inline implementation for standalone package publishing
  */
 
-import { rateLimitFormSubmission as rateLimitFormSubmissionCore } from '@goobits/security/rateLimiter';
-
 /**
- * Rate limiting result interface (forms package format)
+ * Rate limiting result interface
  */
 export interface RateLimitResult {
 	/** Whether the request is allowed */
@@ -38,8 +36,105 @@ export interface FormRateLimitOptions {
 }
 
 /**
+ * Request tracking entry
+ */
+interface RequestEntry {
+	/** Number of requests in the current window */
+	count: number;
+	/** Timestamp when the current window started */
+	windowStart: number;
+}
+
+// In-memory storage for rate limiting
+const ipRequests = new Map<string, RequestEntry>();
+const emailRequests = new Map<string, RequestEntry>();
+
+// Cleanup interval (run every 5 minutes to prevent memory leaks)
+const CLEANUP_INTERVAL = 5 * 60 * 1000;
+let cleanupTimer: NodeJS.Timeout | null = null;
+
+/**
+ * Start periodic cleanup of expired entries
+ */
+function startCleanup() {
+	if (cleanupTimer) return;
+
+	cleanupTimer = setInterval(() => {
+		const now = Date.now();
+		const maxAge = 60 * 60 * 1000; // 1 hour
+
+		// Clean up IP requests
+		for (const [key, entry] of ipRequests.entries()) {
+			if (now - entry.windowStart > maxAge) {
+				ipRequests.delete(key);
+			}
+		}
+
+		// Clean up email requests
+		for (const [key, entry] of emailRequests.entries()) {
+			if (now - entry.windowStart > maxAge) {
+				emailRequests.delete(key);
+			}
+		}
+	}, CLEANUP_INTERVAL);
+
+	// Don't prevent Node from exiting
+	if (cleanupTimer.unref) {
+		cleanupTimer.unref();
+	}
+}
+
+// Start cleanup timer
+startCleanup();
+
+/**
+ * Check rate limit for a given key
+ */
+function checkRateLimit(
+	store: Map<string, RequestEntry>,
+	key: string,
+	maxRequests: number,
+	windowMs: number
+): { allowed: boolean; retryAfter?: number } {
+	const now = Date.now();
+	const entry = store.get(key);
+
+	if (!entry) {
+		// First request in this window
+		store.set(key, { count: 1, windowStart: now });
+		return { allowed: true };
+	}
+
+	const windowElapsed = now - entry.windowStart;
+
+	if (windowElapsed > windowMs) {
+		// Window has expired, reset
+		store.set(key, { count: 1, windowStart: now });
+		return { allowed: true };
+	}
+
+	if (entry.count < maxRequests) {
+		// Within limit, increment count
+		entry.count++;
+		store.set(key, entry);
+		return { allowed: true };
+	}
+
+	// Rate limit exceeded
+	const windowRemaining = windowMs - windowElapsed;
+	const retryAfter = Math.ceil(windowRemaining / 1000);
+
+	return { allowed: false, retryAfter };
+}
+
+/**
  * Rate limit a form submission by IP and/or email
- * Delegates to @goobits/security/rateLimiter and adapts the return shape
+ *
+ * Multi-tier rate limiting:
+ * - Short-term: 10 requests per minute (IP-based)
+ * - Medium-term: 30 requests per 5 minutes (IP-based)
+ * - Long-term: 100 requests per hour (IP-based)
+ * - Email-based: 5 requests per hour per email address
  *
  * @param {string} ipAddress - Client IP address
  * @param {string | null} email - User's email address (optional)
@@ -65,16 +160,121 @@ export function rateLimitFormSubmission(
 	formType: string = 'contact',
 	options: FormRateLimitOptions = {}
 ): RateLimitResult {
-	// Delegate to @goobits/security/rateLimiter (synchronous)
-	const securityResult = rateLimitFormSubmissionCore(ipAddress, email, formType, options);
+	const {
+		maxRequests = 10,
+		windowMs = 60 * 1000, // 1 minute default
+		message: customMessage,
+		skipIpCheck = false
+	} = options;
 
-	// Adapt { isLimited } to { allowed } interface
+	// IP-based rate limiting (multi-tier)
+	if (!skipIpCheck && ipAddress) {
+		const ipKey = `${formType}:${ipAddress}`;
+
+		// Short-term: 10 requests per minute
+		const shortTerm = checkRateLimit(ipRequests, `${ipKey}:short`, 10, 60 * 1000);
+		if (!shortTerm.allowed) {
+			return {
+				allowed: false,
+				retryAfter: shortTerm.retryAfter,
+				limitType: 'short',
+				message:
+					customMessage ||
+					`Too many requests. Please wait ${shortTerm.retryAfter} seconds before trying again.`,
+				windowMs: 60 * 1000,
+				maxRequests: 10
+			};
+		}
+
+		// Medium-term: 30 requests per 5 minutes
+		const mediumTerm = checkRateLimit(ipRequests, `${ipKey}:medium`, 30, 5 * 60 * 1000);
+		if (!mediumTerm.allowed) {
+			return {
+				allowed: false,
+				retryAfter: mediumTerm.retryAfter,
+				limitType: 'medium',
+				message:
+					customMessage ||
+					`Too many requests. Please wait ${mediumTerm.retryAfter} seconds before trying again.`,
+				windowMs: 5 * 60 * 1000,
+				maxRequests: 30
+			};
+		}
+
+		// Long-term: 100 requests per hour
+		const longTerm = checkRateLimit(ipRequests, `${ipKey}:long`, 100, 60 * 60 * 1000);
+		if (!longTerm.allowed) {
+			return {
+				allowed: false,
+				retryAfter: longTerm.retryAfter,
+				limitType: 'long',
+				message:
+					customMessage ||
+					`Too many requests. Please wait ${longTerm.retryAfter} seconds before trying again.`,
+				windowMs: 60 * 60 * 1000,
+				maxRequests: 100
+			};
+		}
+	}
+
+	// Email-based rate limiting: 5 requests per hour
+	if (email) {
+		const emailKey = `${formType}:${email.toLowerCase()}`;
+		const emailLimit = checkRateLimit(emailRequests, emailKey, 5, 60 * 60 * 1000);
+
+		if (!emailLimit.allowed) {
+			return {
+				allowed: false,
+				retryAfter: emailLimit.retryAfter,
+				limitType: 'email',
+				message:
+					customMessage ||
+					`Too many submissions from this email address. Please wait ${emailLimit.retryAfter} seconds before trying again.`,
+				windowMs: 60 * 60 * 1000,
+				maxRequests: 5
+			};
+		}
+	}
+
+	// All checks passed
+	return { allowed: true };
+}
+
+/**
+ * Reset rate limits for a specific IP address (useful for testing)
+ */
+export function resetIpRateLimit(ipAddress: string, formType: string = 'contact'): void {
+	const ipKey = `${formType}:${ipAddress}`;
+	ipRequests.delete(`${ipKey}:short`);
+	ipRequests.delete(`${ipKey}:medium`);
+	ipRequests.delete(`${ipKey}:long`);
+}
+
+/**
+ * Reset rate limits for a specific email address (useful for testing)
+ */
+export function resetEmailRateLimit(email: string, formType: string = 'contact'): void {
+	const emailKey = `${formType}:${email.toLowerCase()}`;
+	emailRequests.delete(emailKey);
+}
+
+/**
+ * Clear all rate limiting data (useful for testing)
+ */
+export function clearAllRateLimits(): void {
+	ipRequests.clear();
+	emailRequests.clear();
+}
+
+/**
+ * Get current rate limit statistics
+ */
+export function getRateLimitStats(): {
+	ipEntries: number;
+	emailEntries: number;
+} {
 	return {
-		allowed: !securityResult.isLimited,
-		retryAfter: securityResult.retryAfter,
-		limitType: securityResult.limitType,
-		message: securityResult.message,
-		windowMs: securityResult.windowMs,
-		maxRequests: securityResult.maxRequests
+		ipEntries: ipRequests.size,
+		emailEntries: emailRequests.size
 	};
 }

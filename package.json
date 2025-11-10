@@ -24,6 +24,8 @@
 		"./config": "./config/index.js",
 		"./validation": "./validation/index.ts",
 		"./services": "./services/index.js",
+		"./security": "./security/csrf.ts",
+		"./security/csrf": "./security/csrf.ts",
 		"./handlers": "./handlers/index.js",
 		"./handlers/contactFormHandler": "./handlers/contactFormHandler.js",
 		"./utils": "./utils/index.js"
@@ -34,6 +36,7 @@
 		"config",
 		"validation",
 		"services",
+		"security",
 		"utils",
 		"handlers",
 		"examples",
@@ -42,10 +45,10 @@
 		"CHANGELOG.md"
 	],
 	"dependencies": {
-		"@goobits/security": "workspace:*",
 		"@lucide/svelte": "^0.543.0",
 		"@sveltejs/kit": "^2.38.0",
 		"formsnap": "^2.0.1",
+		"nanoid": "^5.0.0",
 		"svelte": "^5.38.8",
 		"sveltekit-superforms": "^2.27.1",
 		"zod": "^4.1.12"

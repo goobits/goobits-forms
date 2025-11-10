@@ -9,7 +9,7 @@ import { createLogger } from '../utils/logger.ts';
 import { sanitizeFormData } from '../utils/sanitizeInput.ts';
 import { rateLimitFormSubmission } from '../services/rateLimiterService.ts';
 import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.ts';
-import { validateCsrfToken } from '@goobits/security/csrf';
+import { validateCsrfToken } from '../security/csrf.js';
 import sendEmail from '../services/emailService.ts';
 
 const logger = createLogger('ContactFormHandler');
