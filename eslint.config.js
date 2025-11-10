@@ -35,7 +35,9 @@ export default tseslint.config(
 					varsIgnorePattern: '^_',
 					caughtErrorsIgnorePattern: '^_'
 				}
-			]
+			],
+			'svelte/no-at-html-tags': 'off',
+			'svelte/no-navigation-without-resolve': 'off'
 		}
 	},
 	{

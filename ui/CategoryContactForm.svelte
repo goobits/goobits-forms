@@ -82,7 +82,7 @@
 		showRequiredLabel = true,
 		submitButtonText = undefined,
 		submittingButtonText = undefined,
-		resetAfterSubmit = true,
+		resetAfterSubmit: _resetAfterSubmit = true,
 		hideLabels = false
 	}: Props = $props();
 

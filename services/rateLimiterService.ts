@@ -161,8 +161,8 @@ export function rateLimitFormSubmission(
 	options: FormRateLimitOptions = {}
 ): RateLimitResult {
 	const {
-		maxRequests = 10,
-		windowMs = 60 * 1000, // 1 minute default
+		maxRequests: _maxRequests = 10,
+		windowMs: _windowMs = 60 * 1000, // 1 minute default
 		message: customMessage,
 		skipIpCheck = false
 	} = options;

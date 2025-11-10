@@ -25,7 +25,7 @@
 	}
 
 	let {
-		config = {},
+		config: _config = {},
 		apiEndpoints = {
 			contact: '/api/contact',
 			feedback: '/api/feedback'
