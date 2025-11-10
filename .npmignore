@@ -1,0 +1,27 @@
+# Development files
+dev/
+node_modules/
+.git/
+.gitignore
+.claude/
+
+# Config files
+tsconfig.json
+eslint.config.js
+.prettierrc
+bun.lock
+
+# Build artifacts that shouldn't be in npm
+dist/
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+
+# VM/Docker config
+vm.yaml
+
+# Test files
+**/*.test.ts
+**/*.spec.ts

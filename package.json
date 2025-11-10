@@ -3,33 +3,79 @@
 	"version": "1.2.0",
 	"description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
 	"type": "module",
-	"main": "index.ts",
+	"main": "./index.ts",
+	"types": "./index.ts",
+	"svelte": "./index.ts",
 	"publishConfig": {
 		"access": "public"
 	},
 	"scripts": {
+		"prepublishOnly": "npm run lint",
 		"test": "echo 'No tests configured'",
 		"lint": "eslint . --ext .js,.ts,.svelte",
 		"format": "prettier --write ."
 	},
 	"exports": {
-		".": "./index.ts",
-		"./ui": "./ui/index.ts",
+		".": {
+			"types": "./index.ts",
+			"svelte": "./index.ts",
+			"default": "./index.ts"
+		},
+		"./ui": {
+			"types": "./ui/index.ts",
+			"svelte": "./ui/index.ts",
+			"default": "./ui/index.ts"
+		},
 		"./ui/*": "./ui/*",
 		"./ui/index.css": "./ui/index.css",
-		"./ui/menu": "./ui/menu/index.ts",
+		"./ui/menu": {
+			"types": "./ui/menu/index.ts",
+			"svelte": "./ui/menu/index.ts",
+			"default": "./ui/menu/index.ts"
+		},
 		"./ui/menu/*": "./ui/menu/*",
-		"./ui/modals": "./ui/modals/index.ts",
+		"./ui/modals": {
+			"types": "./ui/modals/index.ts",
+			"svelte": "./ui/modals/index.ts",
+			"default": "./ui/modals/index.ts"
+		},
 		"./ui/modals/*": "./ui/modals/*",
-		"./config": "./config/index.ts",
-		"./validation": "./validation/index.ts",
-		"./i18n": "./i18n/index.ts",
-		"./services": "./services/index.ts",
-		"./security": "./security/csrf.ts",
-		"./security/csrf": "./security/csrf.ts",
-		"./handlers": "./handlers/index.ts",
-		"./handlers/contactFormHandler": "./handlers/contactFormHandler.ts",
-		"./utils": "./utils/index.ts"
+		"./config": {
+			"types": "./config/index.ts",
+			"default": "./config/index.ts"
+		},
+		"./validation": {
+			"types": "./validation/index.ts",
+			"default": "./validation/index.ts"
+		},
+		"./i18n": {
+			"types": "./i18n/index.ts",
+			"default": "./i18n/index.ts"
+		},
+		"./services": {
+			"types": "./services/index.ts",
+			"default": "./services/index.ts"
+		},
+		"./security": {
+			"types": "./security/csrf.ts",
+			"default": "./security/csrf.ts"
+		},
+		"./security/csrf": {
+			"types": "./security/csrf.ts",
+			"default": "./security/csrf.ts"
+		},
+		"./handlers": {
+			"types": "./handlers/index.ts",
+			"default": "./handlers/index.ts"
+		},
+		"./handlers/contactFormHandler": {
+			"types": "./handlers/contactFormHandler.ts",
+			"default": "./handlers/contactFormHandler.ts"
+		},
+		"./utils": {
+			"types": "./utils/index.ts",
+			"default": "./utils/index.ts"
+		}
 	},
 	"files": [
 		"index.ts",
@@ -56,8 +102,8 @@
 		"zod": "^4.1.12"
 	},
 	"peerDependencies": {
-		"nodemailer": "^6.9.0",
-		"@aws-sdk/client-ses": "^3.0.0"
+		"@aws-sdk/client-ses": "^3.0.0",
+		"nodemailer": "^6.9.0"
 	},
 	"peerDependenciesMeta": {
 		"nodemailer": {
@@ -98,6 +144,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.37.0",
+		"@types/node": "^24.10.0",
 		"@typescript-eslint/eslint-plugin": "^8.46.0",
 		"@typescript-eslint/parser": "^8.46.0",
 		"eslint": "^9.37.0",
@@ -105,6 +152,7 @@
 		"globals": "^16.4.0",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
+		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.46.0"
 	}
 }
