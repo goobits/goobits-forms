@@ -9,6 +9,9 @@
 	},
 	"scripts": {
 		"test": "echo 'No tests configured'",
+		"validate:exports": "node tests/exports.test.cjs",
+		"validate:docs": "node tests/docs-validator.cjs",
+		"validate": "npm run validate:exports && npm run validate:docs",
 		"lint": "eslint . --ext .js,.ts,.svelte",
 		"format": "prettier --write ."
 	},
