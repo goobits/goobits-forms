@@ -114,11 +114,7 @@ See [Getting Started Guide](./docs/getting-started.md#security-features) for pro
 - **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
 
 ### Examples
-- **[Basic Contact Form](./examples/contact-api/)** - Simple contact form with email delivery
-- **[File Upload](./examples/file-upload/)** - Image uploads with validation (coming soon)
-- **[i18n Integration](./examples/i18n-paraglide/)** - Paraglide internationalization (coming soon)
-- **[Custom Validation](./examples/custom-validation/)** - Extend validation logic (coming soon)
-- **[Production Deployment](./examples/production-deployment/)** - Full production setup (coming soon)
+- **[Contact Form API Handler](./examples/contact-api/)** - Server-side handler with email delivery
 
 ---
 
