@@ -110,3 +110,7 @@ customSuccessHandler: async (data, clientAddress) => {
 	};
 };
 ```
+
+---
+
+**Resources**: [Main Documentation](../../README.md) | [Changelog](../../CHANGELOG.md) | [Issues](https://github.com/goobits/forms/issues)
