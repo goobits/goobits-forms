@@ -425,7 +425,7 @@ Override specific messages directly:
 
 ### Full i18n Integration
 
-See [Internationalization Guide](./internationalization.md) for complete i18n setup with Paraglide and automatic language detection.
+For complete i18n setup with Paraglide and automatic language detection, see the [main README](../README.md#internationalization).
 
 ---
 
