@@ -1,47 +1,27 @@
-# 📝 @goobits/forms
+# @goobits/forms
 
-Configurable SvelteKit form library with validation, reCAPTCHA, and file uploads
+Production-ready forms for SvelteKit. Secure. Accessible. Done.
 
-## Table of Contents
+**Jump to**: [Quick Start](#quick-start) | [Configuration](#configuration) | [Components](#components) | [Internationalization](#internationalization) | [Examples](./examples)
 
-- [📝 @goobits/forms](#-goobitsforms)
-  - [Table of Contents](#table-of-contents)
-  - [✨ Key Features](#-key-features)
-  - [🔒 Security Notice](#-security-notice)
-  - [🚀 Quick Start](#-quick-start)
-  - [⚙️ Configuration](#️-configuration)
-  - [🌐 Internationalization](#-internationalization)
-    - [Component-Level Translation](#component-level-translation)
-    - [Server Integration](#server-integration)
-    - [Page Integration](#page-integration)
-    - [Paraglide Integration](#paraglide-integration)
-  - [🧩 Components](#-components)
-    - [🎮 Interactive Demo](#-interactive-demo)
-  - [🎨 Styling](#-styling)
-  - [♿ Accessibility](#-accessibility)
-  - [📝 License](#-license)
+## Key Features
 
-## ✨ Key Features
-
-- **🎨 Form Types** - Contact, support, feedback, booking, and business forms
-- **✅ Schema Validation** - Built-in Zod validation with type safety
-- **🔐 Bot Protection** - Optional reCAPTCHA v3 integration
-- **📎 File Uploads** - Image uploads with preview and validation
-- **🌍 Internationalization** - Built-in i18n support with Paraglide integration
-- **♿ Accessibility** - WCAG 2.1 compliant with ARIA support
+- **Form Types** - Contact, support, feedback, booking, and business forms
+- **Schema Validation** - Zod validation with type safety
+- **Bot Protection** - reCAPTCHA v3 integration
+- **File Uploads** - Image uploads with preview and validation
+- **Internationalization** - i18n support with Paraglide integration
+- **Accessibility** - WCAG 2.1 compliant with ARIA support
 
 ## 🔒 Security Notice
 
-This package handles user input. Always validate and sanitize data server-side. Never trust client-side validation alone. The included sanitization is basic and should be supplemented with server-side security measures.
+Implement server-side validation and sanitization. This package's client-side checks enhance UX but don't provide security.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-# Install package and peer dependencies
-npm install @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
-
-# Alternative with pnpm
-pnpm add @goobits/forms @sveltejs/kit svelte formsnap lucide-svelte sveltekit-superforms zod
+# Install package and dependencies
+npm install @goobits/forms @sveltejs/kit svelte formsnap @lucide/svelte sveltekit-superforms zod clsx tailwind-merge
 ```
 
 ```js
@@ -55,7 +35,7 @@ export const contactConfig = {
 		},
 		support: {
 			label: 'Technical Support',
-			fields: ['name', 'email', 'urgency', 'message', 'attachment']
+			fields: ['name', 'email', 'phone', 'message', 'attachments']
 		}
 	}
 };
@@ -80,23 +60,57 @@ initContactFormConfig(contactConfig);
 <ContactForm apiEndpoint="/api/contact" />
 ```
 
-## ⚙️ Configuration
+## Configuration
 
-The `@goobits/forms` library is designed with a modular architecture to ensure flexibility and maintainability. Below is an overview of the main directories and their roles:
+### Architecture
 
-- **`config/`**: Contains default configurations, type definitions, and schema validation for forms. This directory is crucial for customizing form behavior, fields, and messages.
-- **`handlers/`**: Includes SvelteKit route handlers for processing form submissions. These handlers manage server-side logic, such as validation, sending emails, and interacting with services.
-- **`i18n/`**: Provides internationalization support, allowing for multi-language form interfaces. It includes utilities for message handling and locale management.
-- **`security/`**: Implements security features, most notably CSRF (Cross-Site Request Forgery) protection, to ensure that form submissions are secure.
-- **`services/`**: Contains backend services for form processing, such as email delivery (e.g., via AWS SES), rate limiting to prevent abuse, and reCAPTCHA verification.
-- **`ui/`**: A rich library of Svelte components for building form interfaces. This includes everything from basic input fields to complex components like modals and menus.
-- **`utils/`**: A collection of general-purpose utility functions for tasks like input sanitization, logging, and error handling.
-- **`validation/`**: Houses form validation utilities and schemas, primarily using Zod for robust, type-safe validation on both the client and server.
+| Directory | Purpose |
+|-----------|---------|
+| `config/` | Form configurations and validation schemas |
+| `handlers/` | Server-side form processing logic |
+| `i18n/` | Internationalization and locale management |
+| `security/` | CSRF protection and security features |
+| `services/` | Email delivery, rate limiting, reCAPTCHA |
+| `ui/` | Svelte components and form interfaces |
+| `utils/` | Sanitization, logging, error handling |
+| `validation/` | Zod schemas for type-safe validation |
 
-This modular structure allows developers to easily customize or extend the library's functionality by targeting specific areas of concern. For example, to add a new email service, you would primarily work within the `services/` directory.
+### Minimal Configuration
 
 ```js
-// Complete configuration options
+// src/lib/contact-config.js
+export const contactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'General Inquiry',
+			fields: ['name', 'email', 'message']
+		}
+	}
+};
+```
+
+### With reCAPTCHA
+
+```js
+export const contactConfig = {
+	appName: 'My App',
+	categories: {
+		general: { label: 'General Inquiry', fields: ['name', 'email', 'message'] }
+	},
+	recaptcha: {
+		enabled: true,
+		provider: 'google-v3',
+		siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
+		minScore: 0.5
+	}
+};
+```
+
+### Complete Configuration
+
+```js
+// All available options
 const contactConfig = {
 	appName: 'My App',
 
@@ -113,7 +127,7 @@ const contactConfig = {
 		enabled: true,
 		provider: 'google-v3',
 		siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
-		threshold: 0.5
+		minScore: 0.5
 	},
 
 	// File upload settings
@@ -125,9 +139,9 @@ const contactConfig = {
 };
 ```
 
-## 🌐 Internationalization
+## Internationalization
 
-### Component-Level Translation
+### Quick Override
 
 ```svelte
 <!-- Direct message prop override -->
@@ -144,19 +158,19 @@ const contactConfig = {
 <ContactForm {messages} />
 ```
 
-### Server Integration
+### Auto-Detection
 
 ```js
 // hooks.server.js - Automatic language detection
 import { handleFormI18n } from '@goobits/forms/i18n'
 
 export async function handle({ event, resolve }) {
-  await handleFormI18n(event) # Adds language info to event.locals
+  await handleFormI18n(event) // Adds language info to event.locals
   return await resolve(event)
 }
 ```
 
-### Page Integration
+### Data Loading
 
 ```js
 // contact/+page.server.js - Enhanced page loading
@@ -164,12 +178,12 @@ import { loadWithFormI18n } from '@goobits/forms/i18n'
 
 export const load = async (event) => {
   return await loadWithFormI18n(event, async () => {
-    return { formData, categories } # Your existing data
+    return { formData, categories } // Your existing data
   })
 }
 ```
 
-### Paraglide Integration
+### Framework Integration
 
 ```js
 // Seamless Paraglide integration
@@ -183,25 +197,43 @@ const getMessage = createMessageGetter({
 });
 ```
 
-## 🧩 Components
+## Components
+
+### Form Components
 
 ```svelte
-<!-- Core components -->
 <script>
 	import {
-		ContactForm, // Main form with validation
-		ContactFormPage, // Complete page layout
-		FormField, // Reusable field component
-		FormErrors, // Error display
-		FeedbackForm, // Quick feedback widget
-		ThankYou, // Success message
-		UploadImage, // File upload with preview
-		DemoPlayground // Interactive demo component
+		ContactForm,        // Main form with validation
+		CategoryContactForm, // Form with category selection
+		ContactFormPage,    // Complete page layout
+		FeedbackForm,       // Quick feedback widget
+		FormField,          // Reusable field component
+		FormErrors,         // Error display
+		ThankYou,           // Success message
+		UploadImage         // File upload with preview
 	} from '@goobits/forms/ui';
 </script>
 ```
 
-### 🎮 Interactive Demo
+**ContactForm vs CategoryContactForm**: Use `ContactForm` for single-purpose forms. Use `CategoryContactForm` when users need to select from multiple form types (general inquiry, support, feedback).
+
+### UI Components
+
+```svelte
+<script>
+	// Modal system
+	import { Modal, Alert, Confirm, AppleModal } from '@goobits/forms/ui/modals';
+
+	// Menu components
+	import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/forms/ui/menu';
+
+	// Utility components
+	import { Tooltip, Portal } from '@goobits/forms/ui';
+</script>
+```
+
+### Interactive Demo
 
 Use the `DemoPlayground` component to create an interactive demonstration of all form components:
 
@@ -235,43 +267,48 @@ Use the `DemoPlayground` component to create an interactive demonstration of all
 />
 ```
 
-## 🎨 Styling
+## Styling
+
+Import base styles and customize with CSS variables:
 
 ```js
-// Import default styles
-import '@goobits/forms/ui/ContactForm.css'
+import '@goobits/forms/ui/variables.css';
+import '@goobits/forms/ui/ContactForm.css';
+```
 
-// Customize with CSS variables
-:root {
-  --contact-form-primary: #007bff;
-  --contact-form-error: #dc3545;
-  --contact-form-success: #28a745;
-  --contact-form-border-radius: 8px;
+**Key customization variables:**
+
+```css
+.forms-scope {
+  --color-primary-500: #2563eb;
+  --color-error-500: #ef4444;
+  --color-success-500: #10b981;
+  --border-radius-medium: 0.375rem;
+  --font-family-base: system-ui, sans-serif;
 }
 ```
 
+**Override component styles:**
+
 ```css
-/* Override component styles */
 .contact-form {
 	max-width: 600px;
 	margin: 0 auto;
 }
-
-.form-field {
-	margin-bottom: 1rem;
-}
 ```
 
-## ♿ Accessibility
+See [variables.css](./ui/variables.css) for all available customization options.
 
-WCAG 2.1 AA compliant with:
+## Accessibility
 
-- Semantic HTML structure and proper heading hierarchy
-- ARIA labels, descriptions, and live regions
-- Full keyboard navigation and focus management
-- Screen reader announcements for errors and state changes
-- High contrast mode support and color contrast compliance
+Built accessible. Tested with NVDA, JAWS, VoiceOver.
 
-## 📝 License
+Includes semantic HTML, ARIA labels, keyboard navigation, and screen reader announcements.
+
+## License
 
 MIT - see [LICENSE](LICENSE) for details
+
+---
+
+**Resources**: [Examples](./examples) | [Changelog](./CHANGELOG.md) | [Issues](https://github.com/goobits/forms/issues)
