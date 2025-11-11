@@ -48,7 +48,8 @@ Build a basic contact form in 3 steps.
 
 Create form configuration:
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -61,9 +62,26 @@ export const contactConfig = {
 };
 ```
 
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'General Inquiry',
+			fields: ['name', 'email', 'message', 'coppa']
+		}
+	}
+};
+```
+````
+
 Initialize in your app:
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/hooks.server.js
 import { initContactFormConfig } from '@goobits/forms/config';
 import { contactConfig } from '$lib/contact-config.js';
@@ -74,6 +92,20 @@ export async function handle({ event, resolve }) {
 	return await resolve(event);
 }
 ```
+
+```typescript tab="TypeScript"
+// src/hooks.server.ts
+import type { Handle } from '@sveltejs/kit';
+import { initContactFormConfig } from '@goobits/forms/config';
+import { contactConfig } from '$lib/contact-config';
+
+initContactFormConfig(contactConfig);
+
+export const handle: Handle = async ({ event, resolve }) => {
+	return await resolve(event);
+};
+```
+````
 
 :::note Architecture: Why hooks.server.js?
 Configuration runs once at server startup, not on every request. This ensures:
@@ -112,7 +144,8 @@ src/
 
 Create server endpoint to process form submissions:
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/api/contact/+server.js
 import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
 
@@ -124,6 +157,21 @@ export const POST = createContactApiHandler({
 	}
 });
 ```
+
+```typescript tab="TypeScript"
+// src/routes/api/contact/+server.ts
+import type { RequestHandler } from './$types';
+import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+
+export const POST: RequestHandler = createContactApiHandler({
+	adminEmail: process.env.ADMIN_EMAIL!,
+	fromEmail: process.env.FROM_EMAIL!,
+	emailServiceConfig: {
+		provider: 'mock' // Use 'mock' for development
+	}
+});
+```
+````
 
 **Environment variables:**
 ```bash
@@ -275,7 +323,8 @@ Protect against bots with Google reCAPTCHA v3.
 - Get site key and secret key
 
 **2. Update configuration:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -289,14 +338,43 @@ export const contactConfig = {
 };
 ```
 
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: { /* ... */ },
+	recaptcha: {
+		enabled: true,
+		provider: 'google-v3',
+		siteKey: 'YOUR_RECAPTCHA_SITE_KEY',
+		minScore: 0.5 // 0.0 (bot) to 1.0 (human)
+	}
+};
+```
+````
+
 **3. Update API handler:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
 });
 ```
+
+```typescript tab="TypeScript"
+import type { RequestHandler } from './$types';
+
+export const POST: RequestHandler = createContactApiHandler({
+	adminEmail: process.env.ADMIN_EMAIL!,
+	fromEmail: process.env.FROM_EMAIL!,
+	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY!
+});
+```
+````
 
 **4. Add to environment:**
 ```bash
@@ -311,7 +389,8 @@ RECAPTCHA_SECRET_KEY=your_secret_key_here
 Protect against cross-site request forgery.
 
 **1. Create CSRF endpoint:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/api/csrf/+server.js
 import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
@@ -323,6 +402,21 @@ export async function GET(event) {
 	});
 }
 ```
+
+```typescript tab="TypeScript"
+// src/routes/api/csrf/+server.ts
+import type { RequestEvent } from '@sveltejs/kit';
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
+
+export async function GET(event: RequestEvent) {
+	const token = setCsrfCookie(event); // Generates token and sets cookie
+
+	return new Response(JSON.stringify({ csrfToken: token }), {
+		headers: { 'Content-Type': 'application/json' }
+	});
+}
+```
+````
 
 **2. Pass token to form:**
 ```svelte
@@ -338,7 +432,8 @@ export async function GET(event) {
 ```
 
 **3. Generate token on page load:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/contact/+page.server.js
 import { generateCsrfToken } from '@goobits/forms/security/csrf';
 
@@ -347,6 +442,18 @@ export async function load({ cookies }) {
 	return { csrfToken };
 }
 ```
+
+```typescript tab="TypeScript"
+// src/routes/contact/+page.server.ts
+import type { PageServerLoad } from './$types';
+import { generateCsrfToken } from '@goobits/forms/security/csrf';
+
+export const load: PageServerLoad = async ({ cookies }) => {
+	const csrfToken = generateCsrfToken();
+	return { csrfToken };
+};
+```
+````
 
 :::tip Performance Optimization
 Pre-fetching CSRF tokens in `+page.server.js` eliminates the 100-200ms auto-fetch delay on form submission. Without pre-fetching, the form makes an additional request to `/api/csrf` when the user clicks submit.
@@ -374,7 +481,8 @@ Submissions log to console instead of sending emails.
 
 Send emails via SMTP (Gmail, SendGrid, Mailgun, etc.):
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 emailServiceConfig: {
 	provider: 'nodemailer',
 	smtp: {
@@ -388,6 +496,24 @@ emailServiceConfig: {
 	}
 }
 ```
+
+```typescript tab="TypeScript"
+import type { EmailServiceConfig } from '@goobits/forms/services';
+
+const emailServiceConfig: EmailServiceConfig = {
+	provider: 'nodemailer',
+	smtp: {
+		host: 'smtp.gmail.com',
+		port: 587,
+		secure: false,
+		auth: {
+			user: process.env.SMTP_USER!,
+			pass: process.env.SMTP_APP_PASSWORD! // Use app password, not account password
+		}
+	}
+};
+```
+````
 
 :::warning Gmail Setup Requirements
 1. Enable 2-factor authentication on your Google account
@@ -407,7 +533,8 @@ SMTP_APP_PASSWORD=your-app-password
 
 Send emails via Amazon Simple Email Service:
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 emailServiceConfig: {
 	provider: 'aws-ses',
 	region: 'us-east-1',
@@ -415,6 +542,18 @@ emailServiceConfig: {
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 }
 ```
+
+```typescript tab="TypeScript"
+import type { EmailServiceConfig } from '@goobits/forms/services';
+
+const emailServiceConfig: EmailServiceConfig = {
+	provider: 'aws-ses',
+	region: 'us-east-1',
+	accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+};
+```
+````
 
 :::warning AWS SES Setup Requirements
 1. Create AWS account
@@ -437,7 +576,8 @@ AWS_SECRET_ACCESS_KEY=your-secret-key
 Enable image uploads with validation.
 
 **1. Update configuration:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 export const contactConfig = {
 	appName: 'My App',
 	categories: {
@@ -458,8 +598,33 @@ export const contactConfig = {
 };
 ```
 
+```typescript tab="TypeScript"
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		support: {
+			label: 'Technical Support',
+			fields: ['name', 'email', 'message', 'attachments']
+		}
+	},
+	fileSettings: {
+		maxFileSize: 5 * 1024 * 1024, // 5MB in bytes
+		acceptedImageTypes: [
+			'image/jpeg',
+			'image/png',
+			'image/webp',
+			'image/gif'
+		]
+	}
+};
+```
+````
+
 **2. Handle uploads server-side:**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
@@ -473,6 +638,25 @@ export const POST = createContactApiHandler({
 	}
 });
 ```
+
+```typescript tab="TypeScript"
+import type { RequestHandler } from './$types';
+import type { ContactFormData } from '@goobits/forms/validation';
+
+export const POST: RequestHandler = createContactApiHandler({
+	adminEmail: process.env.ADMIN_EMAIL!,
+	fromEmail: process.env.FROM_EMAIL!,
+	customSuccessHandler: async (data: ContactFormData) => {
+		if (data.attachments) {
+			// File is base64-encoded in data.attachments
+			// Store in S3, save to disk, or include in email
+			console.log('File uploaded:', data.attachments);
+		}
+		return { message: 'Success!' };
+	}
+});
+```
+````
 
 ---
 
@@ -628,7 +812,8 @@ npx @inlang/paraglide-js init
 
 Support different form types with category selection:
 
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -651,6 +836,33 @@ export const contactConfig = {
 	}
 };
 ```
+
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'General Inquiry',
+			icon: 'fa fa-envelope',
+			fields: ['name', 'email', 'message']
+		},
+		support: {
+			label: 'Technical Support',
+			icon: 'fa fa-life-ring',
+			fields: ['name', 'email', 'phone', 'message', 'attachments']
+		},
+		sales: {
+			label: 'Sales Inquiry',
+			icon: 'fa fa-shopping-cart',
+			fields: ['name', 'email', 'phone', 'message', 'company']
+		}
+	}
+};
+```
+````
 
 Use CategoryContactForm:
 ```svelte

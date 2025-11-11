@@ -76,6 +76,59 @@ import ContactForm from '@goobits/forms/ui'; // No default export
 
 ## Form Submission
 
+### Diagnostic Flowchart
+
+Use this flowchart to quickly diagnose form submission issues:
+
+```mermaid
+flowchart TD
+    Start[Form doesn't submit?]
+    Start --> Q1{Does form<br/>show spinner?}
+
+    Q1 -->|No| NoSpinner[No submission triggered]
+    Q1 -->|Yes| HasSpinner[Submission initiated]
+
+    NoSpinner --> Q2{Console<br/>errors?}
+    Q2 -->|Yes| Fix1[Fix JavaScript errors]
+    Q2 -->|No| Q3{Button<br/>enabled?}
+    Q3 -->|No| Fix2[Check button disabled state<br/>or validation errors]
+    Q3 -->|Yes| Fix3[Check onclick handler<br/>or form element]
+
+    HasSpinner --> Q4{Network<br/>request sent?}
+    Q4 -->|No| Fix4[Check apiEndpoint prop<br/>Verify route exists]
+
+    Q4 -->|Yes| Q5{Response<br/>received?}
+    Q5 -->|No| NetworkError[Network/CORS error]
+
+    Q5 -->|Yes| Q6{Status code?}
+
+    Q6 -->|200| Q7{Success<br/>message shown?}
+    Q7 -->|No| Fix5[Check response format:<br/>success: true required]
+    Q7 -->|Yes| Success[✓ Working correctly]
+
+    Q6 -->|400| Validation[Validation errors:<br/>Check field requirements<br/>Check server validation]
+
+    Q6 -->|403| CSRF[CSRF token invalid:<br/>Check /api/csrf endpoint<br/>Verify token generation]
+
+    Q6 -->|429| RateLimit[Rate limit exceeded:<br/>Wait 1 hour or<br/>increase rateLimitMaxRequests]
+
+    Q6 -->|500| ServerError[Server error:<br/>Check server logs<br/>Verify email config<br/>Check SMTP credentials]
+
+    style Start fill:#f59e0b,color:#fff
+    style Success fill:#10b981,color:#fff
+    style Fix1 fill:#ef4444,color:#fff
+    style Fix2 fill:#ef4444,color:#fff
+    style Fix3 fill:#ef4444,color:#fff
+    style Fix4 fill:#ef4444,color:#fff
+    style Fix5 fill:#ef4444,color:#fff
+    style Validation fill:#f59e0b,color:#fff
+    style CSRF fill:#f59e0b,color:#fff
+    style RateLimit fill:#f59e0b,color:#fff
+    style ServerError fill:#ef4444,color:#fff
+```
+
+---
+
 ### Form doesn't submit / No response
 
 **Symptoms:**

@@ -105,6 +105,24 @@ SMTP_APP_PASSWORD=your-16-char-app-password
 <ContactForm apiEndpoint="/api/contact" />
 ```
 
+### Project Structure
+
+Your complete project structure should look like this:
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js       ← Step 2
+├── routes/
+│   ├── api/
+│   │   └── contact/
+│   │       └── +server.js      ← Step 4
+│   └── contact/
+│       └── +page.svelte        ← Step 6
+├── hooks.server.js             ← Step 3
+└── .env                        ← Step 5 (add to .gitignore!)
+```
+
 ### Test it
 
 ```bash
@@ -227,6 +245,27 @@ RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
 <ContactForm apiEndpoint="/api/contact" />
 ```
 
+### Project Structure
+
+Recipe 2 adds security endpoints:
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js       ← Updated (Step 1 - reCAPTCHA config)
+├── routes/
+│   ├── api/
+│   │   ├── contact/
+│   │   │   └── +server.js      ← Updated (Step 2 - secrets)
+│   │   └── csrf/
+│   │       └── +server.js      ← NEW (Step 3 - CSRF endpoint)
+│   └── contact/
+│       ├── +page.svelte
+│       └── +page.server.js     ← NEW (Step 4 - token prefetch)
+├── hooks.server.js
+└── .env                        ← Updated (Step 5 - reCAPTCHA secret)
+```
+
 ### What you get
 
 ✅ **CSRF protection:** Prevents cross-site attacks
@@ -321,6 +360,26 @@ export const POST = createContactApiHandler({
 	}
 });
 ```
+
+### Project Structure
+
+Recipe 3 uses multi-category form:
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js       ← Updated (Step 1 - 3 categories)
+├── routes/
+│   ├── api/
+│   │   └── contact/
+│   │       └── +server.js      ← Same as Recipe 1/2
+│   └── contact/
+│       └── +page.svelte        ← Updated (Step 2 - CategoryContactForm)
+├── hooks.server.js
+└── .env
+```
+
+**Key difference:** Using `CategoryContactForm` instead of `ContactForm` enables the category dropdown selector.
 
 ### Advanced: Category-specific email routing
 
