@@ -382,7 +382,7 @@ Override design tokens:
 }
 ```
 
-See [variables.css](../ui/variables.css) for all available customization options.
+See [variables.css](https://github.com/goobits/forms/blob/main/ui/variables.css) for all available customization options.
 
 ### Override Component Styles
 

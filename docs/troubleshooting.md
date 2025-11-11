@@ -127,11 +127,10 @@ Error: Failed to fetch CSRF token
 1. **Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { generateCsrfToken, setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
-export async function GET({ cookies }) {
-	const token = generateCsrfToken();
-	setCsrfCookie(cookies, token);
+export async function GET(event) {
+	const token = setCsrfCookie(event);
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
 	});
@@ -324,7 +323,7 @@ Override variables in correct scope:
 }
 ```
 
-See [variables.css](../ui/variables.css) for all available variables.
+See [variables.css](https://github.com/goobits/forms/blob/main/ui/variables.css) for all available variables.
 
 ---
 
@@ -499,8 +498,8 @@ Error: Rate limit exceeded. Please try again later.
 1. **Adjust rate limits:**
 ```javascript
 createContactApiHandler({
-	rateLimitMaxRequests: 10, // Increase from default 5
-	rateLimitWindowMs: 60000   // 1 minute window
+	rateLimitMaxRequests: 10, // Increase from default 3
+	rateLimitWindowMs: 60000   // Change from default 1 hour to 1 minute
 });
 ```
 

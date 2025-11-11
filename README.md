@@ -1,4 +1,4 @@
-# 📋 @goobits/forms
+# @goobits/forms
 
 Production-ready forms for SvelteKit with validation, security, and email delivery.
 
@@ -7,18 +7,18 @@ Production-ready forms for SvelteKit with validation, security, and email delive
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- **🎯 Form Types** - Contact, support, feedback, and booking forms with category routing
-- **✅ Schema Validation** - Type-safe validation with Zod
-- **🔒 Bot Protection** - reCAPTCHA v3, rate limiting, CSRF tokens
-- **📎 File Uploads** - Image uploads with preview and validation
-- **🌐 Internationalization** - i18n with Paraglide and auto-detection
-- **♿ Accessibility** - WCAG 2.1 compliant, screen reader tested
+- **Form Types** - Contact, support, feedback, and booking forms with category routing
+- **Schema Validation** - Type-safe validation with Zod
+- **Bot Protection** - reCAPTCHA v3, rate limiting, CSRF tokens
+- **File Uploads** - Image uploads with preview and validation
+- **Internationalization** - i18n with Paraglide and auto-detection
+- **Accessibility** - WCAG 2.1 compliant, screen reader tested
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install package (includes all peer dependencies)
@@ -72,7 +72,7 @@ export const POST = createContactApiHandler({
 
 ---
 
-## 🛠️ Configuration
+## Configuration
 
 ```javascript
 // Customize form fields and categories
@@ -105,7 +105,7 @@ initContactFormConfig({
 
 ---
 
-## 📖 Components
+## Components
 
 ```javascript
 // Form components
@@ -132,7 +132,7 @@ import { tooltip, TooltipPortal } from '@goobits/forms/ui/tooltip';
 
 ---
 
-## 🎨 Styling
+## Styling
 
 ```javascript
 // Import base styles
@@ -150,11 +150,11 @@ import '@goobits/forms/ui/ContactForm.css';
 }
 ```
 
-See [variables.css](./ui/variables.css) for all customization options.
+See [variables.css](https://github.com/goobits/forms/blob/main/ui/variables.css) for all customization options.
 
 ---
 
-## 📧 Email Providers
+## Email Providers
 
 ```javascript
 // Development - Console logging
@@ -187,7 +187,7 @@ emailServiceConfig: {
 
 ---
 
-## 🌐 Internationalization
+## Internationalization
 
 ```svelte
 <script>
@@ -216,14 +216,14 @@ See [Getting Started Guide](./docs/getting-started.md#internationalization) for 
 
 ---
 
-## 🔒 Security
+## Security
 
 ```javascript
 // Built-in protections
 createContactApiHandler({
 	// Rate limiting (IP-based)
 	rateLimitMaxRequests: 3,     // Requests per window
-	rateLimitWindowMs: 60000,    // 1 minute window
+	rateLimitWindowMs: 3600000,  // 1 hour window
 
 	// reCAPTCHA verification
 	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
@@ -253,7 +253,7 @@ export async function GET(event) {
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 **Getting Started:**
 - [Installation & Setup](./docs/getting-started.md) - Complete guide with security and email
@@ -270,7 +270,7 @@ export async function GET(event) {
 
 ---
 
-## 🧪 Development
+## Development
 
 ```bash
 # Install dependencies
@@ -292,13 +292,13 @@ pnpm validate:links       # Check documentation links
 
 ---
 
-## 📝 License
+## License
 
 MIT - see [LICENSE](./LICENSE) for details
 
 ---
 
-## 💡 Support
+## Support
 
 - **[Documentation](./docs/)** - Guides and API reference
 - **[GitHub Issues](https://github.com/goobits/forms/issues)** - Bug reports and feature requests

@@ -72,7 +72,7 @@ emailServiceConfig: {
 
 ```javascript
 emailServiceConfig: {
-	provider: 'mock';
+	provider: 'mock'
 }
 ```
 

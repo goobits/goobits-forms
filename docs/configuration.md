@@ -41,17 +41,28 @@ categories: {
 
 ### Available Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | Text | User's full name |
-| `email` | Email | Email address |
-| `phone` | Tel | Phone number |
-| `message` | Textarea | Message content |
-| `subject` | Text | Email subject |
-| `company` | Text | Company name |
-| `attachments` | File | Image upload |
-| `coppa` | Checkbox | COPPA compliance |
-| `category` | Select | Category selector |
+Complete reference for all built-in form fields:
+
+| Field | Type | Description | Validation | Default Placeholder |
+|-------|------|-------------|------------|---------------------|
+| `name` | `text` | User's full name | Required, max 100 chars | "Your name" |
+| `email` | `email` | Email address | Required, valid email, max 254 chars | "your@email.com" |
+| `message` | `textarea` | Message content | Required, max 5000 chars | "Tell us more..." |
+| `phone` | `tel` | Phone number | Required | "+1 (555) 123-4567" |
+| `company` | `text` | Company name | Required | "Your company name" |
+| `businessRole` | `text` | Role in company | Required | "Your role" |
+| `preferredDate` | `date` | Preferred date | Required | - |
+| `preferredTime` | `time` | Preferred time | Required | - |
+| `browser` | `text` | Browser name | Required | "Chrome, Firefox, Safari, etc." |
+| `browserVersion` | `text` | Browser version | Required | "e.g., 91.0" |
+| `operatingSystem` | `text` | Operating system | Required | "Windows 10, macOS, etc." |
+| `attachments` | `file` | Image upload (up to 3) | Optional, 5MB max per file | - |
+| `coppa` | `checkbox` | COPPA compliance | Required | - |
+
+**Usage Notes:**
+- All fields except `attachments` are required by default
+- Fields can be customized by overriding defaults in `initContactFormConfig()`
+- Custom fields can be added using the same pattern
 
 ---
 
@@ -157,7 +168,7 @@ createContactApiHandler({
 
 	// Rate Limiting
 	rateLimitMaxRequests: 3, // Default: 3 requests
-	rateLimitWindowMs: 60000, // Default: 60000ms (1 minute)
+	rateLimitWindowMs: 3600000, // Default: 3600000ms (1 hour)
 
 	// Messages
 	successMessage: 'Thank you for your message!',
@@ -201,7 +212,7 @@ createContactApiHandler({
 
 **Defaults Summary:**
 - `rateLimitMaxRequests`: `3`
-- `rateLimitWindowMs`: `60000` (1 minute)
+- `rateLimitWindowMs`: `3600000` (1 hour)
 - `recaptchaMinScore`: `0.5`
 - `logSubmissions`: `true`
 

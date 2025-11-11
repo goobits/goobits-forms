@@ -2,7 +2,7 @@
 
 Reference for all components, handlers, and utilities in @goobits/forms.
 
-**Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities)
+**Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities) | [Services](#services)
 
 ---
 
@@ -443,7 +443,7 @@ import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHand
 | `recaptchaSecretKey` | `string` | `''` | reCAPTCHA secret key |
 | `recaptchaMinScore` | `number` | `0.5` | Minimum reCAPTCHA score |
 | `rateLimitMaxRequests` | `number` | `3` | Max requests per window |
-| `rateLimitWindowMs` | `number` | `60000` | Rate limit window (ms) |
+| `rateLimitWindowMs` | `number` | `3600000` | Rate limit window (ms, default 1 hour) |
 | `successMessage` | `string` | Default message | Custom success message |
 | `errorMessage` | `string` | Default message | Custom error message |
 | `customValidation` | `function` | `null` | Custom validation logic |
@@ -624,6 +624,173 @@ const customSchema = contactSchema.extend({
 const result = customSchema.safeParse(formData);
 if (!result.success) {
 	return { errors: result.error.flatten() };
+}
+```
+
+---
+
+## Services
+
+Advanced services for form handling, state management, and integrations.
+
+### Form Storage
+
+Persist form data to localStorage to prevent data loss.
+
+**Import:**
+```javascript
+import {
+	saveFormData,
+	loadFormData,
+	clearFormData,
+	hasSavedData
+} from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Save form data
+saveFormData({ name: 'John', email: 'john@example.com' }, 'contact');
+
+// Load saved data
+const data = loadFormData('contact');
+
+// Clear data
+clearFormData('contact');
+```
+
+---
+
+### Form Hydration
+
+Pre-fill forms with saved or test data.
+
+**Import:**
+```javascript
+import { hydrateForm, getTestDataForCategory } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Hydrate form with saved data
+const formData = hydrateForm({ category: 'contact', useTestData: false });
+
+// Get test data for development
+const testData = getTestDataForCategory('support');
+```
+
+---
+
+### Screen Reader Service
+
+Accessibility announcements for screen readers.
+
+**Import:**
+```javascript
+import {
+	announce,
+	announceFormErrors,
+	announceFormStatus
+} from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Announce message
+announce('Form submitted successfully', { priority: 'polite' });
+
+// Announce errors
+announceFormErrors({ email: ['Invalid email'], name: ['Required'] });
+
+// Announce status
+announceFormStatus('submitting');
+```
+
+---
+
+### Email Service
+
+Email delivery via Nodemailer, AWS SES, or mock provider.
+
+**Import:**
+```javascript
+import { createEmailProvider } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Create provider
+const emailService = createEmailProvider({
+	provider: 'nodemailer',
+	smtp: {
+		host: 'smtp.gmail.com',
+		port: 587,
+		auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+	}
+});
+
+// Send email
+await emailService.sendEmail({
+	to: 'admin@example.com',
+	subject: 'New Contact',
+	text: 'Message from user',
+	html: '<p>Message from user</p>'
+});
+```
+
+---
+
+### Rate Limiter
+
+IP and email-based rate limiting.
+
+**Import:**
+```javascript
+import { rateLimitFormSubmission, resetIpRateLimit } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Check rate limit
+const result = await rateLimitFormSubmission({
+	ipAddress: request.headers.get('x-forwarded-for'),
+	email: 'user@example.com',
+	maxRequests: 3,
+	windowMs: 60000
+});
+
+if (!result.allowed) {
+	return { error: 'Rate limit exceeded', retryAfter: result.retryAfter };
+}
+```
+
+---
+
+### reCAPTCHA
+
+reCAPTCHA verification and provider creation.
+
+**Import:**
+```javascript
+import { createRecaptchaProvider } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Create provider
+const recaptcha = createRecaptchaProvider({
+	provider: 'google-v3',
+	siteKey: process.env.RECAPTCHA_SITE_KEY,
+	secretKey: process.env.RECAPTCHA_SECRET_KEY
+});
+
+// Execute challenge (client-side)
+const token = await recaptcha.execute('contact_form');
+
+// Verify token (server-side)
+const result = await recaptcha.verify(token);
+if (result.score < 0.5) {
+	return { error: 'Failed security check' };
 }
 ```
 
