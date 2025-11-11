@@ -211,7 +211,7 @@ Solution: Update site key in configuration.
 
 ---
 
-### Low reCAPTCHA scores causing rejections
+### Low reCAPTCHA Scores
 
 **Symptom:**
 Forms consistently rejected with "reCAPTCHA verification failed"

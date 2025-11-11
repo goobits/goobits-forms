@@ -135,7 +135,7 @@ Use the form component:
 
 ---
 
-## Adding Security Features
+## Security Features
 
 ### reCAPTCHA Protection
 
@@ -345,7 +345,7 @@ export const POST = createContactApiHandler({
 
 ---
 
-## Styling and Customization
+## Styling
 
 ### Import Base Styles
 

@@ -4,9 +4,9 @@ Test forms built with @goobits/forms.
 
 ---
 
-## Unit Testing Components
+## Unit Tests
 
-### Testing ContactForm
+### ContactForm
 
 ```typescript
 // ContactForm.test.ts
@@ -80,9 +80,9 @@ test('displays validation errors', async () => {
 
 ---
 
-## Integration Testing API Handlers
+## Integration Tests
 
-### Testing createContactApiHandler
+### createContactApiHandler
 
 ```typescript
 // api/contact.test.ts
@@ -141,7 +141,7 @@ describe('Contact API Handler', () => {
 
 ---
 
-## Mocking reCAPTCHA
+## reCAPTCHA Mocking
 
 ### Mock reCAPTCHA for Tests
 
@@ -198,7 +198,7 @@ test('verifies reCAPTCHA token', async () => {
 
 ---
 
-## Testing CSRF Protection
+## CSRF Protection Tests
 
 ```typescript
 import { generateCsrfToken, validateCsrfToken } from '@goobits/forms/security/csrf';
@@ -224,7 +224,7 @@ test('rejects mismatched CSRF tokens', () => {
 
 ---
 
-## E2E Testing with Playwright
+## E2E Tests
 
 ### Full Form Submission Flow
 
@@ -263,7 +263,7 @@ test.describe('Contact Form', () => {
 });
 ```
 
-### Testing File Upload
+### File Upload
 
 ```typescript
 test('uploads file attachment', async ({ page }) => {
@@ -289,7 +289,7 @@ test('uploads file attachment', async ({ page }) => {
 
 ---
 
-## Testing Custom Validation
+## Custom Validation Tests
 
 ```typescript
 import { contactSchema } from '@goobits/forms/validation';
@@ -340,7 +340,7 @@ test('rejects invalid email', () => {
 
 ---
 
-## Testing Rate Limiting
+## Rate Limiting Tests
 
 ```typescript
 // Mock rate limiter for tests
