@@ -14,21 +14,21 @@ From the root of the repository:
 
 ```bash
 # Run the demo app
-npm run demo
+pnpm demo
 
 # Build the demo
-npm run demo:build
+pnpm demo:build
 
 # Preview production build
-npm run demo:preview
+pnpm demo:preview
 ```
 
 Or from this directory:
 
 ```bash
-npm run dev
-npm run build
-npm run preview
+pnpm dev
+pnpm build
+pnpm preview
 ```
 
 ## What's Included

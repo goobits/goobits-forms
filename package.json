@@ -10,16 +10,16 @@
 		"access": "public"
 	},
 	"scripts": {
-		"prepublishOnly": "npm run lint",
+		"prepublishOnly": "pnpm run lint",
 		"test": "echo 'No tests configured'",
 		"validate:exports": "node tests/exports.test.cjs",
 		"validate:docs": "node tests/docs-validator.cjs",
-		"validate": "npm run validate:exports && npm run validate:docs",
+		"validate": "pnpm run validate:exports && pnpm run validate:docs",
 		"lint": "eslint . --ext .js,.ts,.svelte",
 		"format": "prettier --write .",
-		"demo": "cd demo && npm run dev",
-		"demo:build": "cd demo && npm run build",
-		"demo:preview": "cd demo && npm run preview"
+		"demo": "cd demo && pnpm run dev",
+		"demo:build": "cd demo && pnpm run build",
+		"demo:preview": "cd demo && pnpm run preview"
 	},
 	"exports": {
 		".": {
