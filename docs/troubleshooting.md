@@ -2,7 +2,7 @@
 
 Common issues and solutions for @goobits/forms.
 
-**Quick Navigation:** [Import Errors](#import-errors) | [Form Submission](#form-submission) | [reCAPTCHA](#recaptcha-issues) | [Styling](#styling-issues) | [Email Delivery](#email-delivery) | [TypeScript](#typescript-errors)
+**Navigation:** [Import Errors](#import-errors) | [Form Submission](#form-submission) | [reCAPTCHA](#recaptcha-issues) | [Styling](#styling-issues) | [Email Delivery](#email-delivery) | [TypeScript](#typescript-errors)
 
 ---
 
@@ -36,13 +36,13 @@ Error: Cannot resolve '@goobits/forms/ui'
 Check your import statements match the package exports:
 
 ```javascript
-// ✅ CORRECT
+// RECOMMENDED: Correct
 import { ContactForm } from '@goobits/forms/ui';
 import { Menu } from '@goobits/forms/ui';
 import { tooltip } from '@goobits/forms/ui/tooltip';
 import { Modal } from '@goobits/forms/ui/modals';
 
-// ❌ WRONG
+// AVOID: Wrong
 import { ContactForm } from '@goobits/forms'; // UI components not exported from root
 ```
 
@@ -63,10 +63,10 @@ TypeError: Component is not a constructor
 All UI components use named exports:
 
 ```javascript
-// ✅ CORRECT
+// RECOMMENDED: Correct
 import { ContactForm, FeedbackForm } from '@goobits/forms/ui';
 
-// ❌ WRONG
+// AVOID: Wrong
 import ContactForm from '@goobits/forms/ui'; // No default export
 ```
 
@@ -312,13 +312,13 @@ CSS variable overrides have no effect
 
 Override variables in correct scope:
 ```css
-/* ✅ CORRECT - Target .forms-scope */
+/* RECOMMENDED: Target .forms-scope */
 .forms-scope {
 	--color-primary-500: #3b82f6;
 	--font-family-base: 'Inter', sans-serif;
 }
 
-/* ❌ WRONG - Wrong selector */
+/* AVOID: Wrong selector */
 :root {
 	--color-primary-500: #3b82f6; /* Won't work */
 }
@@ -475,11 +475,11 @@ Import and use type definitions:
 import type { ContactFormData } from '@goobits/forms/validation';
 
 function handleSubmit(data: ContactFormData) {
-	console.log(data.email); // ✅ Type-safe
+	console.log(data.email); // Type-safe
 }
 ```
 
-See [TypeScript Guide](./typescript.md) for complete type documentation.
+See [TypeScript Guide](./typescript.md) for type documentation.
 
 ---
 

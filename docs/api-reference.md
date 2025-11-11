@@ -1,8 +1,8 @@
 # API Reference
 
-Complete reference for all components, handlers, and utilities in @goobits/forms.
+Reference for all components, handlers, and utilities in @goobits/forms.
 
-**Quick Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities)
+**Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities)
 
 ---
 
@@ -87,7 +87,7 @@ import { CategoryContactForm } from '@goobits/forms/ui';
 
 ### FeedbackForm
 
-Quick feedback widget for collecting user input.
+Feedback widget for collecting user input.
 
 **Import:**
 ```javascript
@@ -123,7 +123,7 @@ import { FeedbackForm } from '@goobits/forms/ui';
 
 ### ContactFormPage
 
-Complete page layout with form, header, and footer.
+Page layout with form, header, and footer.
 
 **Import:**
 ```javascript
@@ -648,7 +648,7 @@ import type {
 } from '@goobits/forms/ui';
 ```
 
-See [TypeScript Guide](./typescript.md) for complete type documentation.
+See [TypeScript Guide](./typescript.md) for type documentation.
 
 ---
 

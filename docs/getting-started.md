@@ -1,6 +1,6 @@
 # Getting Started
 
-Build your first form with @goobits/forms in 10 minutes.
+Build your first form with @goobits/forms.
 
 **Prerequisites:** SvelteKit project with Node.js ≥18 and pnpm ≥9
 
@@ -35,7 +35,7 @@ npm install @aws-sdk/client-ses
 
 ---
 
-## Quick Start
+## Start
 
 Build a basic contact form in 3 steps.
 
@@ -402,7 +402,7 @@ See [variables.css](../ui/variables.css) for all available customization options
 
 ## Internationalization
 
-### Quick Message Override
+### Message Override
 
 Override specific messages directly:
 
@@ -532,7 +532,7 @@ Use CategoryContactForm:
 
 **Add advanced features:**
 - [Configuration Guide](./configuration.md) - All configuration options
-- [API Reference](./api-reference.md) - Complete component documentation
+- [API Reference](./api-reference.md) - Component documentation
 - [TypeScript Guide](./typescript.md) - Type-safe form development
 
 **Production deployment:**
@@ -546,7 +546,7 @@ Use CategoryContactForm:
 
 ---
 
-**Quick Reference:**
+**Reference:**
 
 | Task | Code |
 |------|------|

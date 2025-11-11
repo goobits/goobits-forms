@@ -1,6 +1,6 @@
 # Configuration Guide
 
-Complete reference for configuring @goobits/forms.
+Reference for configuring @goobits/forms.
 
 ---
 
@@ -225,7 +225,7 @@ emailServiceConfig: {
 
 ---
 
-## Complete Example
+## Example
 
 ```javascript
 // src/lib/contact-config.js

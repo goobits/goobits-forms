@@ -452,25 +452,25 @@ export const POST: RequestHandler = async ({ request }) => {
 ### Issue: Cannot find module
 
 ```typescript
-// ❌ Wrong
+// AVOID: Wrong
 import { ContactForm } from '@goobits/forms';
 
-// ✅ Correct
+// RECOMMENDED: Correct
 import { ContactForm } from '@goobits/forms/ui';
 ```
 
 ### Issue: Type 'unknown' error
 
 ```typescript
-// ❌ No type safety
+// AVOID: No type safety
 const data = await request.json();
 console.log(data.email); // Error: Property 'email' does not exist on type 'unknown'
 
-// ✅ With type assertion
+// RECOMMENDED: With type assertion
 const data = await request.json() as ContactFormData;
 console.log(data.email); // Type-safe
 
-// ✅✅ With validation (best)
+// BEST: With validation
 const result = contactSchema.safeParse(await request.json());
 if (result.success) {
 	console.log(result.data.email); // Type-safe and validated
