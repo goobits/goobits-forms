@@ -34,7 +34,8 @@ npm install @goobits/forms
 ```
 
 **Step 2: Create configuration**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -47,8 +48,25 @@ export const contactConfig = {
 };
 ```
 
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'Contact Us',
+			fields: ['name', 'email', 'message', 'coppa']
+		}
+	}
+};
+```
+````
+
 **Step 3: Initialize in hooks**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/hooks.server.js
 import { initContactFormConfig } from '@goobits/forms/config';
 import { contactConfig } from '$lib/contact-config.js';
@@ -60,8 +78,23 @@ export async function handle({ event, resolve }) {
 }
 ```
 
+```typescript tab="TypeScript"
+// src/hooks.server.ts
+import type { Handle } from '@sveltejs/kit';
+import { initContactFormConfig } from '@goobits/forms/config';
+import { contactConfig } from '$lib/contact-config';
+
+initContactFormConfig(contactConfig);
+
+export const handle: Handle = async ({ event, resolve }) => {
+	return await resolve(event);
+};
+```
+````
+
 **Step 4: Create API endpoint**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/api/contact/+server.js
 import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
 
@@ -82,6 +115,30 @@ export const POST = createContactApiHandler({
 	}
 });
 ```
+
+```typescript tab="TypeScript"
+// src/routes/api/contact/+server.ts
+import type { RequestHandler } from './$types';
+import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+
+export const POST: RequestHandler = createContactApiHandler({
+	adminEmail: process.env.ADMIN_EMAIL!,
+	fromEmail: process.env.FROM_EMAIL!,
+	emailServiceConfig: {
+		provider: 'nodemailer',
+		smtp: {
+			host: 'smtp.gmail.com',
+			port: 587,
+			secure: false,
+			auth: {
+				user: process.env.SMTP_USER!,
+				pass: process.env.SMTP_APP_PASSWORD!
+			}
+		}
+	}
+});
+```
+````
 
 **Step 5: Add environment variables**
 ```bash
@@ -155,7 +212,8 @@ Before starting this recipe, ensure you have:
 ### Implementation
 
 **Step 1: Add reCAPTCHA to configuration**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -175,8 +233,32 @@ export const contactConfig = {
 };
 ```
 
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'Contact Us',
+			fields: ['name', 'email', 'message', 'coppa']
+		}
+	},
+	// ADD THIS:
+	recaptcha: {
+		enabled: true,
+		provider: 'google-v3',
+		siteKey: process.env.PUBLIC_RECAPTCHA_SITE_KEY!,
+		minScore: 0.5 // 0.0 (bot) to 1.0 (human)
+	}
+};
+```
+````
+
 **Step 2: Create CSRF endpoint**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/api/csrf/+server.js
 import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
@@ -188,8 +270,23 @@ export async function GET(event) {
 }
 ```
 
+```typescript tab="TypeScript"
+// src/routes/api/csrf/+server.ts
+import type { RequestEvent } from '@sveltejs/kit';
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
+
+export async function GET(event: RequestEvent) {
+	const token = setCsrfCookie(event);
+	return new Response(JSON.stringify({ csrfToken: token }), {
+		headers: { 'Content-Type': 'application/json' }
+	});
+}
+```
+````
+
 **Step 3: Update API handler with all security**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/routes/api/contact/+server.js
 import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
 
@@ -218,6 +315,38 @@ export const POST = createContactApiHandler({
 	rateLimitWindowMs: 3600000         // 1 hour window
 });
 ```
+
+```typescript tab="TypeScript"
+// src/routes/api/contact/+server.ts
+import type { RequestHandler } from './$types';
+import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+
+export const POST: RequestHandler = createContactApiHandler({
+	adminEmail: process.env.ADMIN_EMAIL!,
+	fromEmail: process.env.FROM_EMAIL!,
+
+	// Email configuration
+	emailServiceConfig: {
+		provider: 'nodemailer',
+		smtp: {
+			host: 'smtp.gmail.com',
+			port: 587,
+			secure: false,
+			auth: {
+				user: process.env.SMTP_USER!,
+				pass: process.env.SMTP_APP_PASSWORD!
+			}
+		}
+	},
+
+	// Security features
+	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY!,
+	recaptchaMinScore: 0.5,
+	rateLimitMaxRequests: 3,          // 3 requests per window
+	rateLimitWindowMs: 3600000         // 1 hour window
+});
+```
+````
 
 **Step 4: Update environment variables**
 ```bash
@@ -306,7 +435,8 @@ Before starting this recipe, ensure you have:
 ### Implementation
 
 **Step 1: Configure multiple categories**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -329,6 +459,33 @@ export const contactConfig = {
 	}
 };
 ```
+
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		general: {
+			label: 'General Inquiry',
+			icon: 'fa fa-envelope',
+			fields: ['name', 'email', 'message', 'coppa']
+		},
+		support: {
+			label: 'Technical Support',
+			icon: 'fa fa-life-ring',
+			fields: ['name', 'email', 'browser', 'operatingSystem', 'message', 'attachments']
+		},
+		sales: {
+			label: 'Sales Inquiry',
+			icon: 'fa fa-dollar-sign',
+			fields: ['name', 'email', 'company', 'businessRole', 'message', 'coppa']
+		}
+	}
+};
+```
+````
 
 **Step 2: Use CategoryContactForm component**
 ```svelte
@@ -445,7 +602,8 @@ Before starting this recipe, ensure you have:
 ### Implementation
 
 **Step 1: Add attachments field to configuration**
-```javascript
+````tabs
+```javascript tab="JavaScript"
 // src/lib/contact-config.js
 export const contactConfig = {
 	appName: 'My App',
@@ -470,6 +628,35 @@ export const contactConfig = {
 	}
 };
 ```
+
+```typescript tab="TypeScript"
+// src/lib/contact-config.ts
+import type { ContactConfig } from '@goobits/forms/config';
+
+export const contactConfig: ContactConfig = {
+	appName: 'My App',
+	categories: {
+		support: {
+			label: 'Technical Support',
+			// ADD 'attachments' to fields array
+			fields: ['name', 'email', 'message', 'attachments', 'coppa']
+		}
+	},
+	// OPTIONAL: Customize file upload settings
+	fileSettings: {
+		maxFileSize: 5 * 1024 * 1024,  // 5MB per file (default)
+		maxFiles: 3,                     // Up to 3 files (default)
+		acceptedImageTypes: [            // Allowed types (default)
+			'image/jpeg',
+			'image/jpg',
+			'image/png',
+			'image/webp',
+			'image/gif'
+		]
+	}
+};
+```
+````
 
 **Step 2: API handler processes files automatically**
 ```javascript
