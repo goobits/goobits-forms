@@ -19,10 +19,10 @@ None - fully backward compatible.
 If you were using incorrect import paths (which would have caused errors), update them:
 
 ```javascript
-// ❌ Old (incorrect - would have errored)
+// AVOID: Old (incorrect - would have errored)
 import { ContactForm } from '@goobits/forms';
 
-// ✅ New (correct)
+// RECOMMENDED: New (correct)
 import { ContactForm } from '@goobits/forms/ui';
 ```
 
@@ -31,7 +31,7 @@ import { ContactForm } from '@goobits/forms/ui';
 Update configuration to use correct property names:
 
 ```javascript
-// ❌ Old (incorrect - never worked)
+// AVOID: Old (incorrect - never worked)
 const config = {
 	uploads: {
 		enabled: true,
@@ -40,7 +40,7 @@ const config = {
 	}
 };
 
-// ✅ New (correct)
+// RECOMMENDED: New (correct)
 const config = {
 	fileSettings: {
 		maxFileSize: 5 * 1024 * 1024, // 5MB in bytes
@@ -52,12 +52,12 @@ const config = {
 **3. reCAPTCHA Property Name**
 
 ```javascript
-// ❌ Old
+// AVOID: Old
 recaptcha: {
 	threshold: 0.5
 }
 
-// ✅ New
+// RECOMMENDED: New
 recaptcha: {
 	minScore: 0.5
 }
@@ -122,10 +122,10 @@ npm uninstall @goobits/security
 
 2. **Update imports** if importing from @goobits/security:
 ```javascript
-// ❌ Old
+// AVOID: Old
 import { generateCsrfToken } from '@goobits/security';
 
-// ✅ New
+// RECOMMENDED: New
 import { generateCsrfToken } from '@goobits/forms/security/csrf';
 ```
 
@@ -136,10 +136,10 @@ npm install nanoid
 
 4. **Update CSRF implementation** - generateCsrfToken is now synchronous:
 ```javascript
-// ❌ Old (async)
+// AVOID: Old (async)
 const token = await generateCsrfToken();
 
-// ✅ New (sync)
+// RECOMMENDED: New (sync)
 const token = generateCsrfToken();
 ```
 
@@ -279,4 +279,7 @@ Update validation schemas to Zod v4 syntax if using custom schemas.
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [Configuration](./configuration.md) | [API Reference](./api-reference.md)
+**After migrating:**
+- [Configuration Guide](./configuration.md) - Update your config
+- [API Reference](./api-reference.md) - Check new features
+- [Troubleshooting](./troubleshooting.md) - Resolve migration issues

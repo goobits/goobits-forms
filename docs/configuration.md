@@ -1,6 +1,6 @@
 # Configuration Guide
 
-Complete reference for configuring @goobits/forms.
+Reference for configuring @goobits/forms.
 
 ---
 
@@ -39,19 +39,40 @@ categories: {
 }
 ```
 
+:::note Design Philosophy: Category-Based Fields
+Fields are organized by category rather than hardcoded per component. This approach enables:
+- **Flexibility:** Add new form types without changing component code
+- **Reusability:** Same `ContactForm` component serves multiple purposes (support, sales, general)
+- **Dynamic rendering:** Switch fields based on user selection in `CategoryContactForm`
+- **Validation consistency:** Single schema definition prevents frontend/backend mismatch
+:::
+
 ### Available Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | Text | User's full name |
-| `email` | Email | Email address |
-| `phone` | Tel | Phone number |
-| `message` | Textarea | Message content |
-| `subject` | Text | Email subject |
-| `company` | Text | Company name |
-| `attachments` | File | Image upload |
-| `coppa` | Checkbox | COPPA compliance |
-| `category` | Select | Category selector |
+Complete reference for all built-in form fields:
+
+| Field | Type | Description | Validation | Default Placeholder |
+|-------|------|-------------|------------|---------------------|
+| `name` | `text` | User's full name | Required, max 100 chars | "Your name" |
+| `email` | `email` | Email address | Required, valid email, max 254 chars | "your@email.com" |
+| `message` | `textarea` | Message content | Required, max 5000 chars | "Tell us more..." |
+| `phone` | `tel` | Phone number | Required | "+1 (555) 123-4567" |
+| `company` | `text` | Company name | Required | "Your company name" |
+| `businessRole` | `text` | Role in company | Required | "Your role" |
+| `preferredDate` | `date` | Preferred date | Required | - |
+| `preferredTime` | `time` | Preferred time | Required | - |
+| `browser` | `text` | Browser name | Required | "Chrome, Firefox, Safari, etc." |
+| `browserVersion` | `text` | Browser version | Required | "e.g., 91.0" |
+| `operatingSystem` | `text` | Operating system | Required | "Windows 10, macOS, etc." |
+| `attachments` | `file` | Image upload (up to 3) | Optional, 5MB max per file | - |
+| `coppa` | `checkbox` | COPPA compliance | Required | - |
+
+:::note Field Usage Notes
+- All fields except `attachments` are required by default
+- Fields can be customized by overriding defaults in `initContactFormConfig()`
+- Custom fields can be added using the same pattern
+- Field validation is automatically enforced on both client and server
+:::
 
 ---
 
@@ -61,19 +82,27 @@ Protect forms from bots.
 
 ```javascript
 recaptcha: {
-	enabled: true,
-	provider: 'google-v3', // or 'hcaptcha', 'turnstile'
-	siteKey: 'YOUR_SITE_KEY',
-	minScore: 0.5 // 0.0-1.0 (v3 only)
+	enabled: false, // Default: disabled
+	provider: 'google-v3', // Default: 'google-v3'
+	siteKey: '', // Required when enabled
+	minScore: 0.5 // Default: 0.5 (v3 only, range: 0.0-1.0)
 }
 ```
 
-**Score Guidelines:**
+**Defaults:**
+- `enabled`: `false`
+- `provider`: `'google-v3'`
+- `minScore`: `0.5`
+
+:::tip reCAPTCHA Score Guidelines
 - `0.9-1.0` - Very likely human
 - `0.7-0.8` - Likely human
-- `0.5-0.6` - Neutral (recommended threshold)
+- `0.5-0.6` - Neutral (recommended threshold) ← **Start here**
 - `0.3-0.4` - Possibly bot
 - `0.0-0.2` - Very likely bot
+
+**Recommendation:** Start with `0.5` and adjust based on spam levels. Lower scores may block legitimate users.
+:::
 
 ---
 
@@ -83,8 +112,8 @@ Configure file uploads and validation.
 
 ```javascript
 fileSettings: {
-	maxFileSize: 5 * 1024 * 1024, // 5MB in bytes
-	acceptedImageTypes: [
+	maxFileSize: 5 * 1024 * 1024, // Default: 5MB in bytes
+	acceptedImageTypes: [ // Default: common image formats
 		'image/jpeg',
 		'image/jpg',
 		'image/png',
@@ -95,10 +124,15 @@ fileSettings: {
 }
 ```
 
-**Size Limits:**
-- `1MB` = `1024 * 1024`
-- `5MB` = `5 * 1024 * 1024`
-- `10MB` = `10 * 1024 * 1024`
+**Defaults:**
+- `maxFileSize`: `5242880` (5MB)
+- `acceptedImageTypes`: `['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']`
+
+**Technical Details:**
+- File validation happens client-side before upload
+- Large files (>10MB) may impact form performance
+- MIME type validation prevents malicious uploads
+- Rejected files trigger validation errors without submission
 
 ---
 
@@ -108,13 +142,20 @@ Customize form UI text and behavior.
 
 ```javascript
 ui: {
-	submitButtonText: 'Send Message',
-	submittingButtonText: 'Sending...',
-	resetAfterSubmit: true,
-	showSuccessMessage: true,
-	successMessageDuration: 5000 // milliseconds
+	submitButtonText: 'Send Message', // Default
+	submittingButtonText: 'Sending...', // Default
+	resetAfterSubmit: true, // Default
+	showSuccessMessage: true, // Default
+	successMessageDuration: 5000 // Default: 5000ms (5 seconds)
 }
 ```
+
+**Defaults:**
+- `submitButtonText`: `'Send Message'`
+- `submittingButtonText`: `'Sending...'`
+- `resetAfterSubmit`: `true`
+- `showSuccessMessage`: `true`
+- `successMessageDuration`: `5000` (5 seconds)
 
 ---
 
@@ -139,8 +180,8 @@ createContactApiHandler({
 	recaptchaMinScore: 0.5,
 
 	// Rate Limiting
-	rateLimitMaxRequests: 5,
-	rateLimitWindowMs: 60000, // 1 minute
+	rateLimitMaxRequests: 3, // Default: 3 requests
+	rateLimitWindowMs: 3600000, // Default: 3600000ms (1 hour)
 
 	// Messages
 	successMessage: 'Thank you for your message!',
@@ -154,7 +195,7 @@ createContactApiHandler({
 	customValidation: (data) => {
 		// Return errors object or null
 		if (data.phone && !isValidPhone(data.phone)) {
-			return { phone: ['Invalid phone number'] };
+			return { phone: 'Invalid phone number' };
 		}
 		return null;
 	},
@@ -167,9 +208,83 @@ createContactApiHandler({
 });
 ```
 
+**Technical Details:**
+
+**Rate Limiting:**
+- Uses in-memory IP-based tracking (resets on server restart)
+- Default: 3 requests per 3600 seconds (1 hour) per IP
+- Returns HTTP 429 with `retryAfter` header when exceeded
+- Edge case: Multiple users behind same NAT may share limit
+
+**reCAPTCHA:**
+- `minScore` range: 0.0 (bot) to 1.0 (human)
+- Default: 0.5 (balanced security/UX)
+- Lower scores (0.3-0.4) reduce false positives but increase bot risk
+- Higher scores (0.6-0.8) increase security but may block legitimate users
+- Performance: Adds ~200ms latency on first load (cached after)
+
+**Defaults Summary:**
+- `rateLimitMaxRequests`: `3`
+- `rateLimitWindowMs`: `3600000` (1 hour)
+- `recaptchaMinScore`: `0.5`
+- `logSubmissions`: `true`
+
 ---
 
 ## Email Service Providers
+
+### Choosing an Email Provider
+
+| Provider | Best For | Setup Time | Monthly Cost | Deliverability | Complexity |
+|----------|----------|------------|--------------|----------------|------------|
+| **Mock** | Development, testing | 1 min | Free | N/A (doesn't send) | ⭐ (minimal) |
+| **Nodemailer (Gmail)** | Personal projects, MVPs | 10 min | Free (100/day limit) | Good (95-98%) | ⭐⭐ (low) |
+| **Nodemailer (SendGrid)** | Growing startups | 15 min | $15-80/mo | Excellent (99%+) | ⭐⭐⭐ (medium) |
+| **AWS SES** | Production, high-volume | 30 min | $0.10/1000 emails | Excellent (99%+) | ⭐⭐⭐⭐ (high) |
+
+:::tip Decision Guide: Choosing an Email Provider
+- 🧪 **Testing?** → Mock (logs to console, no external dependencies)
+- 🏠 **Personal project or MVP?** → Gmail SMTP (free, quick setup)
+- 🚀 **Growing startup (1K-10K emails/day)?** → SendGrid or Mailgun (reliable delivery, support)
+- 🏢 **Enterprise (>10K emails/day)?** → AWS SES (scales, lowest cost per email)
+:::
+
+### Email Provider Decision Flow
+
+```mermaid
+flowchart TD
+    Start[Need Email Service] --> Q1{What's your use case?}
+
+    Q1 -->|Development/Testing| Mock[Mock Provider]
+    Q1 -->|Production| Q2{Expected volume?}
+
+    Q2 -->|< 100 emails/day| Gmail[Gmail SMTP]
+    Q2 -->|100-10K/day| Q3{Budget?}
+    Q2 -->|> 10K/day| SES[AWS SES]
+
+    Q3 -->|Startup/Mid-tier| SendGrid[SendGrid/Mailgun]
+    Q3 -->|Cost-conscious| SES
+
+    Mock --> M1[✓ Free<br/>✓ No setup<br/>✓ Console logs only]
+    Gmail --> G1[✓ Free<br/>✓ 5 min setup<br/>⚠ 100/day limit]
+    SendGrid --> S1[✓ Reliable<br/>✓ Good support<br/>⚠ $15-80/month]
+    SES --> SE1[✓ Scalable<br/>✓ $0.10/1000<br/>⚠ Complex setup]
+
+    style Mock fill:#10b981,color:#fff
+    style Gmail fill:#3b82f6,color:#fff
+    style SendGrid fill:#8b5cf6,color:#fff
+    style SES fill:#f59e0b,color:#fff
+```
+
+:::note Pattern Explained: Provider Abstraction
+Email services are pluggable via the provider pattern. This design enables:
+- **Vendor independence:** Switch from Nodemailer to AWS SES without changing form code
+- **Testing:** Mock provider enables testing without external dependencies or email quotas
+- **Progressive enhancement:** Start with mock in development, upgrade to production provider when ready
+- **Cost optimization:** Choose provider based on volume (Gmail free → SendGrid mid-tier → AWS SES high-volume)
+:::
+
+---
 
 ### Mock (Development)
 
@@ -225,7 +340,7 @@ emailServiceConfig: {
 
 ---
 
-## Complete Example
+## Example
 
 ```javascript
 // src/lib/contact-config.js
@@ -314,4 +429,7 @@ AWS_REGION=us-east-1
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [API Reference](./api-reference.md) | [Troubleshooting](./troubleshooting.md)
+**See also:**
+- [Getting Started](./getting-started.md) - Basic setup
+- [API Reference](./api-reference.md) - Component props
+- [TypeScript Guide](./typescript.md) - Type definitions

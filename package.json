@@ -10,13 +10,16 @@
 		"access": "public"
 	},
 	"scripts": {
-		"prepublishOnly": "npm run lint",
+		"prepublishOnly": "pnpm run lint",
 		"test": "echo 'No tests configured'",
 		"validate:exports": "node tests/exports.test.cjs",
 		"validate:docs": "node tests/docs-validator.cjs",
-		"validate": "npm run validate:exports && npm run validate:docs",
+		"validate": "pnpm run validate:exports && pnpm run validate:docs",
 		"lint": "eslint . --ext .js,.ts,.svelte",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"demo": "cd demo && pnpm run dev",
+		"demo:build": "cd demo && pnpm run build",
+		"demo:preview": "cd demo && pnpm run preview"
 	},
 	"exports": {
 		".": {
@@ -96,7 +99,6 @@
 		"CHANGELOG.md"
 	],
 	"dependencies": {
-		"@lucide/svelte": "^0.543.0",
 		"@sveltejs/kit": "^2.38.0",
 		"formsnap": "^2.0.1",
 		"nanoid": "^5.0.0",
@@ -147,6 +149,8 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.37.0",
+		"@goobits/docs-engine": "^2.0.0",
+		"@lucide/svelte": "^0.546.0",
 		"@types/node": "^24.10.0",
 		"@typescript-eslint/eslint-plugin": "^8.46.0",
 		"@typescript-eslint/parser": "^8.46.0",

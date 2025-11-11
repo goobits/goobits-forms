@@ -1,12 +1,104 @@
 # API Reference
 
-Complete reference for all components, handlers, and utilities in @goobits/forms.
+Reference for all components, handlers, and utilities in @goobits/forms.
 
-**Quick Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities)
+## TOC
+
+**Quick Links:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities) | [Services](#services)
 
 ---
 
 ## Form Components
+
+### Choosing a Form Component
+
+| Component | Use When | Category Selector | Bundle Size | Best For |
+|-----------|----------|-------------------|-------------|----------|
+| **ContactForm** | Single form type | No | +12KB | Simple contact page, predetermined category |
+| **CategoryContactForm** | 2+ form types | Yes (dropdown) | +15KB | Multi-department routing, consolidated forms |
+| **ContactFormPage** | Need full page layout | Configurable | +18KB | Complete form page with header/footer |
+| **FeedbackForm** | Quick feedback widget | No | +8KB | Embedded widget, minimal fields |
+
+:::tip Decision Guide: Choosing a Form Component
+- **Use ContactForm when:**
+  - You have ONE type of inquiry (e.g., "Contact Us" page)
+  - Category is predetermined programmatically
+  - You want simpler UI without category selector
+
+- **Use CategoryContactForm when:**
+  - You have 2+ inquiry types (Support, Sales, General)
+  - Users need to select their category
+  - Different fields required per category
+
+- **Use ContactFormPage when:**
+  - You want complete page layout with consistent styling
+  - Need header/footer around the form
+
+- **Use FeedbackForm when:**
+  - Embedded widget (not full page)
+  - Quick feedback only (name, email, message)
+  - Minimal UI footprint
+:::
+
+### Component Architecture
+
+See how form components connect to configuration, API handlers, and services:
+
+```mermaid
+graph TB
+    subgraph "Client Side (Browser)"
+        CF[ContactForm<br/>Single category]
+        CCF[CategoryContactForm<br/>Multi-category selector]
+        CFP[ContactFormPage<br/>Full page layout]
+        FF[FeedbackForm<br/>Minimal widget]
+    end
+
+    subgraph "Configuration Layer"
+        Config[contactConfig<br/>categories, fields, security]
+        Init[initContactFormConfig<br/>in hooks.server.js]
+    end
+
+    subgraph "Server Side APIs"
+        CSRF[/api/csrf<br/>CSRF token generation]
+        Handler[/api/contact<br/>createContactApiHandler]
+    end
+
+    subgraph "Backend Services"
+        Validation[Form Validation<br/>Zod schemas]
+        RateLimit[Rate Limiter<br/>IP-based throttling]
+        reCAPTCHA[reCAPTCHA Service<br/>Bot detection]
+        Email[Email Service<br/>Mock/Nodemailer/AWS SES]
+    end
+
+    CF --> Config
+    CCF --> Config
+    CFP --> Config
+    FF --> Config
+    Config --> Init
+
+    CF --> CSRF
+    CCF --> CSRF
+    CFP --> CSRF
+
+    CF --> Handler
+    CCF --> Handler
+    CFP --> Handler
+    FF --> Handler
+
+    Handler --> Validation
+    Handler --> RateLimit
+    Handler --> reCAPTCHA
+    Handler --> Email
+
+    style CF fill:#3b82f6,color:#fff
+    style CCF fill:#3b82f6,color:#fff
+    style CFP fill:#3b82f6,color:#fff
+    style FF fill:#3b82f6,color:#fff
+    style Handler fill:#10b981,color:#fff
+    style Email fill:#f59e0b,color:#fff
+```
+
+---
 
 ### ContactForm
 
@@ -22,7 +114,7 @@ import { ContactForm } from '@goobits/forms/ui';
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `apiEndpoint` | `string` | `'/api/contact'` | API endpoint for form submission |
-| `csrfToken` | `string` | `''` | CSRF token for security (optional, auto-fetched if not provided) |
+| `csrfToken` | `string` | `''` | CSRF token for security (optional, auto-fetched if not provided). **Performance:** Pre-fetch in `+page.server.js` to avoid 100-200ms delay on submission |
 | `initialData` | `object` | `{}` | Pre-populate form fields |
 | `messages` | `object` | `{}` | Override default i18n messages |
 | `submitContactForm` | `function` | Built-in handler | Custom form submission function |
@@ -87,7 +179,7 @@ import { CategoryContactForm } from '@goobits/forms/ui';
 
 ### FeedbackForm
 
-Quick feedback widget for collecting user input.
+Feedback widget for collecting user input.
 
 **Import:**
 ```javascript
@@ -123,7 +215,7 @@ import { FeedbackForm } from '@goobits/forms/ui';
 
 ### ContactFormPage
 
-Complete page layout with form, header, and footer.
+Page layout with form, header, and footer.
 
 **Import:**
 ```javascript
@@ -442,8 +534,8 @@ import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHand
 | `emailServiceConfig` | `object` | `{}` | Email service configuration |
 | `recaptchaSecretKey` | `string` | `''` | reCAPTCHA secret key |
 | `recaptchaMinScore` | `number` | `0.5` | Minimum reCAPTCHA score |
-| `rateLimitMaxRequests` | `number` | `5` | Max requests per window |
-| `rateLimitWindowMs` | `number` | `60000` | Rate limit window (ms) |
+| `rateLimitMaxRequests` | `number` | `3` | Max requests per window |
+| `rateLimitWindowMs` | `number` | `3600000` | Rate limit window (ms, default 1 hour) |
 | `successMessage` | `string` | Default message | Custom success message |
 | `errorMessage` | `string` | Default message | Custom error message |
 | `customValidation` | `function` | `null` | Custom validation logic |
@@ -629,6 +721,173 @@ if (!result.success) {
 
 ---
 
+## Services
+
+Advanced services for form handling, state management, and integrations.
+
+### Form Storage
+
+Persist form data to localStorage to prevent data loss.
+
+**Import:**
+```javascript
+import {
+	saveFormData,
+	loadFormData,
+	clearFormData,
+	hasSavedData
+} from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Save form data
+saveFormData({ name: 'John', email: 'john@example.com' }, 'contact');
+
+// Load saved data
+const data = loadFormData('contact');
+
+// Clear data
+clearFormData('contact');
+```
+
+---
+
+### Form Hydration
+
+Pre-fill forms with saved or test data.
+
+**Import:**
+```javascript
+import { hydrateForm, getTestDataForCategory } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Hydrate form with saved data
+const formData = hydrateForm({ category: 'contact', useTestData: false });
+
+// Get test data for development
+const testData = getTestDataForCategory('support');
+```
+
+---
+
+### Screen Reader Service
+
+Accessibility announcements for screen readers.
+
+**Import:**
+```javascript
+import {
+	announce,
+	announceFormErrors,
+	announceFormStatus
+} from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Announce message
+announce('Form submitted successfully', { priority: 'polite' });
+
+// Announce errors
+announceFormErrors({ email: ['Invalid email'], name: ['Required'] });
+
+// Announce status
+announceFormStatus('submitting');
+```
+
+---
+
+### Email Service
+
+Email delivery via Nodemailer, AWS SES, or mock provider.
+
+**Import:**
+```javascript
+import { createEmailProvider } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Create provider
+const emailService = createEmailProvider({
+	provider: 'nodemailer',
+	smtp: {
+		host: 'smtp.gmail.com',
+		port: 587,
+		auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+	}
+});
+
+// Send email
+await emailService.sendEmail({
+	to: 'admin@example.com',
+	subject: 'New Contact',
+	text: 'Message from user',
+	html: '<p>Message from user</p>'
+});
+```
+
+---
+
+### Rate Limiter
+
+IP and email-based rate limiting.
+
+**Import:**
+```javascript
+import { rateLimitFormSubmission, resetIpRateLimit } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Check rate limit
+const result = await rateLimitFormSubmission({
+	ipAddress: request.headers.get('x-forwarded-for'),
+	email: 'user@example.com',
+	maxRequests: 3,
+	windowMs: 60000
+});
+
+if (!result.allowed) {
+	return { error: 'Rate limit exceeded', retryAfter: result.retryAfter };
+}
+```
+
+---
+
+### reCAPTCHA
+
+reCAPTCHA verification and provider creation.
+
+**Import:**
+```javascript
+import { createRecaptchaProvider } from '@goobits/forms/services';
+```
+
+**Usage:**
+```javascript
+// Create provider
+const recaptcha = createRecaptchaProvider({
+	provider: 'google-v3',
+	siteKey: process.env.RECAPTCHA_SITE_KEY,
+	secretKey: process.env.RECAPTCHA_SECRET_KEY
+});
+
+// Execute challenge (client-side)
+const token = await recaptcha.execute('contact_form');
+
+// Verify token (server-side)
+const result = await recaptcha.verify(token);
+if (result.score < 0.5) {
+	return { error: 'Failed security check' };
+}
+```
+
+---
+
 ## TypeScript Support
 
 All components and utilities include TypeScript type definitions. Import types:
@@ -648,8 +907,11 @@ import type {
 } from '@goobits/forms/ui';
 ```
 
-See [TypeScript Guide](./typescript.md) for complete type documentation.
+See [TypeScript Guide](./typescript.md) for type documentation.
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [Configuration](./configuration.md) | [Troubleshooting](./troubleshooting.md)
+**See also:**
+- [TypeScript Guide](./typescript.md) - Type-safe development
+- [Configuration Guide](./configuration.md) - Configuration options
+- [Troubleshooting](./troubleshooting.md) - Common issues

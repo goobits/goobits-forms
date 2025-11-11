@@ -2,6 +2,8 @@
 
 Common issues and solutions for @goobits/forms.
 
+## TOC
+
 **Quick Navigation:** [Import Errors](#import-errors) | [Form Submission](#form-submission) | [reCAPTCHA](#recaptcha-issues) | [Styling](#styling-issues) | [Email Delivery](#email-delivery) | [TypeScript](#typescript-errors)
 
 ---
@@ -36,13 +38,13 @@ Error: Cannot resolve '@goobits/forms/ui'
 Check your import statements match the package exports:
 
 ```javascript
-// ✅ CORRECT
+// RECOMMENDED: Correct
 import { ContactForm } from '@goobits/forms/ui';
 import { Menu } from '@goobits/forms/ui';
 import { tooltip } from '@goobits/forms/ui/tooltip';
 import { Modal } from '@goobits/forms/ui/modals';
 
-// ❌ WRONG
+// AVOID: Wrong
 import { ContactForm } from '@goobits/forms'; // UI components not exported from root
 ```
 
@@ -63,16 +65,69 @@ TypeError: Component is not a constructor
 All UI components use named exports:
 
 ```javascript
-// ✅ CORRECT
+// RECOMMENDED: Correct
 import { ContactForm, FeedbackForm } from '@goobits/forms/ui';
 
-// ❌ WRONG
+// AVOID: Wrong
 import ContactForm from '@goobits/forms/ui'; // No default export
 ```
 
 ---
 
 ## Form Submission
+
+### Diagnostic Flowchart
+
+Use this flowchart to quickly diagnose form submission issues:
+
+```mermaid
+flowchart TD
+    Start[Form doesn't submit?]
+    Start --> Q1{Does form<br/>show spinner?}
+
+    Q1 -->|No| NoSpinner[No submission triggered]
+    Q1 -->|Yes| HasSpinner[Submission initiated]
+
+    NoSpinner --> Q2{Console<br/>errors?}
+    Q2 -->|Yes| Fix1[Fix JavaScript errors]
+    Q2 -->|No| Q3{Button<br/>enabled?}
+    Q3 -->|No| Fix2[Check button disabled state<br/>or validation errors]
+    Q3 -->|Yes| Fix3[Check onclick handler<br/>or form element]
+
+    HasSpinner --> Q4{Network<br/>request sent?}
+    Q4 -->|No| Fix4[Check apiEndpoint prop<br/>Verify route exists]
+
+    Q4 -->|Yes| Q5{Response<br/>received?}
+    Q5 -->|No| NetworkError[Network/CORS error]
+
+    Q5 -->|Yes| Q6{Status code?}
+
+    Q6 -->|200| Q7{Success<br/>message shown?}
+    Q7 -->|No| Fix5[Check response format:<br/>success: true required]
+    Q7 -->|Yes| Success[✓ Working correctly]
+
+    Q6 -->|400| Validation[Validation errors:<br/>Check field requirements<br/>Check server validation]
+
+    Q6 -->|403| CSRF[CSRF token invalid:<br/>Check /api/csrf endpoint<br/>Verify token generation]
+
+    Q6 -->|429| RateLimit[Rate limit exceeded:<br/>Wait 1 hour or<br/>increase rateLimitMaxRequests]
+
+    Q6 -->|500| ServerError[Server error:<br/>Check server logs<br/>Verify email config<br/>Check SMTP credentials]
+
+    style Start fill:#f59e0b,color:#fff
+    style Success fill:#10b981,color:#fff
+    style Fix1 fill:#ef4444,color:#fff
+    style Fix2 fill:#ef4444,color:#fff
+    style Fix3 fill:#ef4444,color:#fff
+    style Fix4 fill:#ef4444,color:#fff
+    style Fix5 fill:#ef4444,color:#fff
+    style Validation fill:#f59e0b,color:#fff
+    style CSRF fill:#f59e0b,color:#fff
+    style RateLimit fill:#f59e0b,color:#fff
+    style ServerError fill:#ef4444,color:#fff
+```
+
+---
 
 ### Form doesn't submit / No response
 
@@ -127,11 +182,10 @@ Error: Failed to fetch CSRF token
 1. **Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { generateCsrfToken, setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
-export async function GET({ cookies }) {
-	const token = generateCsrfToken();
-	setCsrfCookie(cookies, token);
+export async function GET(event) {
+	const token = setCsrfCookie(event);
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
 	});
@@ -166,8 +220,8 @@ Server must return errors in this format:
 return new Response(JSON.stringify({
 	success: false,
 	errors: {
-		email: ['Invalid email format'],
-		message: ['Message is required']
+		email: 'Invalid email format',
+		message: 'Message is required'
 	}
 }), {
 	status: 400,
@@ -211,7 +265,7 @@ Solution: Update site key in configuration.
 
 ---
 
-### Low reCAPTCHA scores causing rejections
+### Low reCAPTCHA Scores
 
 **Symptom:**
 Forms consistently rejected with "reCAPTCHA verification failed"
@@ -312,19 +366,19 @@ CSS variable overrides have no effect
 
 Override variables in correct scope:
 ```css
-/* ✅ CORRECT - Target .forms-scope */
+/* RECOMMENDED: Target .forms-scope */
 .forms-scope {
 	--color-primary-500: #3b82f6;
 	--font-family-base: 'Inter', sans-serif;
 }
 
-/* ❌ WRONG - Wrong selector */
+/* AVOID: Wrong selector */
 :root {
 	--color-primary-500: #3b82f6; /* Won't work */
 }
 ```
 
-See [variables.css](../ui/variables.css) for all available variables.
+See [variables.css](https://github.com/goobits/forms/blob/main/ui/variables.css) for all available variables.
 
 ---
 
@@ -475,11 +529,11 @@ Import and use type definitions:
 import type { ContactFormData } from '@goobits/forms/validation';
 
 function handleSubmit(data: ContactFormData) {
-	console.log(data.email); // ✅ Type-safe
+	console.log(data.email); // Type-safe
 }
 ```
 
-See [TypeScript Guide](./typescript.md) for complete type documentation.
+See [TypeScript Guide](./typescript.md) for type documentation.
 
 ---
 
@@ -499,8 +553,8 @@ Error: Rate limit exceeded. Please try again later.
 1. **Adjust rate limits:**
 ```javascript
 createContactApiHandler({
-	rateLimitMaxRequests: 10, // Increase from default 5
-	rateLimitWindowMs: 60000   // 1 minute window
+	rateLimitMaxRequests: 10, // Increase from default 3
+	rateLimitWindowMs: 60000   // Change from default 1 hour to 1 minute
 });
 ```
 
@@ -602,4 +656,7 @@ configureLogger({
 
 ---
 
-**Related:** [API Reference](./api-reference.md) | [Configuration](./configuration.md) | [Getting Started](./getting-started.md)
+**Still stuck?**
+- [GitHub Issues](https://github.com/goobits/forms/issues) - Report bugs
+- [API Reference](./api-reference.md) - Check usage examples
+- [Configuration Guide](./configuration.md) - Verify settings

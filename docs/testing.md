@@ -4,9 +4,9 @@ Test forms built with @goobits/forms.
 
 ---
 
-## Unit Testing Components
+## Unit Tests
 
-### Testing ContactForm
+### ContactForm
 
 ```typescript
 // ContactForm.test.ts
@@ -80,9 +80,9 @@ test('displays validation errors', async () => {
 
 ---
 
-## Integration Testing API Handlers
+## Integration Tests
 
-### Testing createContactApiHandler
+### createContactApiHandler
 
 ```typescript
 // api/contact.test.ts
@@ -141,7 +141,7 @@ describe('Contact API Handler', () => {
 
 ---
 
-## Mocking reCAPTCHA
+## reCAPTCHA Mocking
 
 ### Mock reCAPTCHA for Tests
 
@@ -198,7 +198,7 @@ test('verifies reCAPTCHA token', async () => {
 
 ---
 
-## Testing CSRF Protection
+## CSRF Protection Tests
 
 ```typescript
 import { generateCsrfToken, validateCsrfToken } from '@goobits/forms/security/csrf';
@@ -224,7 +224,7 @@ test('rejects mismatched CSRF tokens', () => {
 
 ---
 
-## E2E Testing with Playwright
+## E2E Tests
 
 ### Full Form Submission Flow
 
@@ -263,7 +263,7 @@ test.describe('Contact Form', () => {
 });
 ```
 
-### Testing File Upload
+### File Upload
 
 ```typescript
 test('uploads file attachment', async ({ page }) => {
@@ -289,7 +289,7 @@ test('uploads file attachment', async ({ page }) => {
 
 ---
 
-## Testing Custom Validation
+## Custom Validation Tests
 
 ```typescript
 import { contactSchema } from '@goobits/forms/validation';
@@ -340,7 +340,7 @@ test('rejects invalid email', () => {
 
 ---
 
-## Testing Rate Limiting
+## Rate Limiting Tests
 
 ```typescript
 // Mock rate limiter for tests
@@ -457,14 +457,23 @@ jobs:
 
 ## Best Practices
 
-1. **Mock external services** - Don't send real emails or make real API calls in tests
-2. **Test user interactions** - Focus on what users do, not implementation details
-3. **Use data-testid** - Add test IDs for reliable element selection
-4. **Test error states** - Verify validation and error handling
-5. **Test accessibility** - Use testing-library's accessibility queries
-6. **Isolate tests** - Each test should be independent
-7. **Use factories** - Create test data factories for consistent fixtures
+1. **Mock external services** - Avoid flaky tests and reduce CI costs by preventing real email/API calls
+
+2. **Test user interactions** - Testing implementation details creates brittle tests that break on refactors. Focus on user behavior for maintainable tests
+
+3. **Use data-testid** - Reliable element selection that won't break when CSS classes change
+
+4. **Test error states** - Most bugs occur in error handling. Verify validation and edge cases thoroughly
+
+5. **Test accessibility** - Use testing-library's accessibility queries (getByRole, getByLabelText) to catch a11y issues early
+
+6. **Isolate tests** - Independent tests prevent cascading failures and enable parallel execution for faster CI
+
+7. **Use factories** - Consistent test data reduces setup duplication and makes tests easier to read
 
 ---
 
-**Related:** [API Reference](./api-reference.md) | [Troubleshooting](./troubleshooting.md) | [Getting Started](./getting-started.md)
+**See also:**
+- [TypeScript Guide](./typescript.md) - Type-safe testing
+- [API Reference](./api-reference.md) - Component APIs
+- [Troubleshooting](./troubleshooting.md) - Debug test failures

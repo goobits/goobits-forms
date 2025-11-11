@@ -205,6 +205,108 @@ export function createDebouncedValidator<T extends (...args: any[]) => any>(
 export { debounce };
 
 /**
+ * Pre-built validation schemas for common contact form categories
+ *
+ * These schemas can be imported directly and used for validation
+ * or extended using Zod's .extend() method for custom fields.
+ *
+ * @example
+ * ```typescript
+ * import { contactSchema } from '@goobits/forms/validation';
+ *
+ * // Use directly
+ * const result = contactSchema.safeParse(formData);
+ *
+ * // Extend for custom fields
+ * const customSchema = contactSchema.extend({
+ *   customField: z.string()
+ * });
+ * ```
+ */
+
+/**
+ * General contact form schema
+ *
+ * Fields: name, email, message, attachments (optional), coppa
+ */
+export const contactSchema = z.object({
+	name: z.string().min(1, 'Please provide your name'),
+	email: z.string().email('Please enter a valid email address'),
+	message: z.string().min(1, 'Please share your message with us'),
+	attachments: z.array(z.instanceof(File)).optional(),
+	coppa: z.boolean().refine(val => val === true, {
+		message: "Please confirm you're over 13 or have parent/teacher permission"
+	})
+});
+
+/**
+ * Feedback form schema
+ *
+ * Fields: name, email, message, attachments (optional), coppa
+ */
+export const feedbackSchema = z.object({
+	name: z.string().min(1, 'Please provide your name'),
+	email: z.string().email('Please enter a valid email address'),
+	message: z.string().min(1, 'Please share your message with us'),
+	attachments: z.array(z.instanceof(File)).optional(),
+	coppa: z.boolean().refine(val => val === true, {
+		message: "Please confirm you're over 13 or have parent/teacher permission"
+	})
+});
+
+/**
+ * Support request form schema
+ *
+ * Fields: name, email, message, browser, browserVersion,
+ *         operatingSystem, attachments (optional), coppa
+ */
+export const supportSchema = z.object({
+	name: z.string().min(1, 'Please provide your name'),
+	email: z.string().email('Please enter a valid email address'),
+	message: z.string().min(1, 'Please share your message with us'),
+	browser: z.string().min(1, "Please tell us which browser you're using"),
+	browserVersion: z.string().min(1, 'Please tell us your browser version'),
+	operatingSystem: z.string().min(1, "Please tell us which operating system you're using"),
+	attachments: z.array(z.instanceof(File)).optional(),
+	coppa: z.boolean().refine(val => val === true, {
+		message: "Please confirm you're over 13 or have parent/teacher permission"
+	})
+});
+
+/**
+ * Business inquiry form schema
+ *
+ * Fields: name, email, company, businessRole, message, coppa
+ */
+export const businessSchema = z.object({
+	name: z.string().min(1, 'Please provide your name'),
+	email: z.string().email('Please enter a valid email address'),
+	company: z.string().min(1, 'Please provide your company name'),
+	businessRole: z.string().min(1, 'Please tell us your role in the company'),
+	message: z.string().min(1, 'Please share your message with us'),
+	coppa: z.boolean().refine(val => val === true, {
+		message: "Please confirm you're over 13 or have parent/teacher permission"
+	})
+});
+
+/**
+ * Booking/appointment form schema
+ *
+ * Fields: name, email, phone, preferredDate, preferredTime, message, coppa
+ */
+export const bookingSchema = z.object({
+	name: z.string().min(1, 'Please provide your name'),
+	email: z.string().email('Please enter a valid email address'),
+	phone: z.string().min(1, 'Please provide a contact phone number'),
+	preferredDate: z.string().min(1, 'Please select your preferred date'),
+	preferredTime: z.string().min(1, 'Please select your preferred time'),
+	message: z.string().min(1, 'Please share your message with us'),
+	coppa: z.boolean().refine(val => val === true, {
+		message: "Please confirm you're over 13 or have parent/teacher permission"
+	})
+});
+
+/**
  * Check if a form has any validation errors
  *
  * Examines the errors object from superforms to determine if there
