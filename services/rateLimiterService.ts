@@ -84,6 +84,17 @@ function startCleanup() {
 	}
 }
 
+/**
+ * Restart the cleanup timer (useful for testing with fake timers)
+ */
+export function restartCleanup(): void {
+	if (cleanupTimer) {
+		clearInterval(cleanupTimer);
+		cleanupTimer = null;
+	}
+	startCleanup();
+}
+
 // Start cleanup timer
 startCleanup();
 
