@@ -2,7 +2,9 @@
 
 Common issues and solutions for @goobits/forms.
 
-**Navigation:** [Import Errors](#import-errors) | [Form Submission](#form-submission) | [reCAPTCHA](#recaptcha-issues) | [Styling](#styling-issues) | [Email Delivery](#email-delivery) | [TypeScript](#typescript-errors)
+## TOC
+
+**Quick Navigation:** [Import Errors](#import-errors) | [Form Submission](#form-submission) | [reCAPTCHA](#recaptcha-issues) | [Styling](#styling-issues) | [Email Delivery](#email-delivery) | [TypeScript](#typescript-errors)
 
 ---
 

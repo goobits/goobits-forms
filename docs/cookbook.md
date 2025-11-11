@@ -2,6 +2,8 @@
 
 Practical recipes for common form scenarios. Each recipe includes complete, copy-paste-ready code.
 
+## TOC
+
 **Recipe Index:**
 - [Recipe 1: Simple Contact Form (5 min)](#recipe-1-simple-contact-form)
 - [Recipe 2: Production-Ready Form (15 min)](#recipe-2-production-ready-form)
@@ -17,10 +19,12 @@ Practical recipes for common form scenarios. Each recipe includes complete, copy
 
 **Time estimate:** 5 minutes
 
-**Prerequisites:**
+:::note Prerequisites
+Before starting this recipe, ensure you have:
 - SvelteKit project initialized
 - Gmail account with 2FA enabled
 - Gmail app password created ([How to create](https://support.google.com/accounts/answer/185833))
+:::
 
 ### Implementation
 
@@ -124,9 +128,11 @@ npm run dev
 
 **Time estimate:** 15 minutes
 
-**Prerequisites:**
+:::note Prerequisites
+Before starting this recipe, ensure you have:
 - Simple contact form working (Recipe 1)
 - Google reCAPTCHA account ([Get keys](https://www.google.com/recaptcha/admin))
+:::
 
 ### Implementation
 
@@ -253,8 +259,10 @@ export async function load(event) {
 
 **Time estimate:** 10 minutes
 
-**Prerequisites:**
+:::note Prerequisites
+Before starting this recipe, ensure you have:
 - Simple contact form working (Recipe 1)
+:::
 
 ### Implementation
 
@@ -370,8 +378,10 @@ export const POST = createContactApiHandler({
 
 **Time estimate:** 10 minutes
 
-**Prerequisites:**
+:::note Prerequisites
+Before starting this recipe, ensure you have:
 - Simple contact form working (Recipe 1)
+:::
 
 ### Implementation
 
@@ -510,8 +520,10 @@ export const POST = createContactApiHandler({
 
 **Time estimate:** 8 minutes
 
-**Prerequisites:**
+:::note Prerequisites
+Before starting this recipe, ensure you have:
 - Simple contact form working (Recipe 1)
+:::
 
 ### Implementation
 

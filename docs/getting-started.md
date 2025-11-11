@@ -2,10 +2,12 @@
 
 Build your first form with @goobits/forms.
 
-**Prerequisites:**
-- SvelteKit project
+:::note Prerequisites
+Before you begin, ensure you have:
+- SvelteKit project initialized
 - Node.js 18 or later
 - pnpm 9 or later
+:::
 
 ---
 
@@ -73,12 +75,26 @@ export async function handle({ event, resolve }) {
 }
 ```
 
-**Architecture Note: Why hooks.server.js?**
+:::note Architecture: Why hooks.server.js?
 Configuration runs once at server startup, not on every request. This ensures:
 - ✅ Better performance (config loaded once, not per-request)
 - ✅ Consistent behavior across all requests
 - ✅ Easy to share config between multiple API endpoints
 - ✅ Type checking at build time, not runtime
+:::
+
+### Project Structure After Step 1
+
+Your project should now have this structure:
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js       ← Form configuration
+├── routes/
+│   └── (routes will be added in next steps)
+└── hooks.server.js             ← Initialize config here
+```
 
 **Available fields:**
 - `name` - User's full name
@@ -116,6 +132,19 @@ ADMIN_EMAIL=admin@example.com
 FROM_EMAIL=noreply@example.com
 ```
 
+### Project Structure After Step 2
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js
+├── routes/
+│   └── api/
+│       └── contact/
+│           └── +server.js      ← API handler (Step 2 ✓)
+└── hooks.server.js
+```
+
 ---
 
 ### Step 3: Add Form to Page
@@ -140,6 +169,21 @@ Use the form component:
 3. Fill out and submit form
 4. Check browser console for submission log (mock provider)
 
+### Complete Project Structure
+
+```filetree
+src/
+├── lib/
+│   └── contact-config.js       ← Configuration
+├── routes/
+│   ├── api/
+│   │   └── contact/
+│   │       └── +server.js      ← API handler
+│   └── contact/
+│       └── +page.svelte        ← Form component (Step 3 ✓)
+└── hooks.server.js             ← Config initialization
+```
+
 ---
 
 ## Security Features
@@ -152,16 +196,72 @@ Use the form component:
 | **Standard** | CSRF + Rate limiting | Public contact forms, medium traffic | 10 min | Low (~150ms) |
 | **Maximum** | CSRF + Rate limiting + reCAPTCHA | High-traffic, spam-prone forms | 20 min | Medium (~400ms) |
 
-**Decision Guide:**
+:::tip Decision Guide: Choosing Your Security Level
 - ✅ **Minimum (CSRF only):** Internal forms, authenticated users only, low traffic
 - ✅ **Standard (CSRF + Rate limiting):** Most public forms, no spam history ← **Start here**
 - ✅ **Maximum (All features):** High-traffic public forms, spam-prone, abuse history
+:::
 
-**Why layered security?**
+:::note Why Layered Security?
 Each layer protects against different threats:
 - **CSRF:** Prevents cross-site attacks (malicious sites can't submit forms to your site)
 - **Rate limiting:** Prevents abuse from single IP (stops brute force, DoS attempts)
 - **reCAPTCHA:** Prevents automated bots (stops spam submissions)
+:::
+
+### Security Flow Visualization
+
+See how the three security layers work together to protect your form:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Form
+    participant CSRF API
+    participant Handler
+    participant RateLimit
+    participant reCAPTCHA
+    participant Email
+
+    User->>Browser: Opens contact page
+    Browser->>CSRF API: GET /api/csrf
+    CSRF API-->>Browser: CSRF token (cookie + response)
+
+    User->>Form: Fills and submits form
+
+    alt reCAPTCHA Enabled
+        Form->>reCAPTCHA: Execute challenge
+        reCAPTCHA-->>Form: Token (score 0.0-1.0)
+    end
+
+    Form->>Handler: POST /api/contact<br/>(data + CSRF token + reCAPTCHA token)
+
+    Handler->>Handler: ✓ Layer 1: Validate CSRF token
+
+    alt CSRF Invalid
+        Handler-->>Form: 403 Forbidden
+    end
+
+    Handler->>RateLimit: ✓ Layer 2: Check IP limits
+
+    alt Rate Limit Exceeded
+        Handler-->>Form: 429 Too Many Requests
+    end
+
+    alt reCAPTCHA Enabled
+        Handler->>reCAPTCHA: ✓ Layer 3: Verify token & score
+        alt Score Too Low
+            Handler-->>Form: 400 Bot Detected
+        end
+    end
+
+    Handler->>Handler: ✓ Validate form data
+    Handler->>Email: Send notification
+    Email-->>Handler: Email sent
+    Handler-->>Form: 200 Success
+    Form-->>User: "Thank you!" message
+```
 
 ---
 
@@ -248,8 +348,9 @@ export async function load({ cookies }) {
 }
 ```
 
-**Performance Note:**
+:::tip Performance Optimization
 Pre-fetching CSRF tokens in `+page.server.js` eliminates the 100-200ms auto-fetch delay on form submission. Without pre-fetching, the form makes an additional request to `/api/csrf` when the user clicks submit.
+:::
 
 ---
 
@@ -288,10 +389,11 @@ emailServiceConfig: {
 }
 ```
 
-**Gmail setup:**
-1. Enable 2-factor authentication
+:::warning Gmail Setup Requirements
+1. Enable 2-factor authentication on your Google account
 2. Generate app password: [Google Account > Security > App Passwords](https://myaccount.google.com/apppasswords)
-3. Use app password in configuration
+3. Use the 16-character app password (not your account password)
+:::
 
 **Environment variables:**
 ```bash
@@ -314,12 +416,13 @@ emailServiceConfig: {
 }
 ```
 
-**AWS SES setup:**
+:::warning AWS SES Setup Requirements
 1. Create AWS account
 2. Verify sender email in SES console
-3. Request production access (starts in sandbox mode)
+3. Request production access (starts in sandbox mode - limited sending)
 4. Create IAM user with SES sending permissions
-5. Generate access keys
+5. Generate access keys for the IAM user
+:::
 
 **Environment variables:**
 ```bash

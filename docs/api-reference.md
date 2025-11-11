@@ -2,7 +2,9 @@
 
 Reference for all components, handlers, and utilities in @goobits/forms.
 
-**Navigation:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities) | [Services](#services)
+## TOC
+
+**Quick Links:** [Form Components](#form-components) | [UI Components](#ui-components) | [Handlers](#handlers) | [Configuration](#configuration) | [Utilities](#utilities) | [Services](#services)
 
 ---
 
@@ -17,7 +19,7 @@ Reference for all components, handlers, and utilities in @goobits/forms.
 | **ContactFormPage** | Need full page layout | Configurable | +18KB | Complete form page with header/footer |
 | **FeedbackForm** | Quick feedback widget | No | +8KB | Embedded widget, minimal fields |
 
-**Decision Guide:**
+:::tip Decision Guide: Choosing a Form Component
 - **Use ContactForm when:**
   - You have ONE type of inquiry (e.g., "Contact Us" page)
   - Category is predetermined programmatically
@@ -36,6 +38,65 @@ Reference for all components, handlers, and utilities in @goobits/forms.
   - Embedded widget (not full page)
   - Quick feedback only (name, email, message)
   - Minimal UI footprint
+:::
+
+### Component Architecture
+
+See how form components connect to configuration, API handlers, and services:
+
+```mermaid
+graph TB
+    subgraph "Client Side (Browser)"
+        CF[ContactForm<br/>Single category]
+        CCF[CategoryContactForm<br/>Multi-category selector]
+        CFP[ContactFormPage<br/>Full page layout]
+        FF[FeedbackForm<br/>Minimal widget]
+    end
+
+    subgraph "Configuration Layer"
+        Config[contactConfig<br/>categories, fields, security]
+        Init[initContactFormConfig<br/>in hooks.server.js]
+    end
+
+    subgraph "Server Side APIs"
+        CSRF[/api/csrf<br/>CSRF token generation]
+        Handler[/api/contact<br/>createContactApiHandler]
+    end
+
+    subgraph "Backend Services"
+        Validation[Form Validation<br/>Zod schemas]
+        RateLimit[Rate Limiter<br/>IP-based throttling]
+        reCAPTCHA[reCAPTCHA Service<br/>Bot detection]
+        Email[Email Service<br/>Mock/Nodemailer/AWS SES]
+    end
+
+    CF --> Config
+    CCF --> Config
+    CFP --> Config
+    FF --> Config
+    Config --> Init
+
+    CF --> CSRF
+    CCF --> CSRF
+    CFP --> CSRF
+
+    CF --> Handler
+    CCF --> Handler
+    CFP --> Handler
+    FF --> Handler
+
+    Handler --> Validation
+    Handler --> RateLimit
+    Handler --> reCAPTCHA
+    Handler --> Email
+
+    style CF fill:#3b82f6,color:#fff
+    style CCF fill:#3b82f6,color:#fff
+    style CFP fill:#3b82f6,color:#fff
+    style FF fill:#3b82f6,color:#fff
+    style Handler fill:#10b981,color:#fff
+    style Email fill:#f59e0b,color:#fff
+```
 
 ---
 

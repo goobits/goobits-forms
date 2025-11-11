@@ -39,12 +39,13 @@ categories: {
 }
 ```
 
-**Design Philosophy: Category-Based Fields**
+:::note Design Philosophy: Category-Based Fields
 Fields are organized by category rather than hardcoded per component. This approach enables:
 - **Flexibility:** Add new form types without changing component code
 - **Reusability:** Same `ContactForm` component serves multiple purposes (support, sales, general)
 - **Dynamic rendering:** Switch fields based on user selection in `CategoryContactForm`
 - **Validation consistency:** Single schema definition prevents frontend/backend mismatch
+:::
 
 ### Available Fields
 
@@ -66,10 +67,12 @@ Complete reference for all built-in form fields:
 | `attachments` | `file` | Image upload (up to 3) | Optional, 5MB max per file | - |
 | `coppa` | `checkbox` | COPPA compliance | Required | - |
 
-**Usage Notes:**
+:::note Field Usage Notes
 - All fields except `attachments` are required by default
 - Fields can be customized by overriding defaults in `initContactFormConfig()`
 - Custom fields can be added using the same pattern
+- Field validation is automatically enforced on both client and server
+:::
 
 ---
 
@@ -91,12 +94,15 @@ recaptcha: {
 - `provider`: `'google-v3'`
 - `minScore`: `0.5`
 
-**Score Guidelines:**
+:::tip reCAPTCHA Score Guidelines
 - `0.9-1.0` - Very likely human
 - `0.7-0.8` - Likely human
-- `0.5-0.6` - Neutral (recommended threshold)
+- `0.5-0.6` - Neutral (recommended threshold) ← **Start here**
 - `0.3-0.4` - Possibly bot
 - `0.0-0.2` - Very likely bot
+
+**Recommendation:** Start with `0.5` and adjust based on spam levels. Lower scores may block legitimate users.
+:::
 
 ---
 
@@ -236,18 +242,47 @@ createContactApiHandler({
 | **Nodemailer (SendGrid)** | Growing startups | 15 min | $15-80/mo | Excellent (99%+) | ⭐⭐⭐ (medium) |
 | **AWS SES** | Production, high-volume | 30 min | $0.10/1000 emails | Excellent (99%+) | ⭐⭐⭐⭐ (high) |
 
-**Decision Guide:**
+:::tip Decision Guide: Choosing an Email Provider
 - 🧪 **Testing?** → Mock (logs to console, no external dependencies)
 - 🏠 **Personal project or MVP?** → Gmail SMTP (free, quick setup)
 - 🚀 **Growing startup (1K-10K emails/day)?** → SendGrid or Mailgun (reliable delivery, support)
 - 🏢 **Enterprise (>10K emails/day)?** → AWS SES (scales, lowest cost per email)
+:::
 
-**Pattern Explained: Provider Abstraction**
+### Email Provider Decision Flow
+
+```mermaid
+flowchart TD
+    Start[Need Email Service] --> Q1{What's your use case?}
+
+    Q1 -->|Development/Testing| Mock[Mock Provider]
+    Q1 -->|Production| Q2{Expected volume?}
+
+    Q2 -->|< 100 emails/day| Gmail[Gmail SMTP]
+    Q2 -->|100-10K/day| Q3{Budget?}
+    Q2 -->|> 10K/day| SES[AWS SES]
+
+    Q3 -->|Startup/Mid-tier| SendGrid[SendGrid/Mailgun]
+    Q3 -->|Cost-conscious| SES
+
+    Mock --> M1[✓ Free<br/>✓ No setup<br/>✓ Console logs only]
+    Gmail --> G1[✓ Free<br/>✓ 5 min setup<br/>⚠ 100/day limit]
+    SendGrid --> S1[✓ Reliable<br/>✓ Good support<br/>⚠ $15-80/month]
+    SES --> SE1[✓ Scalable<br/>✓ $0.10/1000<br/>⚠ Complex setup]
+
+    style Mock fill:#10b981,color:#fff
+    style Gmail fill:#3b82f6,color:#fff
+    style SendGrid fill:#8b5cf6,color:#fff
+    style SES fill:#f59e0b,color:#fff
+```
+
+:::note Pattern Explained: Provider Abstraction
 Email services are pluggable via the provider pattern. This design enables:
 - **Vendor independence:** Switch from Nodemailer to AWS SES without changing form code
 - **Testing:** Mock provider enables testing without external dependencies or email quotas
 - **Progressive enhancement:** Start with mock in development, upgrade to production provider when ready
 - **Cost optimization:** Choose provider based on volume (Gmail free → SendGrid mid-tier → AWS SES high-volume)
+:::
 
 ---
 
