@@ -73,6 +73,13 @@ export async function handle({ event, resolve }) {
 }
 ```
 
+**Architecture Note: Why hooks.server.js?**
+Configuration runs once at server startup, not on every request. This ensures:
+- ✅ Better performance (config loaded once, not per-request)
+- ✅ Consistent behavior across all requests
+- ✅ Easy to share config between multiple API endpoints
+- ✅ Type checking at build time, not runtime
+
 **Available fields:**
 - `name` - User's full name
 - `email` - Email address
@@ -136,6 +143,27 @@ Use the form component:
 ---
 
 ## Security Features
+
+### Choosing Your Security Level
+
+| Security Level | Features | Use When | Setup Time | Performance Impact |
+|----------------|----------|----------|------------|-------------------|
+| **Minimum** | CSRF only | Internal tools, authenticated users | 5 min | Minimal (~100ms) |
+| **Standard** | CSRF + Rate limiting | Public contact forms, medium traffic | 10 min | Low (~150ms) |
+| **Maximum** | CSRF + Rate limiting + reCAPTCHA | High-traffic, spam-prone forms | 20 min | Medium (~400ms) |
+
+**Decision Guide:**
+- ✅ **Minimum (CSRF only):** Internal forms, authenticated users only, low traffic
+- ✅ **Standard (CSRF + Rate limiting):** Most public forms, no spam history ← **Start here**
+- ✅ **Maximum (All features):** High-traffic public forms, spam-prone, abuse history
+
+**Why layered security?**
+Each layer protects against different threats:
+- **CSRF:** Prevents cross-site attacks (malicious sites can't submit forms to your site)
+- **Rate limiting:** Prevents abuse from single IP (stops brute force, DoS attempts)
+- **reCAPTCHA:** Prevents automated bots (stops spam submissions)
+
+---
 
 ### reCAPTCHA Protection
 

@@ -39,6 +39,13 @@ categories: {
 }
 ```
 
+**Design Philosophy: Category-Based Fields**
+Fields are organized by category rather than hardcoded per component. This approach enables:
+- **Flexibility:** Add new form types without changing component code
+- **Reusability:** Same `ContactForm` component serves multiple purposes (support, sales, general)
+- **Dynamic rendering:** Switch fields based on user selection in `CategoryContactForm`
+- **Validation consistency:** Single schema definition prevents frontend/backend mismatch
+
 ### Available Fields
 
 Complete reference for all built-in form fields:
@@ -219,6 +226,30 @@ createContactApiHandler({
 ---
 
 ## Email Service Providers
+
+### Choosing an Email Provider
+
+| Provider | Best For | Setup Time | Monthly Cost | Deliverability | Complexity |
+|----------|----------|------------|--------------|----------------|------------|
+| **Mock** | Development, testing | 1 min | Free | N/A (doesn't send) | ⭐ (minimal) |
+| **Nodemailer (Gmail)** | Personal projects, MVPs | 10 min | Free (100/day limit) | Good (95-98%) | ⭐⭐ (low) |
+| **Nodemailer (SendGrid)** | Growing startups | 15 min | $15-80/mo | Excellent (99%+) | ⭐⭐⭐ (medium) |
+| **AWS SES** | Production, high-volume | 30 min | $0.10/1000 emails | Excellent (99%+) | ⭐⭐⭐⭐ (high) |
+
+**Decision Guide:**
+- 🧪 **Testing?** → Mock (logs to console, no external dependencies)
+- 🏠 **Personal project or MVP?** → Gmail SMTP (free, quick setup)
+- 🚀 **Growing startup (1K-10K emails/day)?** → SendGrid or Mailgun (reliable delivery, support)
+- 🏢 **Enterprise (>10K emails/day)?** → AWS SES (scales, lowest cost per email)
+
+**Pattern Explained: Provider Abstraction**
+Email services are pluggable via the provider pattern. This design enables:
+- **Vendor independence:** Switch from Nodemailer to AWS SES without changing form code
+- **Testing:** Mock provider enables testing without external dependencies or email quotas
+- **Progressive enhancement:** Start with mock in development, upgrade to production provider when ready
+- **Cost optimization:** Choose provider based on volume (Gmail free → SendGrid mid-tier → AWS SES high-volume)
+
+---
 
 ### Mock (Development)
 

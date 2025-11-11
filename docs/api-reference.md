@@ -8,6 +8,37 @@ Reference for all components, handlers, and utilities in @goobits/forms.
 
 ## Form Components
 
+### Choosing a Form Component
+
+| Component | Use When | Category Selector | Bundle Size | Best For |
+|-----------|----------|-------------------|-------------|----------|
+| **ContactForm** | Single form type | No | +12KB | Simple contact page, predetermined category |
+| **CategoryContactForm** | 2+ form types | Yes (dropdown) | +15KB | Multi-department routing, consolidated forms |
+| **ContactFormPage** | Need full page layout | Configurable | +18KB | Complete form page with header/footer |
+| **FeedbackForm** | Quick feedback widget | No | +8KB | Embedded widget, minimal fields |
+
+**Decision Guide:**
+- **Use ContactForm when:**
+  - You have ONE type of inquiry (e.g., "Contact Us" page)
+  - Category is predetermined programmatically
+  - You want simpler UI without category selector
+
+- **Use CategoryContactForm when:**
+  - You have 2+ inquiry types (Support, Sales, General)
+  - Users need to select their category
+  - Different fields required per category
+
+- **Use ContactFormPage when:**
+  - You want complete page layout with consistent styling
+  - Need header/footer around the form
+
+- **Use FeedbackForm when:**
+  - Embedded widget (not full page)
+  - Quick feedback only (name, email, message)
+  - Minimal UI footprint
+
+---
+
 ### ContactForm
 
 Main form component with validation, CSRF protection, and category-based field rendering.

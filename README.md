@@ -257,6 +257,7 @@ export async function GET(event) {
 
 **Getting Started:**
 - [Installation & Setup](./docs/getting-started.md) - Complete guide with security and email
+- [Cookbook](./docs/cookbook.md) - 5 practical recipes with complete code
 - [Configuration](./docs/configuration.md) - All options and providers
 - [TypeScript](./docs/typescript.md) - Type-safe development
 
