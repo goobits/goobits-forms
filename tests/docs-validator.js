@@ -2,11 +2,15 @@
  * Documentation Link Validator
  *
  * Validates markdown links and file references in documentation.
- * Run with: node tests/docs-validator.cjs
+ * Run with: node tests/docs-validator.js
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const errors = [];
@@ -41,7 +45,7 @@ function extractMarkdownLinks(content) {
 // Helper to validate internal file link
 function validateInternalLink(linkUrl, sourceFile) {
 	// Remove anchor
-	const [filePath, anchor] = linkUrl.split('#');
+	const [filePath] = linkUrl.split('#');
 
 	if (!filePath) {
 		// Just an anchor (#section)

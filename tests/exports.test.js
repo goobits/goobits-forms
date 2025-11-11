@@ -5,8 +5,12 @@
  * Run with: node tests/exports.test.js
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const errors = [];
