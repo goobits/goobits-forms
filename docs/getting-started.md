@@ -562,4 +562,7 @@ Use CategoryContactForm:
 
 ---
 
-**Related:** [Configuration](./configuration.md) | [API Reference](./api-reference.md) | [Examples](../examples/)
+**Next steps:**
+- [Configuration Guide](./configuration.md) - Customize your forms
+- [API Reference](./api-reference.md) - Explore all components
+- [Testing Guide](./testing.md) - Test your implementation

@@ -500,4 +500,7 @@ Recommended TypeScript configuration:
 
 ---
 
-**Related:** [API Reference](./api-reference.md) | [Getting Started](./getting-started.md) | [Configuration](./configuration.md)
+**See also:**
+- [API Reference](./api-reference.md) - Available types
+- [Testing Guide](./testing.md) - Type-safe testing
+- [Troubleshooting](./troubleshooting.md) - Type errors

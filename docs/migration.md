@@ -279,4 +279,7 @@ Update validation schemas to Zod v4 syntax if using custom schemas.
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [Configuration](./configuration.md) | [API Reference](./api-reference.md)
+**After migrating:**
+- [Configuration Guide](./configuration.md) - Update your config
+- [API Reference](./api-reference.md) - Check new features
+- [Troubleshooting](./troubleshooting.md) - Resolve migration issues

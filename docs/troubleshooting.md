@@ -602,4 +602,7 @@ configureLogger({
 
 ---
 
-**Related:** [API Reference](./api-reference.md) | [Configuration](./configuration.md) | [Getting Started](./getting-started.md)
+**Still stuck?**
+- [GitHub Issues](https://github.com/goobits/forms/issues) - Report bugs
+- [API Reference](./api-reference.md) - Check usage examples
+- [Configuration Guide](./configuration.md) - Verify settings

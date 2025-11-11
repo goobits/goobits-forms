@@ -352,4 +352,7 @@ AWS_REGION=us-east-1
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [API Reference](./api-reference.md) | [Troubleshooting](./troubleshooting.md)
+**See also:**
+- [Getting Started](./getting-started.md) - Basic setup
+- [API Reference](./api-reference.md) - Component props
+- [TypeScript Guide](./typescript.md) - Type definitions

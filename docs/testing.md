@@ -467,4 +467,7 @@ jobs:
 
 ---
 
-**Related:** [API Reference](./api-reference.md) | [Troubleshooting](./troubleshooting.md) | [Getting Started](./getting-started.md)
+**See also:**
+- [TypeScript Guide](./typescript.md) - Type-safe testing
+- [API Reference](./api-reference.md) - Component APIs
+- [Troubleshooting](./troubleshooting.md) - Debug test failures

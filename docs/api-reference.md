@@ -652,4 +652,7 @@ See [TypeScript Guide](./typescript.md) for type documentation.
 
 ---
 
-**Related:** [Getting Started](./getting-started.md) | [Configuration](./configuration.md) | [Troubleshooting](./troubleshooting.md)
+**See also:**
+- [TypeScript Guide](./typescript.md) - Type-safe development
+- [Configuration Guide](./configuration.md) - Configuration options
+- [Troubleshooting](./troubleshooting.md) - Common issues
