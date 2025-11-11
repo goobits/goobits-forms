@@ -1,6 +1,6 @@
 {
 	"name": "@goobits/forms",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Configurable form components with validation, reCAPTCHA, and file uploads for Svelte 5",
 	"type": "module",
 	"main": "./index.ts",
@@ -12,8 +12,8 @@
 	"scripts": {
 		"prepublishOnly": "pnpm run lint",
 		"test": "echo 'No tests configured'",
-		"validate:exports": "node tests/exports.test.cjs",
-		"validate:docs": "node tests/docs-validator.cjs",
+		"validate:exports": "node tests/exports.test.js",
+		"validate:docs": "node tests/docs-validator.js",
 		"validate": "pnpm run validate:exports && pnpm run validate:docs",
 		"lint": "eslint . --ext .js,.ts,.svelte",
 		"format": "prettier --write .",
