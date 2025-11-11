@@ -232,7 +232,7 @@ createContactApiHandler({
 	// Custom validation
 	customValidation: (data) => {
 		if (data.phone && !isValidPhone(data.phone)) {
-			return { phone: ['Invalid phone number'] };
+			return { phone: 'Invalid phone number' };
 		}
 		return null;
 	}

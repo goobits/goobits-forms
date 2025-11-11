@@ -182,7 +182,7 @@ createContactApiHandler({
 	customValidation: (data) => {
 		// Return errors object or null
 		if (data.phone && !isValidPhone(data.phone)) {
-			return { phone: ['Invalid phone number'] };
+			return { phone: 'Invalid phone number' };
 		}
 		return null;
 	},
@@ -199,7 +199,7 @@ createContactApiHandler({
 
 **Rate Limiting:**
 - Uses in-memory IP-based tracking (resets on server restart)
-- Default: 3 requests per 60 seconds per IP
+- Default: 3 requests per 3600 seconds (1 hour) per IP
 - Returns HTTP 429 with `retryAfter` header when exceeded
 - Edge case: Multiple users behind same NAT may share limit
 

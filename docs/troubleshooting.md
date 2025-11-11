@@ -165,8 +165,8 @@ Server must return errors in this format:
 return new Response(JSON.stringify({
 	success: false,
 	errors: {
-		email: ['Invalid email format'],
-		message: ['Message is required']
+		email: 'Invalid email format',
+		message: 'Message is required'
 	}
 }), {
 	status: 400,

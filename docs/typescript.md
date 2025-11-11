@@ -243,14 +243,14 @@ function validatePhone(phone: string): boolean {
 
 export const POST = createContactApiHandler({
 	customValidation: (data: ContactFormData) => {
-		const errors: Record<string, string[]> = {};
+		const errors: Record<string, string> = {};
 
 		if (data.phone && !validatePhone(data.phone)) {
-			errors.phone = ['Please enter a valid phone number'];
+			errors.phone = 'Please enter a valid phone number';
 		}
 
 		if (data.email && !data.email.includes('@')) {
-			errors.email = ['Invalid email format'];
+			errors.email = 'Invalid email format';
 		}
 
 		return Object.keys(errors).length > 0 ? errors : null;
