@@ -217,7 +217,8 @@ export async function load({ cookies }) {
 }
 ```
 
-**Note:** Forms auto-fetch CSRF token if not provided, but passing it improves performance.
+**Performance Note:**
+Pre-fetching CSRF tokens in `+page.server.js` eliminates the 100-200ms auto-fetch delay on form submission. Without pre-fetching, the form makes an additional request to `/api/csrf` when the user clicks submit.
 
 ---
 

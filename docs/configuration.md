@@ -61,12 +61,17 @@ Protect forms from bots.
 
 ```javascript
 recaptcha: {
-	enabled: true,
-	provider: 'google-v3', // or 'hcaptcha', 'turnstile'
-	siteKey: 'YOUR_SITE_KEY',
-	minScore: 0.5 // 0.0-1.0 (v3 only)
+	enabled: false, // Default: disabled
+	provider: 'google-v3', // Default: 'google-v3'
+	siteKey: '', // Required when enabled
+	minScore: 0.5 // Default: 0.5 (v3 only, range: 0.0-1.0)
 }
 ```
+
+**Defaults:**
+- `enabled`: `false`
+- `provider`: `'google-v3'`
+- `minScore`: `0.5`
 
 **Score Guidelines:**
 - `0.9-1.0` - Very likely human
@@ -83,8 +88,8 @@ Configure file uploads and validation.
 
 ```javascript
 fileSettings: {
-	maxFileSize: 5 * 1024 * 1024, // 5MB in bytes
-	acceptedImageTypes: [
+	maxFileSize: 5 * 1024 * 1024, // Default: 5MB in bytes
+	acceptedImageTypes: [ // Default: common image formats
 		'image/jpeg',
 		'image/jpg',
 		'image/png',
@@ -95,10 +100,15 @@ fileSettings: {
 }
 ```
 
-**Size Limits:**
-- `1MB` = `1024 * 1024`
-- `5MB` = `5 * 1024 * 1024`
-- `10MB` = `10 * 1024 * 1024`
+**Defaults:**
+- `maxFileSize`: `5242880` (5MB)
+- `acceptedImageTypes`: `['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']`
+
+**Technical Details:**
+- File validation happens client-side before upload
+- Large files (>10MB) may impact form performance
+- MIME type validation prevents malicious uploads
+- Rejected files trigger validation errors without submission
 
 ---
 
@@ -108,13 +118,20 @@ Customize form UI text and behavior.
 
 ```javascript
 ui: {
-	submitButtonText: 'Send Message',
-	submittingButtonText: 'Sending...',
-	resetAfterSubmit: true,
-	showSuccessMessage: true,
-	successMessageDuration: 5000 // milliseconds
+	submitButtonText: 'Send Message', // Default
+	submittingButtonText: 'Sending...', // Default
+	resetAfterSubmit: true, // Default
+	showSuccessMessage: true, // Default
+	successMessageDuration: 5000 // Default: 5000ms (5 seconds)
 }
 ```
+
+**Defaults:**
+- `submitButtonText`: `'Send Message'`
+- `submittingButtonText`: `'Sending...'`
+- `resetAfterSubmit`: `true`
+- `showSuccessMessage`: `true`
+- `successMessageDuration`: `5000` (5 seconds)
 
 ---
 
@@ -139,8 +156,8 @@ createContactApiHandler({
 	recaptchaMinScore: 0.5,
 
 	// Rate Limiting
-	rateLimitMaxRequests: 5,
-	rateLimitWindowMs: 60000, // 1 minute
+	rateLimitMaxRequests: 3, // Default: 3 requests
+	rateLimitWindowMs: 60000, // Default: 60000ms (1 minute)
 
 	// Messages
 	successMessage: 'Thank you for your message!',
@@ -166,6 +183,27 @@ createContactApiHandler({
 	}
 });
 ```
+
+**Technical Details:**
+
+**Rate Limiting:**
+- Uses in-memory IP-based tracking (resets on server restart)
+- Default: 3 requests per 60 seconds per IP
+- Returns HTTP 429 with `retryAfter` header when exceeded
+- Edge case: Multiple users behind same NAT may share limit
+
+**reCAPTCHA:**
+- `minScore` range: 0.0 (bot) to 1.0 (human)
+- Default: 0.5 (balanced security/UX)
+- Lower scores (0.3-0.4) reduce false positives but increase bot risk
+- Higher scores (0.6-0.8) increase security but may block legitimate users
+- Performance: Adds ~200ms latency on first load (cached after)
+
+**Defaults Summary:**
+- `rateLimitMaxRequests`: `3`
+- `rateLimitWindowMs`: `60000` (1 minute)
+- `recaptchaMinScore`: `0.5`
+- `logSubmissions`: `true`
 
 ---
 

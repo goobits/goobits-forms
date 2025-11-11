@@ -22,7 +22,7 @@ import { ContactForm } from '@goobits/forms/ui';
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `apiEndpoint` | `string` | `'/api/contact'` | API endpoint for form submission |
-| `csrfToken` | `string` | `''` | CSRF token for security (optional, auto-fetched if not provided) |
+| `csrfToken` | `string` | `''` | CSRF token for security (optional, auto-fetched if not provided). **Performance:** Pre-fetch in `+page.server.js` to avoid 100-200ms delay on submission |
 | `initialData` | `object` | `{}` | Pre-populate form fields |
 | `messages` | `object` | `{}` | Override default i18n messages |
 | `submitContactForm` | `function` | Built-in handler | Custom form submission function |
