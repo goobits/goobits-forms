@@ -457,13 +457,19 @@ jobs:
 
 ## Best Practices
 
-1. **Mock external services** - Don't send real emails or make real API calls in tests
-2. **Test user interactions** - Focus on what users do, not implementation details
-3. **Use data-testid** - Add test IDs for reliable element selection
-4. **Test error states** - Verify validation and error handling
-5. **Test accessibility** - Use testing-library's accessibility queries
-6. **Isolate tests** - Each test should be independent
-7. **Use factories** - Create test data factories for consistent fixtures
+1. **Mock external services** - Avoid flaky tests and reduce CI costs by preventing real email/API calls
+
+2. **Test user interactions** - Testing implementation details creates brittle tests that break on refactors. Focus on user behavior for maintainable tests
+
+3. **Use data-testid** - Reliable element selection that won't break when CSS classes change
+
+4. **Test error states** - Most bugs occur in error handling. Verify validation and edge cases thoroughly
+
+5. **Test accessibility** - Use testing-library's accessibility queries (getByRole, getByLabelText) to catch a11y issues early
+
+6. **Isolate tests** - Independent tests prevent cascading failures and enable parallel execution for faster CI
+
+7. **Use factories** - Consistent test data reduces setup duplication and makes tests easier to read
 
 ---
 

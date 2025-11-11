@@ -2,7 +2,10 @@
 
 Build your first form with @goobits/forms.
 
-**Prerequisites:** SvelteKit project with Node.js ≥18 and pnpm ≥9
+**Prerequisites:**
+- SvelteKit project
+- Node.js 18 or later
+- pnpm 9 or later
 
 ---
 

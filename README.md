@@ -1,42 +1,36 @@
-# @goobits/forms
+# 📋 @goobits/forms
 
-Production-ready forms for SvelteKit. Secure. Accessible. Done.
+Production-ready forms for SvelteKit with validation, security, and email delivery.
 
 [![npm version](https://img.shields.io/npm/v/@goobits/forms.svg)](https://www.npmjs.com/package/@goobits/forms)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 ---
 
-## Choose Your Path
+## ✨ Key Features
 
-**🚀 [Quick Start](#quick-start)** - Ship a contact form in 5 minutes
-**📚 [Documentation](#documentation)** - Complete guides and API reference
-
----
-
-## Key Features
-
-- **Form Types** - Contact, support, feedback, booking forms with category-based routing
-- **Schema Validation** - Type-safe validation with Zod v4
-- **Bot Protection** - reCAPTCHA v3, rate limiting, CSRF tokens
-- **File Uploads** - Image uploads with preview and client-side validation
-- **Internationalization** - i18n with Paraglide integration and auto-detection
-- **Accessibility** - WCAG 2.1 compliant, tested with NVDA/JAWS/VoiceOver
+- **🎯 Form Types** - Contact, support, feedback, and booking forms with category routing
+- **✅ Schema Validation** - Type-safe validation with Zod
+- **🔒 Bot Protection** - reCAPTCHA v3, rate limiting, CSRF tokens
+- **📎 File Uploads** - Image uploads with preview and validation
+- **🌐 Internationalization** - i18n with Paraglide and auto-detection
+- **♿ Accessibility** - WCAG 2.1 compliant, screen reader tested
 
 ---
 
-## Quick Start
-
-### Install
+## 🚀 Quick Start
 
 ```bash
+# Install package (includes all peer dependencies)
 npm install @goobits/forms
+
+# Optional: Email services
+npm install nodemailer          # SMTP
+npm install @aws-sdk/client-ses # AWS SES
 ```
 
-### Configure
-
 ```javascript
-// src/hooks.server.js
+// src/hooks.server.js - Configure forms
 import { initContactFormConfig } from '@goobits/forms/config';
 
 initContactFormConfig({
@@ -50,23 +44,23 @@ initContactFormConfig({
 });
 ```
 
-### Create API
-
 ```javascript
-// src/routes/api/contact/+server.js
+// src/routes/api/contact/+server.js - Create API handler
 import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
-	emailServiceConfig: { provider: 'mock' } // or 'nodemailer', 'aws-ses'
+	emailServiceConfig: {
+		provider: 'mock' // Development
+		// provider: 'nodemailer' // Production SMTP
+		// provider: 'aws-ses'    // Production AWS
+	}
 });
 ```
 
-### Add Form
-
 ```svelte
-<!-- src/routes/contact/+page.svelte -->
+<!-- src/routes/contact/+page.svelte - Add form to page -->
 <script>
 	import { ContactForm } from '@goobits/forms/ui';
 	import '@goobits/forms/ui/variables.css';
@@ -76,91 +70,78 @@ export const POST = createContactApiHandler({
 <ContactForm apiEndpoint="/api/contact" />
 ```
 
-**Done!** Start dev server and visit `/contact`.
-
 ---
 
-## 🔒 Security
-
-Build secure forms by validating data server-side. This package provides client-side checks for better UX, but security happens in your API handlers.
-
-**Included protections:**
-- CSRF token validation
-- Rate limiting (IP-based, configurable)
-- reCAPTCHA verification
-- Input sanitization helpers
-- File upload validation
-
-See [Getting Started Guide](./docs/getting-started.md#security-features) for production deployment.
-
----
-
-## Documentation
-
-### Getting Started
-- **[Installation & Setup](./docs/getting-started.md)** - Complete setup guide with reCAPTCHA, CSRF, and email configuration
-- **[Configuration](./docs/configuration.md)** - All configuration options and providers
-- **[TypeScript](./docs/typescript.md)** - Type-safe form development
-
-### API Reference
-- **[Components](./docs/api-reference.md#form-components)** - ContactForm, FeedbackForm, CategoryContactForm, FormField
-- **[UI Components](./docs/api-reference.md#ui-components)** - Modals, Menus, Tooltips, Inputs
-- **[Handlers](./docs/api-reference.md#handlers)** - API route handlers and email services
-- **[Security](./docs/api-reference.md#utilities)** - CSRF protection, rate limiting
-
-### Guides
-- **[Testing](./docs/testing.md)** - Unit tests, E2E tests, mocking strategies
-- **[Migration](./docs/migration.md)** - Upgrade guides between versions
-- **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
-
-### Examples
-- **[Contact Form API Handler](./examples/contact-api/)** - Server-side handler with email delivery
-
----
-
-## Component Overview
-
-### Form Components
+## 🛠️ Configuration
 
 ```javascript
+// Customize form fields and categories
+initContactFormConfig({
+	categories: {
+		support: {
+			label: 'Technical Support',
+			fields: ['name', 'email', 'browser', 'message']
+		},
+		business: {
+			label: 'Business Inquiry',
+			fields: ['name', 'email', 'company', 'message']
+		}
+	},
+
+	// File upload settings
+	fileSettings: {
+		maxFileSize: 5 * 1024 * 1024, // 5MB
+		acceptedImageTypes: ['image/jpeg', 'image/png', 'image/webp']
+	},
+
+	// reCAPTCHA protection
+	recaptcha: {
+		enabled: true,
+		siteKey: process.env.RECAPTCHA_SITE_KEY,
+		minScore: 0.5 // 0.0 (bot) to 1.0 (human)
+	}
+});
+```
+
+---
+
+## 📖 Components
+
+```javascript
+// Form components
 import {
 	ContactForm,          // Main form with validation
 	CategoryContactForm,  // Form with category selection
 	ContactFormPage,      // Complete page layout
-	FeedbackForm,         // Quick feedback widget
-	FormField,            // Reusable field component
+	FeedbackForm,         // Feedback widget
+	FormField,            // Reusable field
 	UploadImage           // File upload with preview
 } from '@goobits/forms/ui';
-```
 
-### UI Components
-
-```javascript
+// UI components
 import {
-	Input, Textarea, SelectMenu, ToggleSwitch,  // Form inputs
-	FormErrors, ThankYou,                        // Status components
-	DemoPlayground                               // Interactive demo
+	Input, Textarea, SelectMenu, ToggleSwitch,
+	FormErrors, ThankYou
 } from '@goobits/forms/ui';
 
-import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/forms/ui';
-import { Modal, Alert, Confirm, AppleModal } from '@goobits/forms/ui/modals';
+// Advanced UI
+import { Menu, MenuItem, MenuSeparator } from '@goobits/forms/ui';
+import { Modal, Alert, Confirm } from '@goobits/forms/ui/modals';
 import { tooltip, TooltipPortal } from '@goobits/forms/ui/tooltip';
 ```
 
-See [API Reference](./docs/api-reference.md) for complete component documentation with props and usage.
-
 ---
 
-## Styling
-
-Import base styles and customize with CSS variables:
+## 🎨 Styling
 
 ```javascript
+// Import base styles
 import '@goobits/forms/ui/variables.css';
 import '@goobits/forms/ui/ContactForm.css';
 ```
 
 ```css
+/* Customize with CSS variables */
 .forms-scope {
 	--color-primary-500: #3b82f6;
 	--color-error-500: #ef4444;
@@ -173,34 +154,29 @@ See [variables.css](./ui/variables.css) for all customization options.
 
 ---
 
-## Email Configuration
-
-### Development
+## 📧 Email Providers
 
 ```javascript
-emailServiceConfig: { provider: 'mock' }
-```
+// Development - Console logging
+emailServiceConfig: {
+	provider: 'mock'
+}
 
-### Production (Nodemailer)
-
-```javascript
+// Production - Nodemailer (SMTP)
 emailServiceConfig: {
 	provider: 'nodemailer',
 	smtp: {
 		host: 'smtp.gmail.com',
 		port: 587,
-		secure: false,
+		secure: false, // true for port 465
 		auth: {
 			user: process.env.SMTP_USER,
 			pass: process.env.SMTP_APP_PASSWORD
 		}
 	}
 }
-```
 
-### Production (AWS SES)
-
-```javascript
+// Production - AWS SES
 emailServiceConfig: {
 	provider: 'aws-ses',
 	region: 'us-east-1',
@@ -209,16 +185,13 @@ emailServiceConfig: {
 }
 ```
 
-See [Getting Started Guide](./docs/getting-started.md#email-configuration) for complete setup instructions.
-
 ---
 
-## Internationalization
-
-### Quick Override
+## 🌐 Internationalization
 
 ```svelte
 <script>
+	// Quick override
 	const messages = {
 		howCanWeHelp: '¿Cómo podemos ayudarte?',
 		sendMessage: 'Enviar mensaje',
@@ -229,14 +202,12 @@ See [Getting Started Guide](./docs/getting-started.md#email-configuration) for c
 <ContactForm {messages} />
 ```
 
-### Auto-Detection
-
 ```javascript
-// hooks.server.js
+// Auto-detection in hooks.server.js
 import { handleFormI18n } from '@goobits/forms/i18n';
 
 export async function handle({ event, resolve }) {
-	await handleFormI18n(event);
+	await handleFormI18n(event); // Detects from URL, session, browser
 	return await resolve(event);
 }
 ```
@@ -245,43 +216,93 @@ See [Getting Started Guide](./docs/getting-started.md#internationalization) for 
 
 ---
 
-## Requirements
+## 🔒 Security
 
-- **Node.js** ≥18.0.0
-- **pnpm** ≥9.0.0 (or npm/yarn)
-- **SvelteKit** project
+```javascript
+// Built-in protections
+createContactApiHandler({
+	// Rate limiting (IP-based)
+	rateLimitMaxRequests: 3,     // Requests per window
+	rateLimitWindowMs: 60000,    // 1 minute window
 
-### Peer Dependencies
+	// reCAPTCHA verification
+	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
+	recaptchaMinScore: 0.5,
 
-```bash
-npm install @sveltejs/kit svelte formsnap sveltekit-superforms zod
+	// Custom validation
+	customValidation: (data) => {
+		if (data.phone && !isValidPhone(data.phone)) {
+			return { phone: ['Invalid phone number'] };
+		}
+		return null;
+	}
+});
 ```
 
-### Optional Dependencies
+```javascript
+// CSRF protection in routes/api/csrf/+server.js
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
-```bash
-# For email delivery
-npm install nodemailer          # SMTP
-npm install @aws-sdk/client-ses # AWS SES
-
-# For UI icons
-npm install @lucide/svelte
+export async function GET(event) {
+	const token = setCsrfCookie(event);
+	return new Response(JSON.stringify({ csrfToken: token }), {
+		headers: { 'Content-Type': 'application/json' }
+	});
+}
 ```
 
 ---
 
-## License
+## 📚 Documentation
+
+**Getting Started:**
+- [Installation & Setup](./docs/getting-started.md) - Complete guide with security and email
+- [Configuration](./docs/configuration.md) - All options and providers
+- [TypeScript](./docs/typescript.md) - Type-safe development
+
+**Reference:**
+- [API Reference](./docs/api-reference.md) - Components, props, handlers
+- [Testing Guide](./docs/testing.md) - Unit and E2E testing
+- [Troubleshooting](./docs/troubleshooting.md) - Common issues
+
+**Examples:**
+- [Contact API Handler](./examples/) - Server-side handler with email delivery
+
+---
+
+## 🧪 Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run tests
+pnpm test                 # All tests
+pnpm test:unit            # Unit tests only
+pnpm test:integration     # Integration tests
+
+# Code quality
+pnpm lint                 # ESLint
+pnpm format               # Prettier
+
+# Validation
+pnpm validate:exports     # Verify package exports
+pnpm validate:links       # Check documentation links
+```
+
+---
+
+## 📝 License
 
 MIT - see [LICENSE](./LICENSE) for details
 
 ---
 
-## Links
+## 💡 Support
 
-- **[Documentation](./docs/)** - Complete guides and API reference
-- **[Examples](./examples/)** - Real-world implementations
+- **[Documentation](./docs/)** - Guides and API reference
+- **[GitHub Issues](https://github.com/goobits/forms/issues)** - Bug reports and feature requests
 - **[Changelog](./CHANGELOG.md)** - Version history and migration guides
-- **[GitHub Issues](https://github.com/goobits/forms/issues)** - Report bugs or request features
 - **[npm Package](https://www.npmjs.com/package/@goobits/forms)** - Latest releases
 
 ---
