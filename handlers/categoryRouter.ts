@@ -311,6 +311,11 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 				// Redirect to success page
 				throw redirect(303, `/${lang}${successPath}?category=${slug}`);
 			} catch (error) {
+				// Don't catch redirects - re-throw them immediately
+				if (error && typeof error === 'object' && 'status' in error && error.status === 303) {
+					throw error;
+				}
+
 				logger.error('Form submission error', { error });
 
 				// Check if reCAPTCHA validation failed
