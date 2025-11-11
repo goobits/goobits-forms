@@ -182,11 +182,10 @@ Protect against cross-site request forgery.
 **1. Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { generateCsrfToken, setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/forms/security/csrf';
 
-export async function GET({ cookies }) {
-	const token = generateCsrfToken();
-	setCsrfCookie(cookies, token);
+export async function GET(event) {
+	const token = setCsrfCookie(event); // Generates token and sets cookie
 
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
@@ -423,9 +422,70 @@ Override specific messages directly:
 <ContactForm messages={customMessages} />
 ```
 
-### Full i18n Integration
+### Auto-Detection with hooks.server.js
 
-For complete i18n setup with Paraglide and automatic language detection, see the [main README](../README.md#internationalization).
+Enable automatic language detection in your SvelteKit hooks:
+
+```javascript
+// src/hooks.server.js
+import { handleFormI18n } from '@goobits/forms/i18n';
+
+export async function handle({ event, resolve }) {
+	await handleFormI18n(event);
+	return await resolve(event);
+}
+```
+
+The `handleFormI18n` function detects the user's language from:
+1. URL parameters (`?lang=es`)
+2. Session storage
+3. Browser accept-language headers
+
+### Paraglide Integration
+
+For complete translation management with Paraglide:
+
+1. Install Paraglide:
+```bash
+npm install @inlang/paraglide-js
+```
+
+2. Initialize Paraglide in your project:
+```bash
+npx @inlang/paraglide-js init
+```
+
+3. Configure form messages in your Paraglide messages:
+```javascript
+// messages/en.json
+{
+  "form.howCanWeHelp": "How can we help you?",
+  "form.sendMessage": "Send Message",
+  "form.sending": "Sending..."
+}
+
+// messages/es.json
+{
+  "form.howCanWeHelp": "¿Cómo podemos ayudarte?",
+  "form.sendMessage": "Enviar mensaje",
+  "form.sending": "Enviando..."
+}
+```
+
+4. Use with ContactForm:
+```svelte
+<script>
+	import * as m from '$lib/paraglide/messages';
+
+	const messages = {
+		howCanWeHelp: m.form_howCanWeHelp(),
+		sendMessage: m.form_sendMessage(),
+		sending: m.form_sending()
+	};
+</script>
+
+<ContactForm {messages} />
+```
 
 ---
 

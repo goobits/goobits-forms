@@ -442,7 +442,7 @@ import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHand
 | `emailServiceConfig` | `object` | `{}` | Email service configuration |
 | `recaptchaSecretKey` | `string` | `''` | reCAPTCHA secret key |
 | `recaptchaMinScore` | `number` | `0.5` | Minimum reCAPTCHA score |
-| `rateLimitMaxRequests` | `number` | `5` | Max requests per window |
+| `rateLimitMaxRequests` | `number` | `3` | Max requests per window |
 | `rateLimitWindowMs` | `number` | `60000` | Rate limit window (ms) |
 | `successMessage` | `string` | Default message | Custom success message |
 | `errorMessage` | `string` | Default message | Custom error message |
