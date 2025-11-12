@@ -15,9 +15,7 @@ import {
 	hasSavedData,
 	getSavedCategories,
 	isStorableFormData,
-	sanitizeForStorage,
-	type StorableFormData,
-	type CategorizedFormData
+	sanitizeForStorage
 } from './formStorage';
 
 // Mock localStorage
@@ -987,7 +985,7 @@ describe('sanitizeForStorage', () => {
 	test('filters out excluded field types', () => {
 		const mockFileList = {
 			length: 1,
-			item: (index: number) => new File(['content'], 'test.txt')
+			item: (_index: number) => new File(['content'], 'test.txt')
 		};
 		Object.setPrototypeOf(mockFileList, FileList.prototype);
 
@@ -1002,7 +1000,7 @@ describe('sanitizeForStorage', () => {
 			{ name: 'empty strings', data: { name: 'John', empty: '', message: '' }, excluded: 'empty' }
 		];
 
-		testCases.forEach(({ name: caseName, data, excluded }) => {
+		testCases.forEach(({ name: _caseName, data, excluded }) => {
 			const result = sanitizeForStorage(data);
 			expect(result).not.toHaveProperty(excluded);
 			expect(result).toHaveProperty('name', 'John');

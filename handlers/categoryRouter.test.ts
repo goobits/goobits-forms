@@ -38,9 +38,7 @@ vi.mock('../security/csrf.js', () => ({
 import {
 	createCategoryRouter,
 	createContactRouteHandlers,
-	type CategoryRouterConfig,
 	type CategoriesMap,
-	type FormState,
 	type LoadResult,
 	type SubmissionResult
 } from './categoryRouter';
@@ -409,7 +407,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -454,7 +452,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -487,7 +485,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -495,7 +493,7 @@ describe('createCategoryRouter', () => {
 		});
 
 		test('passes formData and slug to formDataParser', async () => {
-			const mockFormDataParser = vi.fn(async (formData, category) => ({
+			const mockFormDataParser = vi.fn(async (_formData, _category) => ({
 				data: {},
 				errors: {}
 			}));
@@ -512,7 +510,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -541,7 +539,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -615,7 +613,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -646,7 +644,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -672,7 +670,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -697,7 +695,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -720,7 +718,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -750,7 +748,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -799,7 +797,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -829,7 +827,7 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e) {
+			} catch (_e) {
 				// Expect redirect
 			}
 
@@ -987,8 +985,8 @@ describe('createCategoryRouter', () => {
 			// Also verify location is defined
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e: any) {
-				expect(e.location).toBeDefined();
+			} catch (_e: any) {
+				expect(_e.location).toBeDefined();
 			}
 		});
 
@@ -1103,8 +1101,8 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await handlers.actions.default(mockEvent);
-			} catch (e: any) {
-				expect(e.location).toContain('/thank-you');
+			} catch (_e: any) {
+				expect(_e.location).toContain('/thank-you');
 			}
 		});
 
@@ -1154,8 +1152,8 @@ describe('createCategoryRouter', () => {
 
 			try {
 				await router.handleSubmission(mockEvent);
-			} catch (e: any) {
-				expect(e.status).toBe(303);
+			} catch (_e: any) {
+				expect(_e.status).toBe(303);
 			}
 
 			expect(capturedData).toEqual({
@@ -1220,9 +1218,9 @@ describe('createCategoryRouter', () => {
 
 				try {
 					await router.handleSubmission(mockEvent);
-				} catch (e: any) {
-					expect(e.status).toBe(303);
-					expect(e.location).toContain(`category=${slug}`);
+				} catch (_e: any) {
+					expect(_e.status).toBe(303);
+					expect(_e.location).toContain(`category=${slug}`);
 				}
 			}
 

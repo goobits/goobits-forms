@@ -9,8 +9,7 @@ import {
 	initContactFormConfig,
 	type ContactSchema,
 	type ExtendedFieldConfig,
-	type ExtendedCategoryConfig,
-	type EnhancedContactFormConfig
+	type ExtendedCategoryConfig
 } from './contactSchemas';
 
 // Mock the logger to verify warning calls - use vi.hoisted to ensure proper initialization
@@ -66,7 +65,7 @@ describe('contactSchemas', () => {
 
 		describe('required field properties', () => {
 			test('should have required properties for all fields', () => {
-				Object.entries(defaultFieldConfigs).forEach(([name, field]) => {
+				Object.entries(defaultFieldConfigs).forEach(([_name, field]) => {
 					expect(field).toHaveProperty('type');
 					expect(typeof field.type).toBe('string');
 					expect(field.type).not.toBe('');
@@ -81,7 +80,7 @@ describe('contactSchemas', () => {
 			});
 
 			test('text/email/tel/url fields should have placeholder', () => {
-				Object.entries(defaultFieldConfigs).forEach(([name, field]) => {
+				Object.entries(defaultFieldConfigs).forEach(([_name, field]) => {
 					if (['text', 'email', 'tel', 'url', 'textarea'].includes(field.type)) {
 						expect(field).toHaveProperty('placeholder');
 						expect(typeof field.placeholder).toBe('string');
@@ -181,7 +180,7 @@ describe('contactSchemas', () => {
 
 		describe('category structure', () => {
 			test('should have required properties for all categories', () => {
-				Object.entries(defaultCategories).forEach(([key, category]) => {
+				Object.entries(defaultCategories).forEach(([_key, category]) => {
 					expect(category).toHaveProperty('label');
 					expect(typeof category.label).toBe('string');
 					expect(category.label).not.toBe('');
@@ -221,7 +220,7 @@ describe('contactSchemas', () => {
 			});
 
 			test('all referenced fields should exist in defaultFieldConfigs', () => {
-				Object.entries(defaultCategories).forEach(([catKey, category]) => {
+				Object.entries(defaultCategories).forEach(([_catKey, category]) => {
 					category.fields.forEach((fieldName) => {
 						expect(defaultFieldConfigs).toHaveProperty(fieldName);
 					});

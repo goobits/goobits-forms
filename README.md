@@ -260,6 +260,7 @@ export async function GET(event) {
 - [Cookbook](./docs/cookbook.md) - 5 practical recipes with complete code
 - [Configuration](./docs/configuration.md) - All options and providers
 - [TypeScript](./docs/typescript.md) - Type-safe development
+- [Migration Guide](./docs/migration.md) - Upgrading between versions
 
 **Reference:**
 - [API Reference](./docs/api-reference.md) - Components, props, handlers

@@ -10,7 +10,6 @@ import {
 	verifyRecaptchaToken,
 	verifyRecaptchaTokenWithDetails,
 	isRecaptchaApiResponse,
-	type RecaptchaVerificationOptions,
 	type RecaptchaApiResponse
 } from './recaptchaVerifierService';
 

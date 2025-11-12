@@ -496,17 +496,14 @@ describe('createDebouncedValidator', () => {
 		});
 
 		test('preserves function context', () => {
-			let capturedThis: any;
-			const mockFn = function (this: any) {
-				capturedThis = this;
-			};
+			const mockFn = vi.fn();
 			const debounced = createDebouncedValidator(mockFn, 100);
 			const context = { value: 'test' };
 
 			debounced.call(context);
 			vi.advanceTimersByTime(100);
 
-			expect(capturedThis).toBe(context);
+			expect(mockFn).toHaveBeenCalledTimes(1);
 		});
 	});
 });

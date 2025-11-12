@@ -5,7 +5,7 @@
  * state management, submission handling, validation, and accessibility features.
  */
 
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { ZodSchema } from 'zod';
 
 // Mock dependencies using vi.hoisted() to ensure they're available before imports
@@ -56,10 +56,8 @@ import {
 	resetForm,
 	isRecaptchaInstance,
 	validateSubmitHandlerOptions,
-	type FormInitializationOptions,
 	type FormState,
-	type FormSubmitHandlerOptions,
-	type RecaptchaInstance
+	type FormSubmitHandlerOptions
 } from './formService';
 
 /**
@@ -129,7 +127,7 @@ describe('initializeForm', () => {
 			{ schema: {}, name: 'missing _def' }
 		];
 
-		invalidSchemas.forEach(({ schema, name }) => {
+		invalidSchemas.forEach(({ schema, _name }) => {
 			expect(() => {
 				initializeForm({
 					initialData: {},
@@ -302,7 +300,7 @@ describe('initializeForm', () => {
 			}
 		];
 
-		fieldTypes.forEach(({ type, schema, expectations }) => {
+		fieldTypes.forEach(({ _type, schema, expectations }) => {
 			vi.clearAllMocks();
 			initializeForm({
 				initialData: {},
@@ -420,7 +418,7 @@ describe('handleFieldInput', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		// Mock debounce to return a function that executes immediately
-		mockDebounce.mockImplementation((fn: Function) => fn);
+		mockDebounce.mockImplementation((fn: (...args: any[]) => any) => fn);
 	});
 
 	test('calls validate when field is touched', () => {
@@ -454,7 +452,7 @@ describe('handleFieldInput', () => {
 	test('multiple rapid calls only validate once with debounce', () => {
 		// Create a proper debounce mock that delays execution
 		let timeoutId: any;
-		mockDebounce.mockImplementation((fn: Function, delay: number) => {
+		mockDebounce.mockImplementation((fn: (...args: any[]) => any, delay: number) => {
 			return () => {
 				clearTimeout(timeoutId);
 				timeoutId = setTimeout(fn, delay);
@@ -1132,7 +1130,7 @@ describe('Integration Tests', () => {
 		vi.clearAllMocks();
 		mockSuperForm.mockReturnValue({ mockForm: true });
 		mockZod4.mockReturnValue({ mockValidator: true });
-		mockDebounce.mockImplementation((fn: Function) => fn);
+		mockDebounce.mockImplementation((fn: (...args: any[]) => any) => fn);
 		mockSanitizeFormData.mockImplementation((data) => data);
 		mockHandleError.mockImplementation((msg) => new Error(msg));
 	});

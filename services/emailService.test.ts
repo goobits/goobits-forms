@@ -11,9 +11,7 @@ import {
 	AwsSesProvider,
 	MockEmailProvider,
 	createEmailProvider,
-	type EmailProviderConfig,
-	type EmailResult,
-	type MockEmailData
+	type EmailProviderConfig
 } from './emailService';
 import sendEmail from './emailService';
 
