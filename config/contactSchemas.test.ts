@@ -38,99 +38,43 @@ describe('contactSchemas', () => {
 
 	describe('defaultFieldConfigs', () => {
 		describe('field presence', () => {
-			test('should contain name field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('name');
-			});
-
-			test('should contain email field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('email');
-			});
-
-			test('should contain phone field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('phone');
-			});
-
-			test('should contain message field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('message');
-			});
-
-			test('should contain subject field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('subject');
-			});
-
-			test('should contain company field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('company');
-			});
-
-			test('should contain website field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('website');
-			});
-
-			test('should contain industry field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('industry');
-			});
-
-			test('should contain role field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('role');
-			});
-
-			test('should contain operatingSystem field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('operatingSystem');
-			});
-
-			test('should contain browser field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('browser');
-			});
-
-			test('should contain browserVersion field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('browserVersion');
-			});
-
-			test('should contain attachments field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('attachments');
-			});
-
-			test('should contain coppa field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('coppa');
-			});
-
-			test('should contain terms field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('terms');
-			});
-
-			test('should contain privacy field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('privacy');
-			});
-
-			test('should contain marketing field', () => {
-				expect(defaultFieldConfigs).toHaveProperty('marketing');
-			});
-
-			test('should have at least 14 fields', () => {
-				const fieldCount = Object.keys(defaultFieldConfigs).length;
-				expect(fieldCount).toBeGreaterThanOrEqual(14);
+			test('should contain all 17 default fields', () => {
+				const expectedFields = [
+					'name',
+					'email',
+					'phone',
+					'message',
+					'subject',
+					'company',
+					'website',
+					'industry',
+					'role',
+					'operatingSystem',
+					'browser',
+					'browserVersion',
+					'attachments',
+					'coppa',
+					'terms',
+					'privacy',
+					'marketing'
+				];
+				expectedFields.forEach((field) => {
+					expect(defaultFieldConfigs).toHaveProperty(field);
+				});
 			});
 		});
 
 		describe('required field properties', () => {
-			test('each field should have type property', () => {
+			test('should have required properties for all fields', () => {
 				Object.entries(defaultFieldConfigs).forEach(([name, field]) => {
 					expect(field).toHaveProperty('type');
 					expect(typeof field.type).toBe('string');
 					expect(field.type).not.toBe('');
-				});
-			});
 
-			test('each field should have label property', () => {
-				Object.entries(defaultFieldConfigs).forEach(([name, field]) => {
 					expect(field).toHaveProperty('label');
 					expect(typeof field.label).toBe('string');
 					expect(field.label).not.toBe('');
-				});
-			});
 
-			test('each field should have required property', () => {
-				Object.entries(defaultFieldConfigs).forEach(([name, field]) => {
 					expect(field).toHaveProperty('required');
 					expect(typeof field.required).toBe('boolean');
 				});
@@ -147,96 +91,40 @@ describe('contactSchemas', () => {
 		});
 
 		describe('required field validation', () => {
-			test('name field should be required', () => {
-				expect(defaultFieldConfigs.name.required).toBe(true);
-			});
-
-			test('email field should be required', () => {
-				expect(defaultFieldConfigs.email.required).toBe(true);
-			});
-
-			test('message field should be required', () => {
-				expect(defaultFieldConfigs.message.required).toBe(true);
-			});
-
-			test('coppa field should be required', () => {
-				expect(defaultFieldConfigs.coppa.required).toBe(true);
-			});
-
-			test('terms field should be required', () => {
-				expect(defaultFieldConfigs.terms.required).toBe(true);
-			});
-
-			test('privacy field should be required', () => {
-				expect(defaultFieldConfigs.privacy.required).toBe(true);
+			test('should mark required fields correctly', () => {
+				const requiredFields = ['name', 'email', 'message', 'coppa', 'terms', 'privacy'];
+				requiredFields.forEach((field) => {
+					expect(defaultFieldConfigs[field].required).toBe(true);
+				});
 			});
 		});
 
 		describe('optional field validation', () => {
-			test('phone field should be optional', () => {
-				expect(defaultFieldConfigs.phone.required).toBe(false);
-			});
-
-			test('subject field should be optional', () => {
-				expect(defaultFieldConfigs.subject.required).toBe(false);
-			});
-
-			test('company field should be optional', () => {
-				expect(defaultFieldConfigs.company.required).toBe(false);
-			});
-
-			test('website field should be optional', () => {
-				expect(defaultFieldConfigs.website.required).toBe(false);
-			});
-
-			test('role field should be optional', () => {
-				expect(defaultFieldConfigs.role.required).toBe(false);
-			});
-
-			test('marketing field should be optional', () => {
-				expect(defaultFieldConfigs.marketing.required).toBe(false);
+			test('should mark optional fields correctly', () => {
+				const optionalFields = ['phone', 'subject', 'company', 'website', 'role', 'marketing'];
+				optionalFields.forEach((field) => {
+					expect(defaultFieldConfigs[field].required).toBe(false);
+				});
 			});
 		});
 
 		describe('field type validation', () => {
-			test('name field should be text type', () => {
-				expect(defaultFieldConfigs.name.type).toBe('text');
-			});
+			test('should have correct field types', () => {
+				const typeMapping = {
+					text: ['name', 'subject', 'company', 'role', 'operatingSystem', 'browserVersion'],
+					email: ['email'],
+					tel: ['phone'],
+					textarea: ['message'],
+					url: ['website'],
+					file: ['attachments'],
+					checkbox: ['coppa', 'terms', 'privacy', 'marketing']
+				};
 
-			test('email field should be email type', () => {
-				expect(defaultFieldConfigs.email.type).toBe('email');
-			});
-
-			test('phone field should be tel type', () => {
-				expect(defaultFieldConfigs.phone.type).toBe('tel');
-			});
-
-			test('message field should be textarea type', () => {
-				expect(defaultFieldConfigs.message.type).toBe('textarea');
-			});
-
-			test('website field should be url type', () => {
-				expect(defaultFieldConfigs.website.type).toBe('url');
-			});
-
-			test('attachments field should be file type', () => {
-				expect(defaultFieldConfigs.attachments.type).toBe('file');
-			});
-
-			test('coppa field should be checkbox type', () => {
-				expect(defaultFieldConfigs.coppa.type).toBe('checkbox');
-			});
-
-			test('terms field should be checkbox type', () => {
-				expect(defaultFieldConfigs.terms.type).toBe('checkbox');
-			});
-
-			test('privacy field should be checkbox type', () => {
-				expect(defaultFieldConfigs.privacy.type).toBe('checkbox');
-			});
-
-			test('marketing field should be checkbox type', () => {
-				expect(defaultFieldConfigs.marketing.type).toBe('checkbox');
+				Object.entries(typeMapping).forEach(([type, fields]) => {
+					fields.forEach((field) => {
+						expect(defaultFieldConfigs[field].type).toBe(type);
+					});
+				});
 			});
 		});
 
@@ -247,24 +135,15 @@ describe('contactSchemas', () => {
 				expect(defaultFieldConfigs.message.rows).toBeGreaterThan(0);
 			});
 
-			test('attachments should have multiple property', () => {
+			test('attachments should have file-specific properties', () => {
 				expect(defaultFieldConfigs.attachments).toHaveProperty('multiple');
 				expect(defaultFieldConfigs.attachments.multiple).toBe(true);
-			});
-
-			test('attachments should have accept property', () => {
 				expect(defaultFieldConfigs.attachments).toHaveProperty('accept');
 				expect(typeof defaultFieldConfigs.attachments.accept).toBe('string');
 				expect(defaultFieldConfigs.attachments.accept).not.toBe('');
-			});
-
-			test('attachments should have maxFiles property', () => {
 				expect(defaultFieldConfigs.attachments).toHaveProperty('maxFiles');
 				expect(typeof defaultFieldConfigs.attachments.maxFiles).toBe('number');
 				expect(defaultFieldConfigs.attachments.maxFiles).toBeGreaterThan(0);
-			});
-
-			test('attachments should have maxSize property', () => {
 				expect(defaultFieldConfigs.attachments).toHaveProperty('maxSize');
 				expect(typeof defaultFieldConfigs.attachments.maxSize).toBe('number');
 				expect(defaultFieldConfigs.attachments.maxSize).toBeGreaterThan(0);
@@ -292,47 +171,25 @@ describe('contactSchemas', () => {
 
 	describe('defaultCategories', () => {
 		describe('category presence', () => {
-			test('should contain general category', () => {
-				expect(defaultCategories).toHaveProperty('general');
-			});
-
-			test('should contain support category', () => {
-				expect(defaultCategories).toHaveProperty('support');
-			});
-
-			test('should contain feedback category', () => {
-				expect(defaultCategories).toHaveProperty('feedback');
-			});
-
-			test('should contain business category', () => {
-				expect(defaultCategories).toHaveProperty('business');
-			});
-
-			test('should have at least 4 categories', () => {
-				const categoryCount = Object.keys(defaultCategories).length;
-				expect(categoryCount).toBeGreaterThanOrEqual(4);
+			test('should contain all 4 default categories', () => {
+				const expectedCategories = ['general', 'support', 'feedback', 'business'];
+				expectedCategories.forEach((cat) => {
+					expect(defaultCategories).toHaveProperty(cat);
+				});
 			});
 		});
 
 		describe('category structure', () => {
-			test('each category should have label property', () => {
+			test('should have required properties for all categories', () => {
 				Object.entries(defaultCategories).forEach(([key, category]) => {
 					expect(category).toHaveProperty('label');
 					expect(typeof category.label).toBe('string');
 					expect(category.label).not.toBe('');
-				});
-			});
 
-			test('each category should have icon property', () => {
-				Object.entries(defaultCategories).forEach(([key, category]) => {
 					expect(category).toHaveProperty('icon');
 					expect(typeof category.icon).toBe('string');
 					expect(category.icon).not.toBe('');
-				});
-			});
 
-			test('each category should have fields array', () => {
-				Object.entries(defaultCategories).forEach(([key, category]) => {
 					expect(category).toHaveProperty('fields');
 					expect(Array.isArray(category.fields)).toBe(true);
 					expect(category.fields.length).toBeGreaterThan(0);
@@ -375,111 +232,62 @@ describe('contactSchemas', () => {
 
 	describe('defaultUiConfig', () => {
 		describe('required properties', () => {
-			test('should have submitButtonText property', () => {
-				expect(defaultUiConfig).toHaveProperty('submitButtonText');
-				expect(typeof defaultUiConfig.submitButtonText).toBe('string');
-				expect(defaultUiConfig.submitButtonText).not.toBe('');
+			test('should have all required string UI config properties', () => {
+				const requiredStringProps = [
+					'submitButtonText',
+					'submittingButtonText',
+					'requiredIndicator',
+					'requiredLabelText'
+				];
+				requiredStringProps.forEach((prop) => {
+					expect(defaultUiConfig).toHaveProperty(prop);
+					expect(typeof defaultUiConfig[prop]).toBe('string');
+					expect(defaultUiConfig[prop]).not.toBe('');
+				});
 			});
 
-			test('should have submittingButtonText property', () => {
-				expect(defaultUiConfig).toHaveProperty('submittingButtonText');
-				expect(typeof defaultUiConfig.submittingButtonText).toBe('string');
-				expect(defaultUiConfig.submittingButtonText).not.toBe('');
-			});
-
-			test('should have resetAfterSubmit property', () => {
-				expect(defaultUiConfig).toHaveProperty('resetAfterSubmit');
+			test('should have correct boolean UI config properties', () => {
 				expect(typeof defaultUiConfig.resetAfterSubmit).toBe('boolean');
-			});
-
-			test('should have showSuccessMessage property', () => {
-				expect(defaultUiConfig).toHaveProperty('showSuccessMessage');
 				expect(typeof defaultUiConfig.showSuccessMessage).toBe('boolean');
+				expect(typeof defaultUiConfig.showRequiredLabel).toBe('boolean');
 			});
 
-			test('should have successMessageDuration property', () => {
-				expect(defaultUiConfig).toHaveProperty('successMessageDuration');
+			test('should have correct numeric UI config properties', () => {
 				expect(typeof defaultUiConfig.successMessageDuration).toBe('number');
 				expect(defaultUiConfig.successMessageDuration).toBeGreaterThan(0);
 			});
 
-			test('should have theme property', () => {
-				expect(defaultUiConfig).toHaveProperty('theme');
+			test('should have valid enum properties', () => {
 				expect(['light', 'dark', 'auto']).toContain(defaultUiConfig.theme);
-			});
-
-			test('should have labelPosition property', () => {
-				expect(defaultUiConfig).toHaveProperty('labelPosition');
 				expect(['top', 'left', 'inline']).toContain(defaultUiConfig.labelPosition);
-			});
-
-			test('should have fieldSpacing property', () => {
-				expect(defaultUiConfig).toHaveProperty('fieldSpacing');
 				expect(['tight', 'medium', 'loose']).toContain(defaultUiConfig.fieldSpacing);
-			});
-
-			test('should have requiredIndicator property', () => {
-				expect(defaultUiConfig).toHaveProperty('requiredIndicator');
-				expect(typeof defaultUiConfig.requiredIndicator).toBe('string');
-				expect(defaultUiConfig.requiredIndicator).not.toBe('');
-			});
-
-			test('should have showRequiredLabel property', () => {
-				expect(defaultUiConfig).toHaveProperty('showRequiredLabel');
-				expect(typeof defaultUiConfig.showRequiredLabel).toBe('boolean');
-			});
-
-			test('should have requiredLabelText property', () => {
-				expect(defaultUiConfig).toHaveProperty('requiredLabelText');
-				expect(typeof defaultUiConfig.requiredLabelText).toBe('string');
-				expect(defaultUiConfig.requiredLabelText).not.toBe('');
-			});
-
-			test('should have errorMessagePosition property', () => {
-				expect(defaultUiConfig).toHaveProperty('errorMessagePosition');
 				expect(['above', 'below', 'inline']).toContain(defaultUiConfig.errorMessagePosition);
 			});
 		});
 
 		describe('default values', () => {
-			test('resetAfterSubmit should default to true', () => {
+			test('should have correct default boolean values', () => {
 				expect(defaultUiConfig.resetAfterSubmit).toBe(true);
-			});
-
-			test('showSuccessMessage should default to true', () => {
 				expect(defaultUiConfig.showSuccessMessage).toBe(true);
-			});
-
-			test('duration should be positive number', () => {
-				expect(defaultUiConfig.successMessageDuration).toBeGreaterThan(0);
-			});
-
-			test('showRequiredLabel should default to true', () => {
 				expect(defaultUiConfig.showRequiredLabel).toBe(true);
 			});
 		});
 	});
 
 	describe('defaultContactSchema', () => {
-		test('should have appName property', () => {
+		test('should have all required top-level properties', () => {
 			expect(defaultContactSchema).toHaveProperty('appName');
 			expect(typeof defaultContactSchema.appName).toBe('string');
 			expect(defaultContactSchema.appName).not.toBe('');
-		});
 
-		test('should have categories object', () => {
 			expect(defaultContactSchema).toHaveProperty('categories');
 			expect(typeof defaultContactSchema.categories).toBe('object');
 			expect(defaultContactSchema.categories).toBe(defaultCategories);
-		});
 
-		test('should have fieldConfigs object', () => {
 			expect(defaultContactSchema).toHaveProperty('fieldConfigs');
 			expect(typeof defaultContactSchema.fieldConfigs).toBe('object');
 			expect(defaultContactSchema.fieldConfigs).toBe(defaultFieldConfigs);
-		});
 
-		test('should have ui object', () => {
 			expect(defaultContactSchema).toHaveProperty('ui');
 			expect(typeof defaultContactSchema.ui).toBe('object');
 			expect(defaultContactSchema.ui).toBe(defaultUiConfig);
@@ -539,10 +347,6 @@ describe('contactSchemas', () => {
 			test('should return valid true for complete valid config', () => {
 				const result = validateContactConfig(defaultContactSchema);
 				expect(result.valid).toBe(true);
-			});
-
-			test('should return empty errors array for valid config', () => {
-				const result = validateContactConfig(defaultContactSchema);
 				expect(result.errors).toEqual([]);
 			});
 
@@ -570,25 +374,23 @@ describe('contactSchemas', () => {
 		});
 
 		describe('category validation', () => {
-			test('should return error when no categories defined', () => {
-				const config: Partial<ContactSchema> = {
+			test('should return error when no categories defined or empty', () => {
+				const config1: Partial<ContactSchema> = {
 					fieldConfigs: defaultFieldConfigs
 				};
 
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('No categories defined in contact form configuration');
-			});
+				const result1 = validateContactConfig(config1);
+				expect(result1.valid).toBe(false);
+				expect(result1.errors).toContain('No categories defined in contact form configuration');
 
-			test('should return error when categories object is empty', () => {
-				const config: Partial<ContactSchema> = {
+				const config2: Partial<ContactSchema> = {
 					categories: {},
 					fieldConfigs: defaultFieldConfigs
 				};
 
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('No categories defined in contact form configuration');
+				const result2 = validateContactConfig(config2);
+				expect(result2.valid).toBe(false);
+				expect(result2.errors).toContain('No categories defined in contact form configuration');
 			});
 
 			test('should return error when category missing label', () => {
@@ -609,49 +411,27 @@ describe('contactSchemas', () => {
 				expect(result.errors).toContain('Category "test" is missing a label');
 			});
 
-			test('should return error when category has no fields', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test: {
-							label: 'Test',
-							fields: [] as any
+			test('should return error when category has no fields or invalid fields', () => {
+				const testCases = [
+					{ fields: [] as any },
+					{ fields: 'invalid' as any },
+					{ fields: null as any }
+				];
+
+				testCases.forEach((testCase) => {
+					const config: Partial<ContactSchema> = {
+						categories: {
+							test: {
+								label: 'Test',
+								...testCase
+							}
 						}
-					}
-				};
+					};
 
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('Category "test" has no fields defined');
-			});
-
-			test('should return error when category fields is empty array', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test: {
-							label: 'Test',
-							fields: []
-						}
-					}
-				};
-
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('Category "test" has no fields defined');
-			});
-
-			test('should return error when category fields is not array', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test: {
-							label: 'Test',
-							fields: 'invalid' as any
-						}
-					}
-				};
-
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('Category "test" has no fields defined');
+					const result = validateContactConfig(config);
+					expect(result.valid).toBe(false);
+					expect(result.errors).toContain('Category "test" has no fields defined');
+				});
 			});
 		});
 
@@ -732,32 +512,8 @@ describe('contactSchemas', () => {
 		});
 
 		describe('reCAPTCHA validation', () => {
-			test('should return error when recaptcha enabled but no siteKey', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test: {
-							label: 'Test',
-							fields: ['name']
-						}
-					},
-					fieldConfigs: {
-						name: { type: 'text', label: 'Name', required: true }
-					},
-					recaptcha: {
-						enabled: true,
-						provider: 'google-v3',
-						siteKey: '',
-						minScore: 0.5
-					}
-				};
-
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors).toContain('reCAPTCHA is enabled but no site key is provided');
-			});
-
-			test('should accept when recaptcha enabled with siteKey', () => {
-				const config: Partial<ContactSchema> = {
+			test('should validate recaptcha enabled with and without siteKey', () => {
+				const configWithKey: Partial<ContactSchema> = {
 					categories: {
 						test: {
 							label: 'Test',
@@ -775,21 +531,25 @@ describe('contactSchemas', () => {
 					}
 				};
 
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(true);
-			});
+				const resultWithKey = validateContactConfig(configWithKey);
+				expect(resultWithKey.valid).toBe(true);
 
-			test('should accept when recaptcha disabled without siteKey', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test: {
-							label: 'Test',
-							fields: ['name']
-						}
-					},
-					fieldConfigs: {
-						name: { type: 'text', label: 'Name', required: true }
-					},
+				const configNoKey: Partial<ContactSchema> = {
+					...configWithKey,
+					recaptcha: {
+						enabled: true,
+						provider: 'google-v3',
+						siteKey: '',
+						minScore: 0.5
+					}
+				};
+
+				const resultNoKey = validateContactConfig(configNoKey);
+				expect(resultNoKey.valid).toBe(false);
+				expect(resultNoKey.errors).toContain('reCAPTCHA is enabled but no site key is provided');
+
+				const configDisabled: Partial<ContactSchema> = {
+					...configWithKey,
 					recaptcha: {
 						enabled: false,
 						provider: 'google-v3',
@@ -798,33 +558,13 @@ describe('contactSchemas', () => {
 					}
 				};
 
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(true);
+				const resultDisabled = validateContactConfig(configDisabled);
+				expect(resultDisabled.valid).toBe(true);
 			});
 		});
 
 		describe('multiple errors', () => {
-			test('should accumulate multiple errors', () => {
-				const config: Partial<ContactSchema> = {
-					categories: {
-						test1: {
-							label: '',
-							fields: []
-						},
-						test2: {
-							label: 'Test2',
-							fields: ['missingField']
-						}
-					},
-					fieldConfigs: {}
-				};
-
-				const result = validateContactConfig(config);
-				expect(result.valid).toBe(false);
-				expect(result.errors.length).toBeGreaterThan(1);
-			});
-
-			test('should return all errors at once', () => {
+			test('should accumulate and return all errors at once', () => {
 				const config: Partial<ContactSchema> = {
 					categories: {
 						test: {
@@ -856,14 +596,9 @@ describe('contactSchemas', () => {
 				expect(typeof validator).toBe('function');
 			});
 
-			test('should return null for invalid category', () => {
-				const validator = getValidatorForCategory(defaultContactSchema, 'nonexistent');
-				expect(validator).toBeNull();
-			});
-
-			test('should return null for missing category', () => {
-				const validator = getValidatorForCategory(defaultContactSchema, '');
-				expect(validator).toBeNull();
+			test('should return null for invalid or missing category', () => {
+				expect(getValidatorForCategory(defaultContactSchema, 'nonexistent')).toBeNull();
+				expect(getValidatorForCategory(defaultContactSchema, '')).toBeNull();
 			});
 
 			test('different categories should return different validators', () => {
@@ -912,18 +647,7 @@ describe('contactSchemas', () => {
 				expect(result.errors.some((err) => err.includes('Email'))).toBe(true);
 			});
 
-			test('validator should check all category fields', () => {
-				const validator = getValidatorForCategory(defaultContactSchema, 'business');
-				expect(validator).not.toBeNull();
-
-				const result = validator!({});
-
-				expect(result.valid).toBe(false);
-				// Should have errors for name, email, and message (required fields in business category)
-				expect(result.errors.length).toBeGreaterThan(0);
-			});
-
-			test('validator should reject whitespace-only values', () => {
+			test('validator should reject whitespace-only values and produce multiple errors', () => {
 				const validator = getValidatorForCategory(defaultContactSchema, 'general');
 				expect(validator).not.toBeNull();
 
@@ -934,38 +658,25 @@ describe('contactSchemas', () => {
 				});
 
 				expect(result.valid).toBe(false);
-				expect(result.errors.length).toBeGreaterThan(0);
-			});
-
-			test('validator should produce multiple errors for multiple missing fields', () => {
-				const validator = getValidatorForCategory(defaultContactSchema, 'general');
-				expect(validator).not.toBeNull();
-
-				const result = validator!({});
-
-				expect(result.valid).toBe(false);
-				// General category requires name, email, and message
 				expect(result.errors.length).toBeGreaterThanOrEqual(3);
 			});
 		});
 
 		describe('enhanced config handling', () => {
-			test('should handle EnhancedContactFormConfig by delegating to method', () => {
+			test('should handle both EnhancedContactFormConfig and plain ContactSchema', () => {
 				const enhanced = initContactFormConfig({});
-				const validator = getValidatorForCategory(enhanced, 'general');
+				const validator1 = getValidatorForCategory(enhanced, 'general');
 
-				expect(validator).not.toBeNull();
-				expect(typeof validator).toBe('function');
-			});
+				expect(validator1).not.toBeNull();
+				expect(typeof validator1).toBe('function');
 
-			test('should handle plain ContactSchema by creating validator', () => {
 				const plain: ContactSchema = {
 					...defaultContactSchema
 				};
 
-				const validator = getValidatorForCategory(plain, 'general');
-				expect(validator).not.toBeNull();
-				expect(typeof validator).toBe('function');
+				const validator2 = getValidatorForCategory(plain, 'general');
+				expect(validator2).not.toBeNull();
+				expect(typeof validator2).toBe('function');
 			});
 
 			test('enhanced config validator should work correctly', () => {
@@ -985,7 +696,7 @@ describe('contactSchemas', () => {
 
 	describe('initContactFormConfig', () => {
 		describe('basic initialization', () => {
-			test('should merge user config with defaults', () => {
+			test('should merge user config with defaults and return EnhancedContactFormConfig', () => {
 				const userConfig = {
 					appName: 'Custom App'
 				};
@@ -994,10 +705,6 @@ describe('contactSchemas', () => {
 				expect(result.appName).toBe('Custom App');
 				expect(result.categories).toBeDefined();
 				expect(result.fieldConfigs).toBeDefined();
-			});
-
-			test('should return EnhancedContactFormConfig', () => {
-				const result = initContactFormConfig({});
 
 				expect(result).toHaveProperty('getValidatorForCategory');
 				expect(result).toHaveProperty('formDataParser');
@@ -1005,7 +712,7 @@ describe('contactSchemas', () => {
 				expect(result).toHaveProperty('validationResult');
 			});
 
-			test('should preserve user-provided values', () => {
+			test('should preserve user-provided values and add missing defaults', () => {
 				const userConfig = {
 					appName: 'Test App',
 					ui: {
@@ -1016,14 +723,6 @@ describe('contactSchemas', () => {
 				const result = initContactFormConfig(userConfig);
 				expect(result.appName).toBe('Test App');
 				expect(result.ui.submitButtonText).toBe('Custom Submit');
-			});
-
-			test('should add missing defaults', () => {
-				const userConfig = {
-					appName: 'Test App'
-				};
-
-				const result = initContactFormConfig(userConfig);
 				expect(result.categories).toBeDefined();
 				expect(result.fieldConfigs).toBeDefined();
 				expect(result.ui).toBeDefined();
@@ -1046,7 +745,7 @@ describe('contactSchemas', () => {
 		});
 
 		describe('validation on init', () => {
-			test('should run validation on merged config', () => {
+			test('should run validation on merged config and log warnings', () => {
 				// Clear mocks to ensure clean state
 				vi.clearAllMocks();
 
@@ -1097,14 +796,11 @@ describe('contactSchemas', () => {
 		});
 
 		describe('getValidatorForCategory method', () => {
-			test('method should exist and be function', () => {
+			test('method should exist and return validator for valid category', () => {
 				const result = initContactFormConfig({});
 				expect(result.getValidatorForCategory).toBeDefined();
 				expect(typeof result.getValidatorForCategory).toBe('function');
-			});
 
-			test('should return validator for valid category', () => {
-				const result = initContactFormConfig({});
 				const validator = result.getValidatorForCategory('general');
 				expect(validator).not.toBeNull();
 				expect(typeof validator).toBe('function');
@@ -1151,28 +847,7 @@ describe('contactSchemas', () => {
 				expect(result.formDataParser.constructor.name).toBe('AsyncFunction');
 			});
 
-			test('should convert FormData to plain object', async () => {
-				const result = initContactFormConfig({});
-				const formData = createMockFormData({
-					name: 'Test',
-					email: 'test@example.com',
-					message: 'Test message'
-				});
-
-				const parsed = await result.formDataParser(formData, 'general');
-				expect(parsed.data).toBeDefined();
-				expect(parsed.data.name).toBe('Test');
-			});
-
-			test('should run validation on data', async () => {
-				const result = initContactFormConfig({});
-				const formData = createMockFormData({});
-
-				const parsed = await result.formDataParser(formData, 'general');
-				expect(parsed.errors).toBeDefined();
-			});
-
-			test('should return {data, errors} object', async () => {
+			test('should convert FormData to plain object and run validation', async () => {
 				const result = initContactFormConfig({});
 				const formData = createMockFormData({
 					name: 'Test',
@@ -1183,77 +858,51 @@ describe('contactSchemas', () => {
 				const parsed = await result.formDataParser(formData, 'general');
 				expect(parsed).toHaveProperty('data');
 				expect(parsed).toHaveProperty('errors');
+				expect(parsed.data.name).toBe('Test');
 			});
 
-			test('errors should be empty for valid data', async () => {
+			test('should have empty errors for valid data, errors for invalid data', async () => {
 				const result = initContactFormConfig({});
-				const formData = createMockFormData({
+				const validFormData = createMockFormData({
 					name: 'Test',
 					email: 'test@example.com',
 					message: 'Test message'
 				});
 
-				const parsed = await result.formDataParser(formData, 'general');
-				expect(Object.keys(parsed.errors).length).toBe(0);
-			});
+				const validParsed = await result.formDataParser(validFormData, 'general');
+				expect(Object.keys(validParsed.errors).length).toBe(0);
 
-			test('errors should contain messages for invalid data', async () => {
-				const result = initContactFormConfig({});
-				const formData = createMockFormData({});
-
-				const parsed = await result.formDataParser(formData, 'general');
-				expect(Object.keys(parsed.errors).length).toBeGreaterThan(0);
+				const invalidFormData = createMockFormData({});
+				const invalidParsed = await result.formDataParser(invalidFormData, 'general');
+				expect(Object.keys(invalidParsed.errors).length).toBeGreaterThan(0);
 			});
 		});
 
 		describe('createSubmissionHandler method', () => {
-			test('method should exist and be async function', () => {
+			test('method should exist and return submission handler function', async () => {
 				const result = initContactFormConfig({});
 				expect(result.createSubmissionHandler).toBeDefined();
 				expect(typeof result.createSubmissionHandler).toBe('function');
 				expect(result.createSubmissionHandler.constructor.name).toBe('AsyncFunction');
-			});
 
-			test('should return submission handler function', async () => {
-				const result = initContactFormConfig({});
 				const handler = await result.createSubmissionHandler();
 				expect(typeof handler).toBe('function');
-			});
-
-			test('handler should accept (data, categorySlug)', async () => {
-				const result = initContactFormConfig({});
-				const handler = await result.createSubmissionHandler();
 				expect(handler.length).toBe(2);
 			});
 
-			test('handler should return SubmissionResult with success', async () => {
+			test('handler should return SubmissionResult with success and log submission', async () => {
 				const result = initContactFormConfig({});
 				const handler = await result.createSubmissionHandler();
 
 				const submission = await handler({ name: 'Test' } as any, 'general');
 				expect(submission).toHaveProperty('success');
 				expect(submission.success).toBe(true);
-			});
-
-			test('handler should log submission info', async () => {
-				const result = initContactFormConfig({});
-				const handler = await result.createSubmissionHandler();
-
-				await handler({ name: 'Test' } as any, 'general');
 				expect(mockInfo).toHaveBeenCalled();
-			});
-
-			test('handler should be async', async () => {
-				const result = initContactFormConfig({});
-				const handler = await result.createSubmissionHandler();
-
-				const submission = handler({ name: 'Test' } as any, 'general');
-				expect(submission).toBeInstanceOf(Promise);
 			});
 		});
 
 		describe('integration', () => {
-			test('all methods should work together', async () => {
+			test('all methods should work together in complete workflow', async () => {
 				// Helper to create iterable FormData-like object
 				const createMockFormData = (data: Record<string, string>) => {
 					const entries = Object.entries(data);
@@ -1288,7 +937,7 @@ describe('contactSchemas', () => {
 				expect(submission.success).toBe(true);
 			});
 
-			test('deep merge should work correctly', () => {
+			test('deep merge should work correctly with partial overrides', () => {
 				const result = initContactFormConfig({
 					ui: {
 						theme: 'dark' as const,
@@ -1313,20 +962,6 @@ describe('contactSchemas', () => {
 
 				expect(result.categories).toHaveProperty('custom');
 				expect(result.categories.custom.label).toBe('Custom Category');
-			});
-
-			test('partial configs should complete with defaults', () => {
-				const result = initContactFormConfig({
-					appName: 'Partial'
-				});
-
-				expect(result.categories).toBeDefined();
-				expect(result.fieldConfigs).toBeDefined();
-				expect(result.ui).toBeDefined();
-				expect(result.validation).toBeDefined();
-				expect(result.routes).toBeDefined();
-				expect(result.recaptcha).toBeDefined();
-				expect(result.storage).toBeDefined();
 			});
 		});
 	});
@@ -1430,28 +1065,6 @@ describe('contactSchemas', () => {
 			expect(result.errors.length).toBeGreaterThanOrEqual(4);
 		});
 
-		test('validator catches all field validation errors', () => {
-			const config = initContactFormConfig({
-				categories: {
-					test: {
-						label: 'Test',
-						fields: ['name', 'email', 'phone']
-					}
-				},
-				fieldConfigs: {
-					name: { type: 'text', label: 'Name', required: true },
-					email: { type: 'email', label: 'Email', required: true },
-					phone: { type: 'tel', label: 'Phone', required: true }
-				}
-			});
-
-			const validator = config.getValidatorForCategory('test');
-			const result = validator!({});
-
-			expect(result.valid).toBe(false);
-			expect(result.errors.length).toBe(3);
-		});
-
 		test('formDataParser full workflow', async () => {
 			// Helper to create iterable FormData-like object
 			const createMockFormData = (data: Record<string, string>) => {
@@ -1477,24 +1090,6 @@ describe('contactSchemas', () => {
 			expect(parsed.data).toBeDefined();
 			expect(parsed.data.name).toBe('Test User');
 			expect(Object.keys(parsed.errors).length).toBe(0);
-		});
-
-		test('submission handler workflow', async () => {
-			const config = initContactFormConfig({
-				appName: 'Test App'
-			});
-
-			const handler = await config.createSubmissionHandler();
-			const data = {
-				name: 'Test',
-				email: 'test@example.com',
-				message: 'Test'
-			} as any;
-
-			const result = await handler(data, 'general');
-
-			expect(result.success).toBe(true);
-			expect(mockInfo).toHaveBeenCalled();
 		});
 
 		test('deep merge with nested overrides', () => {
@@ -1558,17 +1153,15 @@ describe('contactSchemas', () => {
 	});
 
 	describe('edge cases', () => {
-		test('should handle empty config object', () => {
-			const result = initContactFormConfig({});
-			expect(result).toBeDefined();
-			expect(result.validationResult.valid).toBe(true);
-		});
+		test('should handle empty or minimal config objects', () => {
+			const emptyResult = initContactFormConfig({});
+			expect(emptyResult).toBeDefined();
+			expect(emptyResult.validationResult.valid).toBe(true);
 
-		test('should handle config with only appName', () => {
-			const result = initContactFormConfig({ appName: 'Test' });
-			expect(result.appName).toBe('Test');
-			expect(result.categories).toBeDefined();
-			expect(result.fieldConfigs).toBeDefined();
+			const minimalResult = initContactFormConfig({ appName: 'Test' });
+			expect(minimalResult.appName).toBe('Test');
+			expect(minimalResult.categories).toBeDefined();
+			expect(minimalResult.fieldConfigs).toBeDefined();
 		});
 
 		test('should handle very large config (many categories/fields)', () => {
@@ -1600,28 +1193,26 @@ describe('contactSchemas', () => {
 			expect(Object.keys(result.categories).length).toBeGreaterThanOrEqual(20);
 		});
 
-		test('should handle null values in config', () => {
-			const config = {
+		test('should handle null and undefined values in config', () => {
+			const configWithNull = {
 				appName: 'Test',
 				ui: {
 					theme: null as any
 				}
 			};
 
-			const result = initContactFormConfig(config);
-			expect(result).toBeDefined();
-		});
+			const resultNull = initContactFormConfig(configWithNull);
+			expect(resultNull).toBeDefined();
 
-		test('should handle undefined values in config', () => {
-			const config = {
+			const configWithUndefined = {
 				appName: 'Test',
 				ui: {
 					theme: undefined as any
 				}
 			};
 
-			const result = initContactFormConfig(config);
-			expect(result).toBeDefined();
+			const resultUndefined = initContactFormConfig(configWithUndefined);
+			expect(resultUndefined).toBeDefined();
 		});
 
 		test('should handle special characters in field names', () => {

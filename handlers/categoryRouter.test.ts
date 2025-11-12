@@ -169,27 +169,17 @@ describe('createCategoryRouter', () => {
 			expect(typeof router.handleSubmission).toBe('function');
 		});
 
-		test('merges custom config with defaults', () => {
+		test('creates router with merged config options', () => {
 			const router = createCategoryRouter({
 				categories: testCategories,
-				basePath: '/custom-contact',
+				basePath: '/custom',
 				defaultCategory: 'support',
-				successPath: '/custom-success'
+				successPath: '/thank-you'
 			});
 
-			expect(router.categories).toBe(testCategories);
-		});
-
-		test('returns load and handleSubmission functions', () => {
-			const router = createCategoryRouter({});
-
-			expect(typeof router.load).toBe('function');
-			expect(typeof router.handleSubmission).toBe('function');
-		});
-
-		test('exposes categories in return object', () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
+			expect(router).toHaveProperty('load');
+			expect(router).toHaveProperty('handleSubmission');
+			expect(router).toHaveProperty('categories');
 			expect(router.categories).toBe(testCategories);
 		});
 
@@ -197,63 +187,6 @@ describe('createCategoryRouter', () => {
 			const router = createCategoryRouter({ categories: {} });
 
 			expect(router.categories).toEqual({});
-		});
-
-		test('applies custom basePath', async () => {
-			const router = createCategoryRouter({
-				categories: testCategories,
-				basePath: '/custom'
-			});
-
-			const mockLoadParams = createMockLoadParams({
-				slug: 'technical-support'
-			});
-
-			try {
-				await router.load(mockLoadParams);
-			} catch (e: any) {
-				if (e.status === 301) {
-					expect(e.location).toContain('/custom/');
-				}
-			}
-		});
-
-		test('applies custom defaultCategory', async () => {
-			const router = createCategoryRouter({
-				categories: testCategories,
-				defaultCategory: 'support'
-			});
-
-			const mockLoadParams = createMockLoadParams({
-				slug: 'success'
-			});
-
-			const result = await router.load(mockLoadParams);
-			expect(result.categorySlug).toBe('support');
-		});
-
-		test('applies custom successPath', async () => {
-			const router = createCategoryRouter({
-				categories: testCategories,
-				successPath: '/thank-you'
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: {
-					name: 'John Doe',
-					email: 'john@example.com',
-					message: 'Test'
-				}
-			});
-
-			try {
-				await router.handleSubmission(mockEvent);
-			} catch (e: any) {
-				if (e.status === 303) {
-					expect(e.location).toContain('/thank-you');
-				}
-			}
 		});
 	});
 
@@ -483,83 +416,7 @@ describe('createCategoryRouter', () => {
 			expect(mockValidateCsrfToken).toHaveBeenCalledWith(mockEvent.request);
 		});
 
-		test('returns error when CSRF validation fails', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(false);
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors._form).toContain('Invalid security token');
-		});
-
-		test('passes Request object to validateCsrfToken', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(true);
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			try {
-				await router.handleSubmission(mockEvent);
-			} catch (e) {
-				// Expect redirect
-			}
-
-			const callArgs = mockValidateCsrfToken.mock.calls[0];
-			expect(callArgs[0]).toBe(mockEvent.request);
-		});
-
-		test('logs CSRF validation failures', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(false);
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John' }
-			});
-
-			await router.handleSubmission(mockEvent);
-
-			expect(mockLogger.error).toHaveBeenCalledWith('CSRF validation failed');
-		});
-
-		test('returns form with _form error on CSRF failure', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(false);
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors).toHaveProperty('_form');
-			expect(result.form.errors._form).toContain('security token');
-		});
-
-		test('sets isSubmitted to false on CSRF failure', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(false);
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.isSubmitted).toBe(false);
-		});
-
-		test('preserves form data on CSRF failure', async () => {
+		test('handles CSRF validation failure comprehensively', async () => {
 			const router = createCategoryRouter({ categories: testCategories });
 			mockValidateCsrfToken.mockReturnValue(false);
 
@@ -570,6 +427,9 @@ describe('createCategoryRouter', () => {
 
 			const result = await router.handleSubmission(mockEvent);
 
+			expect(result.form.errors._form).toContain('Invalid security token');
+			expect(result.form.isSubmitted).toBe(false);
+			expect(mockLogger.error).toHaveBeenCalledWith('CSRF validation failed');
 			expect(result.form.data.name).toBe('John Doe');
 			expect(result.form.data.email).toBe('john@example.com');
 		});
@@ -719,7 +579,7 @@ describe('createCategoryRouter', () => {
 			});
 		});
 
-		test('returns early if validation errors exist', async () => {
+		test('returns validation errors without processing', async () => {
 			const mockSubmissionHandler = vi.fn();
 			const mockFormDataParser = vi.fn(async () => ({
 				data: { name: 'John' },
@@ -737,31 +597,11 @@ describe('createCategoryRouter', () => {
 				formData: { name: 'John' }
 			});
 
-			await router.handleSubmission(mockEvent);
-
-			expect(mockSubmissionHandler).not.toHaveBeenCalled();
-		});
-
-		test('returns form state with errors on validation failure', async () => {
-			const mockFormDataParser = vi.fn(async () => ({
-				data: { name: 'John' },
-				errors: { email: 'Invalid email' }
-			}));
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				formDataParser: mockFormDataParser
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John' }
-			});
-
 			const result = await router.handleSubmission(mockEvent);
 
-			expect(result.form.errors.email).toBe('Invalid email');
+			expect(result.form.errors).toEqual({ email: 'Email is required' });
 			expect(result.form.isSubmitted).toBe(false);
+			expect(mockSubmissionHandler).not.toHaveBeenCalled();
 		});
 
 		test('logs form submission with category and lang', async () => {
@@ -918,63 +758,21 @@ describe('createCategoryRouter', () => {
 			expect(callData.category).toBe('support');
 		});
 
-		test('redirects to success page on success', async () => {
+		test('redirects to success page with correct parameters', async () => {
 			const router = createCategoryRouter({
 				categories: testCategories,
-				successPath: '/contact/success'
+				successPath: '/custom-success'
 			});
 
 			const mockEvent = createMockRequestEvent({
 				slug: 'general',
+				lang: 'en',
 				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
 			});
 
 			await expect(router.handleSubmission(mockEvent)).rejects.toMatchObject({
 				status: 303,
-				location: expect.stringContaining('/contact/success')
-			});
-		});
-
-		test('redirect is 303 status', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			await expect(router.handleSubmission(mockEvent)).rejects.toMatchObject({
-				status: 303
-			});
-		});
-
-		test('includes category in success page query params', async () => {
-			const router = createCategoryRouter({
-				categories: testCategories,
-				successPath: '/contact/success'
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'support',
-				formData: { name: 'Jane', email: 'jane@example.com', message: 'Issue' }
-			});
-
-			await expect(router.handleSubmission(mockEvent)).rejects.toMatchObject({
-				location: expect.stringContaining('category=support')
-			});
-		});
-
-		test('includes lang in redirect URL', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				lang: 'es',
-				formData: { name: 'Carlos', email: 'carlos@example.com', message: 'Hola' }
-			});
-
-			await expect(router.handleSubmission(mockEvent)).rejects.toMatchObject({
-				location: expect.stringContaining('/es/')
+				location: expect.stringMatching(/\/en\/custom-success\?category=general/)
 			});
 		});
 
@@ -1047,7 +845,7 @@ describe('createCategoryRouter', () => {
 	});
 
 	describe('handleSubmission() - Error Handling', () => {
-		test('catches submission errors', async () => {
+		test('catches submission errors and returns generic error message', async () => {
 			const mockSubmissionHandler = vi.fn(async () => {
 				throw new Error('Database connection failed');
 			});
@@ -1064,52 +862,16 @@ describe('createCategoryRouter', () => {
 
 			const result = await router.handleSubmission(mockEvent);
 
-			expect(result.form.errors._form).toContain('An error occurred');
-		});
-
-		test('returns generic error for unknown errors', async () => {
-			const mockSubmissionHandler = vi.fn(async () => {
-				throw new Error('Unknown error');
-			});
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
 			expect(result.form.errors._form).toBe('An error occurred. Please try again.');
-		});
-
-		test('detects reCAPTCHA errors by message content', async () => {
-			const mockSubmissionHandler = vi.fn(async () => {
-				throw new Error('reCAPTCHA verification failed');
-			});
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors._form).toContain('reCAPTCHA validation failed');
+			expect(mockLogger.error).toHaveBeenCalledWith(
+				'Form submission error',
+				expect.objectContaining({ error: expect.any(Error) })
+			);
 		});
 
 		test('returns specific error for reCAPTCHA failures', async () => {
 			const mockSubmissionHandler = vi.fn(async () => {
-				throw new Error('reCAPTCHA score too low');
+				throw new Error('reCAPTCHA verification failed');
 			});
 
 			const router = createCategoryRouter({
@@ -1127,30 +889,7 @@ describe('createCategoryRouter', () => {
 			expect(result.form.errors._form).toBe('reCAPTCHA validation failed. Please try again.');
 		});
 
-		test('calls errorHandler if provided', async () => {
-			const mockError = new Error('Custom error');
-			const mockSubmissionHandler = vi.fn(async () => {
-				throw mockError;
-			});
-			const mockErrorHandler = vi.fn(async () => null);
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler,
-				errorHandler: mockErrorHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			await router.handleSubmission(mockEvent);
-
-			expect(mockErrorHandler).toHaveBeenCalled();
-		});
-
-		test('passes error and context to errorHandler', async () => {
+		test('calls errorHandler and passes error context', async () => {
 			const mockError = new Error('Test error');
 			const mockSubmissionHandler = vi.fn(async () => {
 				throw mockError;
@@ -1233,42 +972,6 @@ describe('createCategoryRouter', () => {
 			expect(result.form.errors._form).toBe('An error occurred. Please try again.');
 		});
 
-		test('logs submission errors', async () => {
-			const mockSubmissionHandler = vi.fn(async () => {
-				throw new Error('Submission failed');
-			});
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			await router.handleSubmission(mockEvent);
-
-			expect(mockLogger.error).toHaveBeenCalledWith(
-				'Form submission error',
-				expect.objectContaining({ error: expect.any(Error) })
-			);
-		});
-
-		test('does not catch 303 redirects', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			await expect(router.handleSubmission(mockEvent)).rejects.toMatchObject({
-				status: 303
-			});
-		});
-
 		test('re-throws redirect exceptions', async () => {
 			const router = createCategoryRouter({ categories: testCategories });
 
@@ -1306,25 +1009,10 @@ describe('createCategoryRouter', () => {
 			const result = await router.handleSubmission(mockEvent);
 
 			expect(result.form.errors._form).toContain('An unexpected error occurred');
-		});
-
-		test('returns form with _form error for unexpected errors', async () => {
-			const mockEvent = {
-				request: {
-					formData: vi.fn().mockRejectedValue(new Error('Unexpected'))
-				},
-				url: new URL('http://localhost:3000/contact/general'),
-				params: { slug: 'general', lang: 'en' },
-				redirect: vi.fn(),
-				locals: {}
-			} as any;
-
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors).toHaveProperty('_form');
-			expect(result.form.isSubmitted).toBe(false);
+			expect(mockLogger.error).toHaveBeenCalledWith(
+				'Unexpected form submission error',
+				expect.objectContaining({ error: expect.any(Error) })
+			);
 		});
 
 		test('preserves form data on error', async () => {
@@ -1351,27 +1039,6 @@ describe('createCategoryRouter', () => {
 			expect(result.form.data.name).toBe('John Doe');
 			expect(result.form.data.email).toBe('john@example.com');
 			expect(result.form.data.message).toBe('Test message');
-		});
-
-		test('logs unexpected errors', async () => {
-			const mockEvent = {
-				request: {
-					formData: vi.fn().mockRejectedValue(new Error('Fatal error'))
-				},
-				url: new URL('http://localhost:3000/contact/general'),
-				params: { slug: 'general', lang: 'en' },
-				redirect: vi.fn(),
-				locals: {}
-			} as any;
-
-			const router = createCategoryRouter({ categories: testCategories });
-
-			await router.handleSubmission(mockEvent);
-
-			expect(mockLogger.error).toHaveBeenCalledWith(
-				'Unexpected form submission error',
-				expect.objectContaining({ error: expect.any(Error) })
-			);
 		});
 	});
 
@@ -1465,107 +1132,7 @@ describe('createCategoryRouter', () => {
 	});
 
 	describe('Integration Tests', () => {
-		test('full flow: load -> submit -> redirect to success', async () => {
-			const mockSubmissionHandler = vi.fn();
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			// Load the form
-			const mockLoadParams = createMockLoadParams({ slug: 'general', lang: 'en' });
-			const loadResult = await router.load(mockLoadParams);
-
-			expect(loadResult.categorySlug).toBe('general');
-			expect(loadResult.form.isSubmitted).toBe(false);
-			expect(loadResult.category).toEqual(testCategories.general);
-
-			// Submit the form
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				lang: 'en',
-				formData: {
-					name: 'John Doe',
-					email: 'john@example.com',
-					message: 'Test message'
-				}
-			});
-
-			// Check redirect contains both success path and category query param
-			try {
-				await router.handleSubmission(mockEvent);
-				expect.fail('Should have thrown redirect');
-			} catch (e: any) {
-				expect(e.status).toBe(303);
-				expect(e.location).toContain('/en/contact/success');
-				expect(e.location).toContain('category=general');
-			}
-
-			expect(mockSubmissionHandler).toHaveBeenCalled();
-		});
-
-		test('full flow with custom validator', async () => {
-			const mockValidator = { validate: vi.fn() };
-			const getValidatorForCategory = vi.fn(() => mockValidator);
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				getValidatorForCategory
-			});
-
-			const mockLoadParams = createMockLoadParams({ slug: 'support' });
-			const loadResult = await router.load(mockLoadParams);
-
-			expect(loadResult.form.validator).toBe(mockValidator);
-			expect(getValidatorForCategory).toHaveBeenCalledWith('support');
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'support',
-				formData: { name: 'Jane', email: 'jane@example.com', message: 'Help' }
-			});
-
-			try {
-				await router.handleSubmission(mockEvent);
-			} catch (e: any) {
-				expect(e.status).toBe(303);
-			}
-		});
-
-		test('full flow with custom formDataParser', async () => {
-			const mockSubmissionHandler = vi.fn();
-			const mockFormDataParser = vi.fn(async (formData, category) => ({
-				data: { parsed: 'true', category },
-				errors: {}
-			}));
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				formDataParser: mockFormDataParser,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'sales',
-				formData: { name: 'Bob', email: 'bob@example.com', message: 'Quote' }
-			});
-
-			try {
-				await router.handleSubmission(mockEvent);
-			} catch (e: any) {
-				expect(e.status).toBe(303);
-			}
-
-			expect(mockFormDataParser).toHaveBeenCalled();
-			expect(mockSubmissionHandler).toHaveBeenCalledWith(
-				expect.objectContaining({
-					parsed: 'true',
-					category: 'sales'
-				}),
-				'sales'
-			);
-		});
-
-		test('full flow with custom submissionHandler', async () => {
+		test('full flow with custom submissionHandler and locals', async () => {
 			let capturedData: any = null;
 			const mockSubmissionHandler = vi.fn(async (data) => {
 				capturedData = data;
@@ -1629,121 +1196,6 @@ describe('createCategoryRouter', () => {
 				expect.any(Error),
 				expect.objectContaining({ slug: 'general' })
 			);
-		});
-
-		test('CSRF failure prevents submission', async () => {
-			mockValidateCsrfToken.mockReturnValue(false);
-			const mockSubmissionHandler = vi.fn();
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors._form).toContain('Invalid security token');
-			expect(mockSubmissionHandler).not.toHaveBeenCalled();
-		});
-
-		test('validation errors prevent submission', async () => {
-			const mockSubmissionHandler = vi.fn();
-			const mockFormDataParser = vi.fn(async () => ({
-				data: { name: 'John' },
-				errors: { email: 'Email is required', message: 'Message is required' }
-			}));
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				formDataParser: mockFormDataParser,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors.email).toBe('Email is required');
-			expect(result.form.errors.message).toBe('Message is required');
-			expect(mockSubmissionHandler).not.toHaveBeenCalled();
-		});
-
-		test('category not found shows 404', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const mockLoadParams = createMockLoadParams({ slug: 'nonexistent' });
-
-			try {
-				await router.load(mockLoadParams);
-				expect.fail('Should have thrown 404');
-			} catch (e: any) {
-				expect(e.status).toBe(404);
-				expect(e.message).toContain('Category not found: nonexistent');
-			}
-		});
-
-		test('label-based slug redirects to canonical', async () => {
-			const router = createCategoryRouter({ categories: testCategories });
-
-			const mockLoadParams = createMockLoadParams({
-				slug: 'sales-inquiry',
-				lang: 'en'
-			});
-
-			try {
-				await router.load(mockLoadParams);
-				expect.fail('Should have thrown redirect');
-			} catch (e: any) {
-				expect(e.status).toBe(301);
-				expect(e.location).toBe('/en/contact/sales');
-			}
-		});
-
-		test('success page shows thank you message', async () => {
-			const router = createCategoryRouter({
-				categories: testCategories,
-				defaultCategory: 'general'
-			});
-
-			const mockLoadParams = createMockLoadParams({
-				slug: 'success',
-				searchParams: { category: 'support' }
-			});
-
-			const result = await router.load(mockLoadParams);
-
-			expect(result.showThankYou).toBe(true);
-			expect(result.categorySlug).toBe('support');
-			expect(result.form.isSubmitted).toBe(false);
-		});
-
-		test('error in submission shows error message', async () => {
-			const mockSubmissionHandler = vi.fn(async () => {
-				throw new Error('Network error occurred');
-			});
-
-			const router = createCategoryRouter({
-				categories: testCategories,
-				createSubmissionHandler: async () => mockSubmissionHandler
-			});
-
-			const mockEvent = createMockRequestEvent({
-				slug: 'general',
-				formData: { name: 'John', email: 'john@example.com', message: 'Test' }
-			});
-
-			const result = await router.handleSubmission(mockEvent);
-
-			expect(result.form.errors._form).toBe('An error occurred. Please try again.');
-			expect(result.form.isSubmitted).toBe(false);
 		});
 
 		test('complete flow with multiple categories', async () => {

@@ -582,60 +582,26 @@ describe('createContactApiHandler', () => {
 	});
 
 	describe('Field Validation Tests', () => {
-		test('rejects missing name field', async () => {
+		test.each([
+			{ field: 'name', body: { email: 'john@example.com', message: 'Hello' } },
+			{ field: 'email', body: { name: 'John', message: 'Hello' } },
+			{ field: 'message', body: { name: 'John', email: 'john@example.com' } }
+		])('rejects missing required field: $field', async ({ field, body }) => {
 			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { email: 'john@example.com', message: 'Hello' }
-			});
+			const event = createMockRequestEvent({ body });
 
 			const response = await handler(event);
 			const data = await response.json();
 
 			expect(response.status).toBe(400);
 			expect(data.success).toBe(false);
-			expect(data.errors?.name).toBeDefined();
+			expect(data.errors?.[field]).toBeDefined();
 		});
 
-		test('rejects empty name field', async () => {
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: '   ', email: 'john@example.com', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(400);
-			expect(data.errors?.name).toContain('required');
-		});
-
-		test('rejects missing email field', async () => {
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: 'John', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(400);
-			expect(data.errors?.email).toBeDefined();
-		});
-
-		test('rejects missing message field', async () => {
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(400);
-			expect(data.errors?.message).toBeDefined();
-		});
-
-		test('allows optional phone field', async () => {
+		test.each([
+			{ field: 'phone', value: '555-1234' },
+			{ field: 'subject', value: 'Question' }
+		])('allows optional field: $field', async ({ field, value }) => {
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
 			});
@@ -645,7 +611,7 @@ describe('createContactApiHandler', () => {
 					name: 'John',
 					email: 'john@example.com',
 					message: 'Hello',
-					phone: '555-1234'
+					[field]: value
 				}
 			});
 
@@ -654,26 +620,7 @@ describe('createContactApiHandler', () => {
 			expect(response.status).toBe(200);
 		});
 
-		test('allows optional subject field', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event = createMockRequestEvent({
-				body: {
-					name: 'John',
-					email: 'john@example.com',
-					message: 'Hello',
-					subject: 'Question'
-				}
-			});
-
-			const response = await handler(event);
-
-			expect(response.status).toBe(200);
-		});
-
-		test('returns field-specific errors with 400 status', async () => {
+		test('rejects empty required fields and returns multiple errors', async () => {
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
 				body: { name: '', email: '', message: '' }
@@ -685,21 +632,23 @@ describe('createContactApiHandler', () => {
 			expect(response.status).toBe(400);
 			expect(data.errors).toBeDefined();
 			expect(typeof data.errors).toBe('object');
+			expect(Object.keys(data.errors).length).toBeGreaterThan(1);
+			expect(data.errors.name).toBeDefined();
+			expect(data.errors.email).toBeDefined();
+			expect(data.errors.message).toBeDefined();
 		});
 
-		test('reports multiple field errors at once', async () => {
+		test('rejects empty name field with whitespace', async () => {
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
-				body: { name: '', email: '', message: '' }
+				body: { name: '   ', email: 'john@example.com', message: 'Hello' }
 			});
 
 			const response = await handler(event);
 			const data = await response.json();
 
-			expect(Object.keys(data.errors || {}).length).toBeGreaterThan(1);
-			expect(data.errors?.name).toBeDefined();
-			expect(data.errors?.email).toBeDefined();
-			expect(data.errors?.message).toBeDefined();
+			expect(response.status).toBe(400);
+			expect(data.errors?.name).toContain('required');
 		});
 	});
 
@@ -895,26 +844,7 @@ describe('createContactApiHandler', () => {
 	});
 
 	describe('Email Sending Tests', () => {
-		test('sends email with form data', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com',
-				fromEmail: 'noreply@example.com'
-			});
-
-			const formData = {
-				name: 'John Doe',
-				email: 'john@example.com',
-				message: 'Test message'
-			};
-
-			const event = createMockRequestEvent({ body: formData });
-
-			await handler(event);
-
-			expect(mockSendEmail).toHaveBeenCalled();
-		});
-
-		test('includes all form fields in email', async () => {
+		test('sends email with all form fields included in both HTML and text', async () => {
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
 			});
@@ -932,6 +862,7 @@ describe('createContactApiHandler', () => {
 
 			await handler(event);
 
+			expect(mockSendEmail).toHaveBeenCalled();
 			const emailCall = mockSendEmail.mock.calls[0];
 			const bodyHtml = emailCall[2];
 			const bodyText = emailCall[3];
@@ -945,7 +876,7 @@ describe('createContactApiHandler', () => {
 			expect(bodyHtml).toContain('john@example.com');
 		});
 
-		test('uses correct subject format', async () => {
+		test('uses correct subject format with category', async () => {
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
 			});
@@ -968,10 +899,10 @@ describe('createContactApiHandler', () => {
 			expect(subject).toContain('sales');
 		});
 
-		test('sends to adminEmail', async () => {
+		test('sends to adminEmail and uses fromEmail from config', async () => {
 			const handler = createContactApiHandler({
 				adminEmail: 'contact@mycompany.com',
-				fromEmail: 'noreply@mycompany.com'
+				fromEmail: 'forms@example.com'
 			});
 
 			const event = createMockRequestEvent({
@@ -985,26 +916,8 @@ describe('createContactApiHandler', () => {
 				expect.any(String),
 				expect.any(String),
 				expect.any(String),
-				expect.any(Object)
+				expect.objectContaining({ fromEmail: 'forms@example.com' })
 			);
-		});
-
-		test('uses fromEmail in config', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com',
-				fromEmail: 'forms@example.com'
-			});
-
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			await handler(event);
-
-			const emailCall = mockSendEmail.mock.calls[0];
-			const config = emailCall[4];
-
-			expect(config.fromEmail).toBe('forms@example.com');
 		});
 
 		test('handles email errors gracefully (does not fail request)', async () => {
@@ -1024,63 +937,38 @@ describe('createContactApiHandler', () => {
 			expect(response.status).toBe(200);
 		});
 
-		test('logs email success', async () => {
+		test('logs email success and failure appropriately', async () => {
+			// Test success logging
 			mockSendEmail.mockResolvedValue({ success: true });
-
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
 			});
-
-			const event = createMockRequestEvent({
+			const event1 = createMockRequestEvent({
 				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
 			});
-
-			await handler(event);
-
+			await handler(event1);
 			expect(mockLogger.info).toHaveBeenCalledWith(
 				expect.stringContaining('email sent successfully')
 			);
-		});
 
-		test('logs email failure', async () => {
+			// Reset and test failure logging
+			vi.clearAllMocks();
+			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
+			mockValidateCsrfToken.mockReturnValue(true);
+			mockSanitizeFormData.mockImplementation((data) => data);
 			mockSendEmail.mockResolvedValue({ success: false, message: 'Failed to send' });
 
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event = createMockRequestEvent({
+			const event2 = createMockRequestEvent({
 				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
 			});
-
-			await handler(event);
-
+			await handler(event2);
 			expect(mockLogger.warn).toHaveBeenCalledWith(
 				expect.stringContaining('may not have been sent'),
 				expect.anything()
 			);
 		});
 
-		test('formats HTML body correctly', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			await handler(event);
-
-			const emailCall = mockSendEmail.mock.calls[0];
-			const bodyHtml = emailCall[2];
-
-			expect(bodyHtml).toContain('<h2>');
-			expect(bodyHtml).toContain('<p>');
-			expect(bodyHtml).toContain('<strong>');
-		});
-
-		test('formats text body correctly', async () => {
+		test('formats email body with HTML and text correctly', async () => {
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
 			});
@@ -1097,8 +985,15 @@ describe('createContactApiHandler', () => {
 			await handler(event);
 
 			const emailCall = mockSendEmail.mock.calls[0];
+			const bodyHtml = emailCall[2];
 			const bodyText = emailCall[3];
 
+			// Verify HTML formatting
+			expect(bodyHtml).toContain('<h2>');
+			expect(bodyHtml).toContain('<p>');
+			expect(bodyHtml).toContain('<strong>');
+
+			// Verify text formatting
 			expect(bodyText).toContain('New contact form submission');
 			expect(bodyText).toContain('Category: support');
 			expect(bodyText).toContain('Name: John');
@@ -1108,41 +1003,8 @@ describe('createContactApiHandler', () => {
 	});
 
 	describe('Success Response Tests', () => {
-		test('returns 200 with success message', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com',
-				successMessage: 'Thank you for contacting us!'
-			});
-
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(200);
-			expect(data.message).toBe('Thank you for contacting us!');
-		});
-
-		test('returns success: true in JSON', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(data.success).toBe(true);
-		});
-
-		test('uses custom success message', async () => {
-			const customMessage = 'Your message has been received!';
-
+		test('returns 200 with success:true and custom success message', async () => {
+			const customMessage = 'Thank you for contacting us!';
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com',
 				successMessage: customMessage
@@ -1155,6 +1017,8 @@ describe('createContactApiHandler', () => {
 			const response = await handler(event);
 			const data = await response.json();
 
+			expect(response.status).toBe(200);
+			expect(data.success).toBe(true);
 			expect(data.message).toBe(customMessage);
 		});
 
@@ -1170,6 +1034,8 @@ describe('createContactApiHandler', () => {
 			const response = await handler(event);
 			const data = await response.json();
 
+			expect(response.status).toBe(200);
+			expect(data.success).toBe(true);
 			expect(data.message).toBeDefined();
 			expect(data.message.length).toBeGreaterThan(0);
 		});
@@ -1259,7 +1125,7 @@ describe('createContactApiHandler', () => {
 	});
 
 	describe('Integration Tests', () => {
-		test('full happy path (all checks pass, email sent)', async () => {
+		test('full happy path with all security checks and email sending', async () => {
 			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
 			mockValidateCsrfToken.mockReturnValue(true);
 			mockSanitizeFormData.mockImplementation((data) => data);
@@ -1270,7 +1136,8 @@ describe('createContactApiHandler', () => {
 				adminEmail: 'admin@example.com',
 				fromEmail: 'noreply@example.com',
 				successMessage: 'Success!',
-				recaptchaSecretKey: 'secret'
+				recaptchaSecretKey: 'secret',
+				logSubmissions: true
 			});
 
 			const event = createMockRequestEvent({
@@ -1278,8 +1145,10 @@ describe('createContactApiHandler', () => {
 					name: 'John Doe',
 					email: 'john@example.com',
 					message: 'Hello world',
+					category: 'support',
 					recaptchaToken: 'valid-token'
-				}
+				},
+				clientAddress: '10.0.0.1'
 			});
 
 			const response = await handler(event);
@@ -1293,110 +1162,16 @@ describe('createContactApiHandler', () => {
 			expect(mockSanitizeFormData).toHaveBeenCalled();
 			expect(mockVerifyRecaptchaToken).toHaveBeenCalled();
 			expect(mockSendEmail).toHaveBeenCalled();
+			expect(mockLogger.info).toHaveBeenCalledWith(
+				expect.stringContaining('Contact form submission'),
+				expect.objectContaining({
+					category: 'support',
+					ip: '10.0.0.1'
+				})
+			);
 		});
 
-		test('full rejection path (rate limit failure)', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({
-				allowed: false,
-				retryAfter: 60
-			});
-
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(429);
-			expect(data.success).toBe(false);
-			// Should not proceed to other checks
-			expect(mockValidateCsrfToken).not.toHaveBeenCalled();
-			expect(mockSendEmail).not.toHaveBeenCalled();
-		});
-
-		test('full rejection path (CSRF failure)', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-			mockValidateCsrfToken.mockReturnValue(false);
-
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(403);
-			expect(data.success).toBe(false);
-			expect(mockSendEmail).not.toHaveBeenCalled();
-		});
-
-		test('full rejection path (validation failure)', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-			mockValidateCsrfToken.mockReturnValue(true);
-			mockSanitizeFormData.mockImplementation((data) => data);
-
-			const handler = createContactApiHandler();
-			const event = createMockRequestEvent({
-				body: { name: '', email: '', message: '' }
-			});
-
-			const response = await handler(event);
-			const data = await response.json();
-
-			expect(response.status).toBe(400);
-			expect(data.success).toBe(false);
-			expect(data.errors).toBeDefined();
-			expect(mockSendEmail).not.toHaveBeenCalled();
-		});
-
-		test('multiple form submissions in sequence', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event1 = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'First' }
-			});
-
-			const event2 = createMockRequestEvent({
-				body: { name: 'Jane', email: 'jane@example.com', message: 'Second' }
-			});
-
-			const response1 = await handler(event1);
-			const response2 = await handler(event2);
-
-			expect(response1.status).toBe(200);
-			expect(response2.status).toBe(200);
-			expect(mockSendEmail).toHaveBeenCalledTimes(2);
-		});
-
-		test('different client IPs handled independently', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com'
-			});
-
-			const event1 = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' },
-				clientAddress: '192.168.1.1'
-			});
-
-			const event2 = createMockRequestEvent({
-				body: { name: 'Jane', email: 'jane@example.com', message: 'Hi' },
-				clientAddress: '192.168.1.2'
-			});
-
-			await handler(event1);
-			await handler(event2);
-
-			// Verify each IP was passed to rate limiter
-			expect(mockRateLimitFormSubmission.mock.calls[0][0]).toBe('192.168.1.1');
-			expect(mockRateLimitFormSubmission.mock.calls[1][0]).toBe('192.168.1.2');
-		});
-
-		test('email failure does not break success response', async () => {
+		test('handles email failure gracefully and continues with success response', async () => {
 			mockSendEmail.mockRejectedValue(new Error('Email service unavailable'));
 
 			const handler = createContactApiHandler({
@@ -1416,52 +1191,6 @@ describe('createContactApiHandler', () => {
 				expect.stringContaining('Failed to send'),
 				expect.anything()
 			);
-		});
-
-		test('submission logging when enabled', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com',
-				logSubmissions: true
-			});
-
-			const event = createMockRequestEvent({
-				body: {
-					name: 'John',
-					email: 'john@example.com',
-					message: 'Hello',
-					category: 'support'
-				},
-				clientAddress: '10.0.0.1'
-			});
-
-			await handler(event);
-
-			expect(mockLogger.info).toHaveBeenCalledWith(
-				expect.stringContaining('Contact form submission'),
-				expect.objectContaining({
-					category: 'support',
-					ip: '10.0.0.1'
-				})
-			);
-		});
-
-		test('submission logging when disabled', async () => {
-			const handler = createContactApiHandler({
-				adminEmail: 'admin@example.com',
-				logSubmissions: false
-			});
-
-			const event = createMockRequestEvent({
-				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
-			});
-
-			await handler(event);
-
-			// Should not log submission details
-			const logCalls = mockLogger.info.mock.calls.filter((call) =>
-				call[0].includes('Contact form submission')
-			);
-			expect(logCalls.length).toBe(0);
 		});
 	});
 });

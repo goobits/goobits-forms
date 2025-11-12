@@ -250,7 +250,7 @@ describe('AwsSesProvider', () => {
 		expect((provider as any).config).toEqual(config);
 	});
 
-	test('init() initializes SES client and transporter', async () => {
+	test('init() initializes SES client and transporter, and is idempotent', async () => {
 		const mockAwsImports = await import('./awsImports.ts');
 		const createTransportSpy = vi.spyOn(mockAwsImports.nodemailer, 'createTransport');
 
@@ -260,76 +260,37 @@ describe('AwsSesProvider', () => {
 		expect(createTransportSpy).toHaveBeenCalled();
 		expect((awsProvider as any).transporter).toBeDefined();
 		expect((awsProvider as any).initialized).toBe(true);
-	});
 
-	test('init() only runs once (idempotent)', async () => {
-		const mockAwsImports = await import('./awsImports.ts');
-		const createTransportSpy = vi.spyOn(mockAwsImports.nodemailer, 'createTransport');
-
+		// Test idempotency - multiple calls should only init once
 		await awsProvider.init();
 		await awsProvider.init();
-		await awsProvider.init();
-
-		// Should only create transport once despite multiple init() calls
 		expect(createTransportSpy).toHaveBeenCalledTimes(1);
-		expect((awsProvider as any).initialized).toBe(true);
 	});
 
-	test('init() uses config.region', async () => {
-		const provider = new AwsSesProvider({
+	test('init() handles config variations (region, credentials, apiVersion)', async () => {
+		// Test with credentials
+		const providerWithCreds = new AwsSesProvider({
 			region: 'eu-west-1',
-			fromEmail: 'test@example.com'
-		});
-
-		await provider.init();
-
-		// Verify provider is initialized
-		expect((provider as any).initialized).toBe(true);
-		expect((provider as any).transporter).toBeDefined();
-	});
-
-	test('init() uses credentials when provided', async () => {
-		const provider = new AwsSesProvider({
-			region: 'us-east-1',
 			fromEmail: 'test@example.com',
 			accessKeyId: 'my-key',
-			secretAccessKey: 'my-secret'
+			secretAccessKey: 'my-secret',
+			apiVersion: '2010-12-01'
 		});
+		await providerWithCreds.init();
+		expect((providerWithCreds as any).initialized).toBe(true);
+		expect((providerWithCreds as any).config.accessKeyId).toBe('my-key');
+		expect((providerWithCreds as any).config.secretAccessKey).toBe('my-secret');
+		expect((providerWithCreds as any).config.apiVersion).toBe('2010-12-01');
 
-		await provider.init();
-
-		// Verify provider is initialized with credentials in config
-		expect((provider as any).initialized).toBe(true);
-		expect((provider as any).config.accessKeyId).toBe('my-key');
-		expect((provider as any).config.secretAccessKey).toBe('my-secret');
-	});
-
-	test('init() omits credentials when not provided', async () => {
-		const provider = new AwsSesProvider({
+		// Test without credentials
+		const providerWithoutCreds = new AwsSesProvider({
 			region: 'us-east-1',
 			fromEmail: 'test@example.com'
 		});
-
-		await provider.init();
-
-		// Verify provider is initialized without credentials in config
-		expect((provider as any).initialized).toBe(true);
-		expect((provider as any).config.accessKeyId).toBeUndefined();
-		expect((provider as any).config.secretAccessKey).toBeUndefined();
-	});
-
-	test('init() uses custom apiVersion when provided', async () => {
-		const provider = new AwsSesProvider({
-			region: 'us-east-1',
-			fromEmail: 'test@example.com',
-			apiVersion: '2010-12-01'
-		});
-
-		await provider.init();
-
-		// Verify provider is initialized with custom apiVersion
-		expect((provider as any).initialized).toBe(true);
-		expect((provider as any).config.apiVersion).toBe('2010-12-01');
+		await providerWithoutCreds.init();
+		expect((providerWithoutCreds as any).initialized).toBe(true);
+		expect((providerWithoutCreds as any).config.accessKeyId).toBeUndefined();
+		expect((providerWithoutCreds as any).config.secretAccessKey).toBeUndefined();
 	});
 
 	test('sendEmail calls init() before sending', async () => {
@@ -392,53 +353,21 @@ describe('AwsSesProvider', () => {
 		expect(result.details).toBe(mockError);
 	});
 
-	test('sendEmail trims whitespace from subject', async () => {
+	test('sendEmail trims whitespace from subject, bodyHtml, and bodyText', async () => {
 		await awsProvider.init();
 		const transporter = (awsProvider as any).transporter;
 
 		await awsProvider.sendEmail(
 			'recipient@example.com',
 			'  Test Subject with whitespace  ',
-			'<p>Body</p>'
-		);
-
-		expect(transporter.sendMail).toHaveBeenCalledWith(
-			expect.objectContaining({
-				subject: 'Test Subject with whitespace'
-			})
-		);
-	});
-
-	test('sendEmail trims whitespace from bodyHtml', async () => {
-		await awsProvider.init();
-		const transporter = (awsProvider as any).transporter;
-
-		await awsProvider.sendEmail(
-			'recipient@example.com',
-			'Subject',
-			'  <p>Body with whitespace</p>  '
-		);
-
-		expect(transporter.sendMail).toHaveBeenCalledWith(
-			expect.objectContaining({
-				html: '<p>Body with whitespace</p>'
-			})
-		);
-	});
-
-	test('sendEmail trims whitespace from bodyText', async () => {
-		await awsProvider.init();
-		const transporter = (awsProvider as any).transporter;
-
-		await awsProvider.sendEmail(
-			'recipient@example.com',
-			'Subject',
-			'<p>HTML</p>',
+			'  <p>Body with whitespace</p>  ',
 			'  Plain text with whitespace  '
 		);
 
 		expect(transporter.sendMail).toHaveBeenCalledWith(
 			expect.objectContaining({
+				subject: 'Test Subject with whitespace',
+				html: '<p>Body with whitespace</p>',
 				text: 'Plain text with whitespace'
 			})
 		);
@@ -462,24 +391,22 @@ describe('AwsSesProvider', () => {
 });
 
 describe('createEmailProvider Factory', () => {
-	test('creates MockEmailProvider when provider="mock"', () => {
-		const provider = createEmailProvider({ provider: 'mock' });
-		expect(provider).toBeInstanceOf(MockEmailProvider);
+	test('creates MockEmailProvider when provider="mock" or by default', () => {
+		const provider1 = createEmailProvider({ provider: 'mock' });
+		expect(provider1).toBeInstanceOf(MockEmailProvider);
+		expect(provider1).toBeInstanceOf(EmailProvider);
+
+		const provider2 = createEmailProvider({});
+		expect(provider2).toBeInstanceOf(MockEmailProvider);
+
+		const provider3 = createEmailProvider();
+		expect(provider3).toBeInstanceOf(MockEmailProvider);
 	});
 
 	test('creates AwsSesProvider when provider="aws-ses"', () => {
 		const provider = createEmailProvider({ provider: 'aws-ses' });
 		expect(provider).toBeInstanceOf(AwsSesProvider);
-	});
-
-	test('defaults to mock provider when no provider specified', () => {
-		const provider = createEmailProvider({});
-		expect(provider).toBeInstanceOf(MockEmailProvider);
-	});
-
-	test('defaults to mock provider when config is empty', () => {
-		const provider = createEmailProvider();
-		expect(provider).toBeInstanceOf(MockEmailProvider);
+		expect(provider).toBeInstanceOf(EmailProvider);
 	});
 
 	test('throws error for unknown provider', () => {
@@ -497,18 +424,6 @@ describe('createEmailProvider Factory', () => {
 		const provider = createEmailProvider(config);
 		expect((provider as any).config).toEqual(config);
 	});
-
-	test('returns correct instance type for mock', () => {
-		const provider = createEmailProvider({ provider: 'mock' });
-		expect(provider).toBeInstanceOf(MockEmailProvider);
-		expect(provider).toBeInstanceOf(EmailProvider);
-	});
-
-	test('returns correct instance type for aws-ses', () => {
-		const provider = createEmailProvider({ provider: 'aws-ses' });
-		expect(provider).toBeInstanceOf(AwsSesProvider);
-		expect(provider).toBeInstanceOf(EmailProvider);
-	});
 });
 
 describe('sendEmail Convenience Function', () => {
@@ -522,34 +437,7 @@ describe('sendEmail Convenience Function', () => {
 		consoleLogSpy.mockRestore();
 	});
 
-	test('calls createEmailProvider with config', async () => {
-		// Test that the config is properly passed through by verifying the result
-		const result = await sendEmail(
-			'test@example.com',
-			'Subject',
-			'<p>Body</p>',
-			undefined,
-			{ provider: 'mock', fromEmail: 'sender@example.com' }
-		);
-
-		// Verify the email was sent successfully (which means provider was created)
-		expect(result.success).toBe(true);
-		expect(result.message).toBe('Mock email sent successfully');
-	});
-
-	test('calls provider.sendEmail with correct params', async () => {
-		const result = await sendEmail(
-			'recipient@example.com',
-			'Test Subject',
-			'<p>HTML Body</p>',
-			'Plain text body'
-		);
-
-		expect(result.success).toBe(true);
-		expect(result.message).toBe('Mock email sent successfully');
-	});
-
-	test('returns result from provider', async () => {
+	test('works with mock provider (default) and returns success result', async () => {
 		const result = await sendEmail(
 			'test@example.com',
 			'Subject',
@@ -557,22 +445,11 @@ describe('sendEmail Convenience Function', () => {
 		);
 
 		expect(result).toBeDefined();
-		expect(result.success).toBeDefined();
-		expect(result.message).toBeDefined();
-	});
-
-	test('works with mock provider (default)', async () => {
-		const result = await sendEmail(
-			'test@example.com',
-			'Subject',
-			'<p>Body</p>'
-		);
-
 		expect(result.success).toBe(true);
 		expect(result.message).toBe('Mock email sent successfully');
 	});
 
-	test('works with aws-ses provider', async () => {
+	test('works with aws-ses provider when specified in config', async () => {
 		const result = await sendEmail(
 			'test@example.com',
 			'Subject',
@@ -589,8 +466,8 @@ describe('sendEmail Convenience Function', () => {
 		expect(result.message).toBe('Email sent successfully');
 	});
 
-	test('handles all parameters', async () => {
-		const result = await sendEmail(
+	test('handles all parameters including optional bodyText and config', async () => {
+		const result1 = await sendEmail(
 			'recipient@example.com',
 			'Test Subject',
 			'<p>HTML content</p>',
@@ -600,30 +477,16 @@ describe('sendEmail Convenience Function', () => {
 				fromEmail: 'sender@example.com'
 			}
 		);
+		expect(result1.success).toBe(true);
 
-		expect(result.success).toBe(true);
-	});
-
-	test('optional bodyText parameter', async () => {
-		const result = await sendEmail(
+		// Test without bodyText
+		const result2 = await sendEmail(
 			'test@example.com',
 			'Subject',
 			'<p>HTML only</p>'
 		);
-
-		expect(result.success).toBe(true);
-		expect(result.details.bodyText).toBeUndefined();
-	});
-
-	test('optional config parameter', async () => {
-		const result = await sendEmail(
-			'test@example.com',
-			'Subject',
-			'<p>Body</p>',
-			'Text'
-		);
-
-		expect(result.success).toBe(true);
+		expect(result2.success).toBe(true);
+		expect(result2.details.bodyText).toBeUndefined();
 	});
 });
 
@@ -778,44 +641,29 @@ describe('Edge Cases & Error Handling', () => {
 		consoleLogSpy.mockRestore();
 	});
 
-	test('empty subject handling', async () => {
+	test('handles empty subject and body correctly', async () => {
 		const mockProvider = new MockEmailProvider();
-		const result = await mockProvider.sendEmail(
-			'test@example.com',
-			'',
-			'<p>Body</p>'
-		);
 
-		expect(result.success).toBe(true);
-		const sentEmails = mockProvider.getSentEmails();
-		expect(sentEmails[0].subject).toBe('');
-	});
+		// Empty subject
+		const result1 = await mockProvider.sendEmail('test@example.com', '', '<p>Body</p>');
+		expect(result1.success).toBe(true);
+		expect(mockProvider.getSentEmails()[0].subject).toBe('');
 
-	test('empty body handling', async () => {
-		const mockProvider = new MockEmailProvider();
-		const result = await mockProvider.sendEmail(
-			'test@example.com',
-			'Subject',
-			''
-		);
+		// Empty body
+		mockProvider.clearSentEmails();
+		const result2 = await mockProvider.sendEmail('test@example.com', 'Subject', '');
+		expect(result2.success).toBe(true);
+		expect(mockProvider.getSentEmails()[0].bodyHtml).toBe('');
 
-		expect(result.success).toBe(true);
-		const sentEmails = mockProvider.getSentEmails();
-		expect(sentEmails[0].bodyHtml).toBe('');
-	});
-
-	test('AWS SES trims empty bodyHtml', async () => {
+		// AWS SES trims empty bodyHtml/bodyText
 		const awsProvider = new AwsSesProvider({
 			region: 'us-east-1',
 			fromEmail: 'test@example.com'
 		});
 		await awsProvider.init();
 		const transporter = (awsProvider as any).transporter;
-
 		await awsProvider.sendEmail('test@example.com', 'Subject', '   ', '');
-
 		const callArgs = transporter.sendMail.mock.calls[0][0];
-		// After trimming, empty string should not add html field
 		expect(callArgs.html).toBeUndefined();
 		expect(callArgs.text).toBeUndefined();
 	});

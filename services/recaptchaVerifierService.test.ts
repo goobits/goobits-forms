@@ -376,26 +376,19 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 			expect(result['error-codes']).toEqual(['timeout-or-duplicate', 'bad-request']);
 		});
 
-		test('handles non-200 HTTP status', async () => {
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse({}, 500));
+		test.each([
+			{ status: 500, token: 'token_500' },
+			{ status: 404, token: 'token_404' },
+			{ status: 403, token: 'token_403' }
+		])('handles non-200 HTTP status: $status', async ({ status, token }) => {
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse({}, status));
 
-			const result = await verifyRecaptchaTokenWithDetails('token_500', {
+			const result = await verifyRecaptchaTokenWithDetails(token, {
 				secretKey: 'test_secret_key'
 			});
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe('reCAPTCHA API returned status 500');
-		});
-
-		test('handles non-200 HTTP status (404)', async () => {
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse({}, 404));
-
-			const result = await verifyRecaptchaTokenWithDetails('token_404', {
-				secretKey: 'test_secret_key'
-			});
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBe('reCAPTCHA API returned status 404');
+			expect(result.error).toBe(`reCAPTCHA API returned status ${status}`);
 		});
 
 		test('handles network errors', async () => {
@@ -428,42 +421,29 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 	});
 
 	describe('Score Validation (v3)', () => {
-		test('accepts score greater than or equal to minScore', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.7
-			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('high_score_token', {
+		test('accepts scores greater than or equal to minScore', async () => {
+			// Test score above minScore
+			const mockResponse1 = createMockApiResponse({ success: true, score: 0.7 });
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse1));
+			const result1 = await verifyRecaptchaTokenWithDetails('high_score_token', {
 				secretKey: 'test_secret_key',
 				minScore: 0.6
 			});
+			expect(result1.success).toBe(true);
+			expect(result1.score).toBe(0.7);
 
-			expect(result.success).toBe(true);
-			expect(result.score).toBe(0.7);
-		});
-
-		test('accepts score exactly equal to minScore', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.5
-			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('exact_score_token', {
+			// Test score exactly equal to minScore
+			const mockResponse2 = createMockApiResponse({ success: true, score: 0.5 });
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse2));
+			const result2 = await verifyRecaptchaTokenWithDetails('exact_score_token', {
 				secretKey: 'test_secret_key',
 				minScore: 0.5
 			});
-
-			expect(result.success).toBe(true);
+			expect(result2.success).toBe(true);
 		});
 
-		test('rejects score less than minScore', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.3
-			});
+		test('rejects scores less than minScore with detailed error', async () => {
+			const mockResponse = createMockApiResponse({ success: true, score: 0.3 });
 			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
 
 			const result = await verifyRecaptchaTokenWithDetails('low_score_token', {
@@ -475,51 +455,25 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 			expect(result.error).toContain('Score 0.3 is below minimum threshold 0.5');
 		});
 
-		test('uses default minScore of 0.5', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.4
-			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('default_min_token', {
+		test('uses default minScore of 0.5 and respects custom minScore', async () => {
+			// Test default minScore (0.5)
+			const mockResponse1 = createMockApiResponse({ success: true, score: 0.4 });
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse1));
+			const result1 = await verifyRecaptchaTokenWithDetails('default_min_token', {
 				secretKey: 'test_secret_key'
 			});
+			expect(result1.success).toBe(false);
+			expect(result1.error).toContain('Score 0.4 is below minimum threshold 0.5');
 
-			expect(result.success).toBe(false);
-			expect(result.error).toContain('Score 0.4 is below minimum threshold 0.5');
-		});
-
-		test('respects custom minScore', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.6
-			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('custom_min_token', {
+			// Test custom minScore (0.7)
+			const mockResponse2 = createMockApiResponse({ success: true, score: 0.6 });
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse2));
+			const result2 = await verifyRecaptchaTokenWithDetails('custom_min_token', {
 				secretKey: 'test_secret_key',
 				minScore: 0.7
 			});
-
-			expect(result.success).toBe(false);
-			expect(result.error).toContain('Score 0.6 is below minimum threshold 0.7');
-		});
-
-		test('returns detailed error message with actual and expected scores', async () => {
-			const mockResponse = createMockApiResponse({
-				success: true,
-				score: 0.25
-			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('detailed_error_token', {
-				secretKey: 'test_secret_key',
-				minScore: 0.8
-			});
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBe('Score 0.25 is below minimum threshold 0.8');
+			expect(result2.success).toBe(false);
+			expect(result2.error).toBe('Score 0.6 is below minimum threshold 0.7');
 		});
 
 		test('passes when score is undefined (v2 scenario)', async () => {
@@ -573,35 +527,31 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 			expect(result.error).toBe("Action mismatch: expected 'submit_form', got 'login'");
 		});
 
-		test('passes when action is null (not validated)', async () => {
-			const mockResponse = createMockApiResponse({
+		test('passes when action is null or not provided in options', async () => {
+			// Test with action: null
+			const mockResponse1 = createMockApiResponse({
 				success: true,
 				action: 'any_action',
 				score: 0.9
 			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('no_action_check_token', {
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse1));
+			const result1 = await verifyRecaptchaTokenWithDetails('no_action_check_token', {
 				secretKey: 'test_secret_key',
 				action: null
 			});
+			expect(result1.success).toBe(true);
 
-			expect(result.success).toBe(true);
-		});
-
-		test('passes when action not provided in options', async () => {
-			const mockResponse = createMockApiResponse({
+			// Test with action not provided
+			const mockResponse2 = createMockApiResponse({
 				success: true,
 				action: 'any_action',
 				score: 0.9
 			});
-			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-			const result = await verifyRecaptchaTokenWithDetails('no_action_option_token', {
+			mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse2));
+			const result2 = await verifyRecaptchaTokenWithDetails('no_action_option_token', {
 				secretKey: 'test_secret_key'
 			});
-
-			expect(result.success).toBe(true);
+			expect(result2.success).toBe(true);
 		});
 
 		test('fails when expected action provided but no action in API response', async () => {
@@ -641,18 +591,19 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 	});
 
 	describe('Error Handling', () => {
-		test('catches fetch exceptions', async () => {
+		test('catches fetch and JSON parse exceptions with proper error structure', async () => {
+			// Test fetch exception
 			mockFetch.mockRejectedValueOnce(new Error('Connection timeout'));
-
-			const result = await verifyRecaptchaTokenWithDetails('fetch_exception_token', {
+			const result1 = await verifyRecaptchaTokenWithDetails('fetch_exception_token', {
 				secretKey: 'test_secret_key'
 			});
+			expect(result1.success).toBe(false);
+			expect(result1.error).toBe('Connection timeout');
+			expect(result1).toHaveProperty('success');
+			expect(result1).toHaveProperty('error');
+			expect(typeof result1.error).toBe('string');
 
-			expect(result.success).toBe(false);
-			expect(result.error).toBe('Connection timeout');
-		});
-
-		test('catches JSON parse exceptions', async () => {
+			// Test JSON parse exception
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				status: 200,
@@ -660,26 +611,11 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 					throw new SyntaxError('Unexpected end of JSON input');
 				}
 			});
-
-			const result = await verifyRecaptchaTokenWithDetails('json_parse_error_token', {
+			const result2 = await verifyRecaptchaTokenWithDetails('json_parse_error_token', {
 				secretKey: 'test_secret_key'
 			});
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBe('Unexpected end of JSON input');
-		});
-
-		test('returns proper error structure on failure', async () => {
-			mockFetch.mockRejectedValueOnce(new Error('Network failure'));
-
-			const result = await verifyRecaptchaTokenWithDetails('error_structure_token', {
-				secretKey: 'test_secret_key'
-			});
-
-			expect(result).toHaveProperty('success');
-			expect(result).toHaveProperty('error');
-			expect(result.success).toBe(false);
-			expect(typeof result.error).toBe('string');
+			expect(result2.success).toBe(false);
+			expect(result2.error).toBe('Unexpected end of JSON input');
 		});
 
 		test('includes error-codes from API response', async () => {
@@ -712,54 +648,37 @@ describe('verifyRecaptchaTokenWithDetails', () => {
 });
 
 describe('isRecaptchaApiResponse', () => {
-	test('returns true for valid response object with success property', () => {
+	test('returns true for valid response objects', () => {
+		// Valid full response
 		const validResponse: RecaptchaApiResponse = {
 			success: true,
 			score: 0.9,
 			action: 'submit'
 		};
-
 		expect(isRecaptchaApiResponse(validResponse)).toBe(true);
-	});
 
-	test('returns true for minimal valid object', () => {
-		const minimalResponse = {
-			success: false
-		};
-
+		// Minimal valid object
+		const minimalResponse = { success: false };
 		expect(isRecaptchaApiResponse(minimalResponse)).toBe(true);
 	});
 
-	test('returns false for null', () => {
+	test('returns false for null, undefined, and non-object types', () => {
 		expect(isRecaptchaApiResponse(null)).toBeFalsy();
-	});
-
-	test('returns false for undefined', () => {
 		expect(isRecaptchaApiResponse(undefined)).toBeFalsy();
-	});
-
-	test('returns false for non-object types', () => {
 		expect(isRecaptchaApiResponse('string')).toBe(false);
 		expect(isRecaptchaApiResponse(123)).toBe(false);
 		expect(isRecaptchaApiResponse(true)).toBe(false);
 		expect(isRecaptchaApiResponse([])).toBe(false);
 	});
 
-	test('returns false for object without success property', () => {
-		const invalidResponse = {
-			score: 0.9,
-			action: 'submit'
-		};
+	test('returns false for invalid objects', () => {
+		// Missing success property
+		const noSuccess = { score: 0.9, action: 'submit' };
+		expect(isRecaptchaApiResponse(noSuccess)).toBe(false);
 
-		expect(isRecaptchaApiResponse(invalidResponse)).toBe(false);
-	});
-
-	test('returns false for object with non-boolean success property', () => {
-		const invalidResponse = {
-			success: 'true'
-		};
-
-		expect(isRecaptchaApiResponse(invalidResponse)).toBe(false);
+		// Non-boolean success property
+		const wrongType = { success: 'true' };
+		expect(isRecaptchaApiResponse(wrongType)).toBe(false);
 	});
 });
 
@@ -775,7 +694,7 @@ describe('Integration Tests', () => {
 		process.env = originalEnv;
 	});
 
-	test('full success flow: valid token -> API success -> return details', async () => {
+	test('full success flow with all validations passing', async () => {
 		const mockResponse = createMockApiResponse({
 			success: true,
 			score: 0.85,
@@ -801,58 +720,7 @@ describe('Integration Tests', () => {
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 	});
 
-	test('full failure flow: invalid token -> API failure -> error details', async () => {
-		const mockResponse = createMockApiResponse({
-			success: false,
-			'error-codes': ['invalid-input-response']
-		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('integration_invalid_token', {
-			secretKey: 'integration_secret_key'
-		});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBe('invalid-input-response');
-		expect(result['error-codes']).toEqual(['invalid-input-response']);
-	});
-
-	test('score rejection flow: low score -> failure with message', async () => {
-		const mockResponse = createMockApiResponse({
-			success: true,
-			score: 0.3,
-			action: 'submit'
-		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('low_score_integration_token', {
-			secretKey: 'integration_secret_key',
-			minScore: 0.6
-		});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toContain('Score 0.3 is below minimum threshold 0.6');
-		expect(result.score).toBe(0.3);
-	});
-
-	test('action mismatch flow: wrong action -> failure with message', async () => {
-		const mockResponse = createMockApiResponse({
-			success: true,
-			score: 0.9,
-			action: 'login'
-		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('action_mismatch_token', {
-			secretKey: 'integration_secret_key',
-			action: 'register'
-		});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBe("Action mismatch: expected 'register', got 'login'");
-	});
-
-	test('development bypass flow: dev mode -> bypass API', async () => {
+	test('development bypass flow without API call', async () => {
 		process.env.NODE_ENV = 'development';
 
 		const result = await verifyRecaptchaTokenWithDetails('dev_bypass_token', {
@@ -865,30 +733,7 @@ describe('Integration Tests', () => {
 		expect(mockFetch).not.toHaveBeenCalled();
 	});
 
-	test('fetch error flow: network error -> error response', async () => {
-		mockFetch.mockRejectedValueOnce(new Error('ECONNREFUSED'));
-
-		const result = await verifyRecaptchaTokenWithDetails('network_error_integration', {
-			secretKey: 'integration_secret_key'
-		});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBe('ECONNREFUSED');
-	});
-
-	test('missing config flow: no secret -> error', async () => {
-		delete process.env.RECAPTCHA_SECRET_KEY;
-
-		const result = await verifyRecaptchaTokenWithDetails('no_config_token', {});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBe('Missing reCAPTCHA secret key');
-		expect(mockFetch).not.toHaveBeenCalled();
-	});
-
-	test('combined validation: checks score before action', async () => {
-		// API returns success with low score and wrong action
-		// Should fail on score check first
+	test('combined validation checks score before action', async () => {
 		const mockResponse = createMockApiResponse({
 			success: true,
 			score: 0.2,
@@ -919,57 +764,37 @@ describe('Edge Cases', () => {
 		process.env = originalEnv;
 	});
 
-	test('handles empty options object', async () => {
+	test('handles various token formats and empty options', async () => {
+		// Empty options with env secret
 		process.env.RECAPTCHA_SECRET_KEY = 'env_key';
-		const mockResponse = createMockApiResponse({ success: true, score: 0.9 });
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
+		const mockResponse1 = createMockApiResponse({ success: true, score: 0.9 });
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse1));
+		const result1 = await verifyRecaptchaTokenWithDetails('empty_options_token', {});
+		expect(result1.success).toBe(true);
 
-		const result = await verifyRecaptchaTokenWithDetails('empty_options_token', {});
-
-		expect(result.success).toBe(true);
-	});
-
-	test('handles very long token string', async () => {
+		// Very long token
 		const longToken = 'a'.repeat(10000);
-		const mockResponse = createMockApiResponse({ success: true });
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails(longToken, {
+		const mockResponse2 = createMockApiResponse({ success: true });
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse2));
+		const result2 = await verifyRecaptchaTokenWithDetails(longToken, {
 			secretKey: 'test_secret_key'
 		});
-
-		expect(result.success).toBe(true);
+		expect(result2.success).toBe(true);
 		expect(mockFetch).toHaveBeenCalledWith(
 			expect.any(String),
 			expect.objectContaining({
 				body: expect.stringContaining(longToken)
 			})
 		);
-	});
 
-	test('handles special characters in token', async () => {
+		// Special characters in token
 		const specialToken = 'token-with_special.chars+equals==%20';
-		const mockResponse = createMockApiResponse({ success: true });
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails(specialToken, {
+		const mockResponse3 = createMockApiResponse({ success: true });
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse3));
+		const result3 = await verifyRecaptchaTokenWithDetails(specialToken, {
 			secretKey: 'test_secret_key'
 		});
-
-		expect(result.success).toBe(true);
-	});
-
-	test('handles null values in options gracefully', async () => {
-		const mockResponse = createMockApiResponse({ success: true });
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('null_options_token', {
-			secretKey: 'test_secret_key',
-			action: null,
-			minScore: undefined
-		} as RecaptchaVerificationOptions);
-
-		expect(result.success).toBe(true);
+		expect(result3.success).toBe(true);
 	});
 
 	test('handles multiple error codes from API', async () => {
@@ -1015,51 +840,38 @@ describe('Edge Cases', () => {
 		expect(result.score).toBe(0.9);
 	});
 
-	test('handles score of exactly 0.0', async () => {
-		const mockResponse = createMockApiResponse({
-			success: true,
-			score: 0.0
-		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('zero_score_token', {
+	test('handles edge case scores (0.0 and 1.0) and empty error-codes', async () => {
+		// Score of exactly 0.0
+		const mockResponse1 = createMockApiResponse({ success: true, score: 0.0 });
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse1));
+		const result1 = await verifyRecaptchaTokenWithDetails('zero_score_token', {
 			secretKey: 'test_secret_key',
 			minScore: 0.0
 		});
+		expect(result1.success).toBe(true);
+		expect(result1.score).toBe(0.0);
 
-		expect(result.success).toBe(true);
-		expect(result.score).toBe(0.0);
-	});
-
-	test('handles score of exactly 1.0', async () => {
-		const mockResponse = createMockApiResponse({
-			success: true,
-			score: 1.0
-		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('perfect_score_token', {
+		// Score of exactly 1.0
+		const mockResponse2 = createMockApiResponse({ success: true, score: 1.0 });
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse2));
+		const result2 = await verifyRecaptchaTokenWithDetails('perfect_score_token', {
 			secretKey: 'test_secret_key',
 			minScore: 1.0
 		});
+		expect(result2.success).toBe(true);
+		expect(result2.score).toBe(1.0);
 
-		expect(result.success).toBe(true);
-		expect(result.score).toBe(1.0);
-	});
-
-	test('handles empty error-codes array', async () => {
-		const mockResponse = createMockApiResponse({
+		// Empty error-codes array
+		const mockResponse3 = createMockApiResponse({
 			success: false,
 			'error-codes': []
 		});
-		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse));
-
-		const result = await verifyRecaptchaTokenWithDetails('empty_errors_token', {
+		mockFetch.mockResolvedValueOnce(createMockFetchResponse(mockResponse3));
+		const result3 = await verifyRecaptchaTokenWithDetails('empty_errors_token', {
 			secretKey: 'test_secret_key'
 		});
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBe('Verification failed');
+		expect(result3.success).toBe(false);
+		expect(result3.error).toBe('Verification failed');
 	});
 
 	test('handles response with missing hostname and challenge_ts', async () => {

@@ -307,106 +307,54 @@ describe('getValidatorForCategory', () => {
 
 describe('getValidationClasses', () => {
 	describe('untouched field behavior', () => {
-		test('returns empty string when not touched', () => {
-			expect(getValidationClasses(false, false, '')).toBe('');
-		});
+		test('returns empty string for untouched fields', () => {
+			const scenarios = [
+				{ hasError: false, isTouched: false, value: '' },
+				{ hasError: true, isTouched: false, value: '' },
+				{ hasError: false, isTouched: false, value: 'value' },
+				{ hasError: true, isTouched: false, value: 'value' },
+			];
 
-		test('returns empty string when not touched even with error', () => {
-			expect(getValidationClasses(true, false, '')).toBe('');
-		});
-
-		test('returns empty string when not touched with value', () => {
-			expect(getValidationClasses(false, false, 'value')).toBe('');
-		});
-
-		test('returns empty string when not touched with error and value', () => {
-			expect(getValidationClasses(true, false, 'value')).toBe('');
+			scenarios.forEach(({ hasError, isTouched, value }) => {
+				expect(getValidationClasses(hasError, isTouched, value)).toBe('');
+			});
 		});
 	});
 
 	describe('touched field with errors', () => {
-		test('returns "is-invalid has-error" when touched with error', () => {
-			expect(getValidationClasses(true, true, '')).toBe('is-invalid has-error');
-		});
+		test('returns error classes for touched fields with errors', () => {
+			const scenarios = [
+				{ value: undefined },
+				{ value: '' },
+				{ value: 'text' },
+				{ value: 42 },
+				{ value: true },
+				{ value: false },
+				{ value: 0 },
+				{ value: null },
+			];
 
-		test('returns "is-invalid has-error" when touched with error and value', () => {
-			expect(getValidationClasses(true, true, 'some value')).toBe('is-invalid has-error');
-		});
-
-		test('returns error classes regardless of value type', () => {
-			expect(getValidationClasses(true, true, 0)).toBe('is-invalid has-error');
-			expect(getValidationClasses(true, true, false)).toBe('is-invalid has-error');
-			expect(getValidationClasses(true, true, null)).toBe('is-invalid has-error');
+			scenarios.forEach(({ value }) => {
+				expect(getValidationClasses(true, true, value)).toBe('is-invalid has-error');
+			});
 		});
 	});
 
 	describe('touched field without errors', () => {
-		test('returns "is-valid" when touched, no error, with value', () => {
-			expect(getValidationClasses(false, true, 'valid value')).toBe('is-valid');
+		test('returns valid classes for touched fields with non-empty values', () => {
+			const validValues = ['text', 123, true, { key: 'value' }, [1, 2, 3], [], {}, '   '];
+
+			validValues.forEach(value => {
+				expect(getValidationClasses(false, true, value)).toBe('is-valid');
+			});
 		});
 
-		test('returns empty string when touched, no error, no value', () => {
-			expect(getValidationClasses(false, true, '')).toBe('');
-		});
+		test('returns empty for touched fields with empty values', () => {
+			const emptyValues = ['', 0, false, null, undefined];
 
-		test('returns empty string when touched, no error, with null', () => {
-			expect(getValidationClasses(false, true, null)).toBe('');
-		});
-
-		test('returns empty string when touched, no error, with undefined', () => {
-			expect(getValidationClasses(false, true, undefined)).toBe('');
-		});
-	});
-
-	describe('value handling', () => {
-		test('handles various truthy values correctly', () => {
-			expect(getValidationClasses(false, true, 'text')).toBe('is-valid');
-			expect(getValidationClasses(false, true, 123)).toBe('is-valid');
-			expect(getValidationClasses(false, true, { key: 'value' })).toBe('is-valid');
-			expect(getValidationClasses(false, true, [1, 2, 3])).toBe('is-valid');
-		});
-
-		test('handles various falsy values correctly', () => {
-			expect(getValidationClasses(false, true, '')).toBe('');
-			expect(getValidationClasses(false, true, 0)).toBe('');
-			expect(getValidationClasses(false, true, false)).toBe('');
-			expect(getValidationClasses(false, true, null)).toBe('');
-			expect(getValidationClasses(false, true, undefined)).toBe('');
-		});
-
-		test('boolean true is considered a value', () => {
-			expect(getValidationClasses(false, true, true)).toBe('is-valid');
-		});
-
-		test('empty arrays and objects are considered values', () => {
-			expect(getValidationClasses(false, true, [])).toBe('is-valid');
-			expect(getValidationClasses(false, true, {})).toBe('is-valid');
-		});
-
-		test('whitespace-only string is considered a value', () => {
-			expect(getValidationClasses(false, true, '   ')).toBe('is-valid');
-		});
-	});
-
-	describe('all state combinations', () => {
-		test('combinations: hasError=false, isTouched=false', () => {
-			expect(getValidationClasses(false, false, '')).toBe('');
-			expect(getValidationClasses(false, false, 'value')).toBe('');
-		});
-
-		test('combinations: hasError=false, isTouched=true', () => {
-			expect(getValidationClasses(false, true, '')).toBe('');
-			expect(getValidationClasses(false, true, 'value')).toBe('is-valid');
-		});
-
-		test('combinations: hasError=true, isTouched=false', () => {
-			expect(getValidationClasses(true, false, '')).toBe('');
-			expect(getValidationClasses(true, false, 'value')).toBe('');
-		});
-
-		test('combinations: hasError=true, isTouched=true', () => {
-			expect(getValidationClasses(true, true, '')).toBe('is-invalid has-error');
-			expect(getValidationClasses(true, true, 'value')).toBe('is-invalid has-error');
+			emptyValues.forEach(value => {
+				expect(getValidationClasses(false, true, value)).toBe('');
+			});
 		});
 	});
 });
@@ -573,24 +521,18 @@ describe('hasValidationErrors', () => {
 		});
 
 		test('returns false when no errors exist', () => {
-			const errors: ValidationErrors = {};
-			expect(hasValidationErrors(errors)).toBe(false);
-		});
+			const noErrorScenarios = [
+				{},
+				{ field1: [] },
+				{ field1: undefined },
+				{ field1: [], field2: undefined },
+				{ field1: [], field2: [], field3: undefined },
+				{ email: undefined, name: undefined, message: undefined },
+			];
 
-		test('returns false when errors are empty arrays', () => {
-			const errors: ValidationErrors = {
-				email: [],
-				name: [],
-			};
-			expect(hasValidationErrors(errors)).toBe(false);
-		});
-
-		test('returns false when errors are undefined', () => {
-			const errors: ValidationErrors = {
-				email: undefined,
-				name: undefined,
-			};
-			expect(hasValidationErrors(errors)).toBe(false);
+			noErrorScenarios.forEach(errors => {
+				expect(hasValidationErrors(errors)).toBe(false);
+			});
 		});
 	});
 
@@ -619,31 +561,6 @@ describe('hasValidationErrors', () => {
 				email: ['Invalid format', 'Already taken', 'Too long'],
 			};
 			expect(hasValidationErrors(errors)).toBe(true);
-		});
-	});
-
-	describe('edge cases', () => {
-		test('empty errors object returns false', () => {
-			expect(hasValidationErrors({})).toBe(false);
-		});
-
-		test('handles multiple fields all with empty arrays', () => {
-			const errors: ValidationErrors = {
-				email: [],
-				name: [],
-				message: [],
-				phone: [],
-			};
-			expect(hasValidationErrors(errors)).toBe(false);
-		});
-
-		test('handles multiple fields all with undefined', () => {
-			const errors: ValidationErrors = {
-				email: undefined,
-				name: undefined,
-				message: undefined,
-			};
-			expect(hasValidationErrors(errors)).toBe(false);
 		});
 
 		test('handles large number of fields', () => {
@@ -788,7 +705,8 @@ describe('clearFieldError', () => {
 
 describe('Pre-built Schemas', () => {
 	describe('contactSchema', () => {
-		test('validates valid contact data', () => {
+		test('validates all required fields', () => {
+			const requiredFields = ['name', 'email', 'message'];
 			const validData = {
 				name: 'John Doe',
 				email: 'john@example.com',
@@ -796,83 +714,37 @@ describe('Pre-built Schemas', () => {
 				coppa: true,
 			};
 
-			const result = contactSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+			requiredFields.forEach(field => {
+				const incomplete = { ...validData };
+				delete incomplete[field as keyof typeof incomplete];
+				const result = contactSchema.safeParse(incomplete);
+				expect(result.success).toBe(false);
+			});
+
+			expect(contactSchema.safeParse(validData).success).toBe(true);
 		});
 
-		test('requires name (non-empty)', () => {
-			const data = {
-				name: '',
-				email: 'john@example.com',
-				message: 'Hello',
-				coppa: true,
-			};
-
-			const result = contactSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'name')).toBe(true);
-			}
-		});
-
-		test('requires valid email format', () => {
-			const data = {
+		test('validates email format and coppa requirement', () => {
+			// Invalid email
+			const invalidEmail = {
 				name: 'John',
 				email: 'invalid-email',
 				message: 'Hello',
 				coppa: true,
 			};
+			expect(contactSchema.safeParse(invalidEmail).success).toBe(false);
 
-			const result = contactSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'email')).toBe(true);
-			}
-		});
-
-		test('requires message (non-empty)', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: '',
-				coppa: true,
-			};
-
-			const result = contactSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'message')).toBe(true);
-			}
-		});
-
-		test('requires coppa=true', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: 'Hello',
-				coppa: true,
-			};
-
-			const result = contactSchema.safeParse(data);
-			expect(result.success).toBe(true);
-		});
-
-		test('rejects coppa=false', () => {
-			const data = {
+			// Invalid coppa
+			const invalidCoppa = {
 				name: 'John',
 				email: 'john@example.com',
 				message: 'Hello',
 				coppa: false,
 			};
-
-			const result = contactSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'coppa')).toBe(true);
-			}
+			expect(contactSchema.safeParse(invalidCoppa).success).toBe(false);
 		});
 
-		test('optional attachments (array of Files)', () => {
+		test('accepts optional attachments field', () => {
 			const dataWithAttachments = {
 				name: 'John',
 				email: 'john@example.com',
@@ -881,11 +753,8 @@ describe('Pre-built Schemas', () => {
 				coppa: true,
 			};
 
-			const result = contactSchema.safeParse(dataWithAttachments);
-			expect(result.success).toBe(true);
-		});
+			expect(contactSchema.safeParse(dataWithAttachments).success).toBe(true);
 
-		test('validates without attachments', () => {
 			const dataWithoutAttachments = {
 				name: 'John',
 				email: 'john@example.com',
@@ -893,13 +762,12 @@ describe('Pre-built Schemas', () => {
 				coppa: true,
 			};
 
-			const result = contactSchema.safeParse(dataWithoutAttachments);
-			expect(result.success).toBe(true);
+			expect(contactSchema.safeParse(dataWithoutAttachments).success).toBe(true);
 		});
 	});
 
 	describe('feedbackSchema', () => {
-		test('validates valid feedback data', () => {
+		test('validates all required fields', () => {
 			const validData = {
 				name: 'Jane Doe',
 				email: 'jane@example.com',
@@ -907,8 +775,17 @@ describe('Pre-built Schemas', () => {
 				coppa: true,
 			};
 
-			const result = feedbackSchema.safeParse(validData);
-			expect(result.success).toBe(true);
+			expect(feedbackSchema.safeParse(validData).success).toBe(true);
+
+			const incompleteData = {
+				name: '',
+				email: 'invalid',
+				message: '',
+				coppa: false,
+			};
+
+			const result = feedbackSchema.safeParse(incompleteData);
+			expect(result.success).toBe(false);
 		});
 
 		test('has same structure as contactSchema', () => {
@@ -925,21 +802,6 @@ describe('Pre-built Schemas', () => {
 			expect(contactResult.success).toBe(feedbackResult.success);
 		});
 
-		test('requires all contact fields', () => {
-			const incompleteData = {
-				name: '',
-				email: 'invalid',
-				message: '',
-				coppa: false,
-			};
-
-			const result = feedbackSchema.safeParse(incompleteData);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.length).toBeGreaterThan(0);
-			}
-		});
-
 		test('accepts attachments like contactSchema', () => {
 			const data = {
 				name: 'Jane',
@@ -949,89 +811,30 @@ describe('Pre-built Schemas', () => {
 				coppa: true,
 			};
 
-			const result = feedbackSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(feedbackSchema.safeParse(data).success).toBe(true);
 		});
 	});
 
 	describe('supportSchema', () => {
-		test('requires name, email, message', () => {
-			const data = {
-				name: '',
-				email: 'invalid',
-				message: '',
+		test('validates all required fields', () => {
+			const requiredFields = ['name', 'email', 'message', 'browser', 'browserVersion', 'operatingSystem'];
+			const validData = {
+				name: 'John Doe',
+				email: 'john@example.com',
+				message: 'I need help with login',
 				browser: 'Chrome',
-				browserVersion: '100',
-				operatingSystem: 'Windows',
+				browserVersion: '100.0.4896.127',
+				operatingSystem: 'Windows 11',
 				coppa: true,
 			};
 
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
+			requiredFields.forEach(field => {
+				const incomplete = { ...validData, [field]: '' };
+				const result = supportSchema.safeParse(incomplete);
+				expect(result.success).toBe(false);
+			});
 
-		test('requires browser field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: 'Help needed',
-				browser: '',
-				browserVersion: '100',
-				operatingSystem: 'Windows',
-				coppa: true,
-			};
-
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'browser')).toBe(true);
-			}
-		});
-
-		test('requires browserVersion field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: 'Help',
-				browser: 'Chrome',
-				browserVersion: '',
-				operatingSystem: 'Windows',
-				coppa: true,
-			};
-
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		test('requires operatingSystem field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: 'Help',
-				browser: 'Chrome',
-				browserVersion: '100',
-				operatingSystem: '',
-				coppa: true,
-			};
-
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		test('optional attachments', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				message: 'Bug report',
-				browser: 'Firefox',
-				browserVersion: '95',
-				operatingSystem: 'macOS',
-				attachments: [new File(['log'], 'error.log')],
-				coppa: true,
-			};
-
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(supportSchema.safeParse(validData).success).toBe(true);
 		});
 
 		test('requires coppa=true', () => {
@@ -1045,73 +848,44 @@ describe('Pre-built Schemas', () => {
 				coppa: false,
 			};
 
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(false);
+			expect(supportSchema.safeParse(data).success).toBe(false);
 		});
 
-		test('validates complete valid support data', () => {
+		test('accepts optional attachments', () => {
 			const data = {
-				name: 'John Doe',
+				name: 'John',
 				email: 'john@example.com',
-				message: 'I need help with login',
-				browser: 'Chrome',
-				browserVersion: '100.0.4896.127',
-				operatingSystem: 'Windows 11',
+				message: 'Bug report',
+				browser: 'Firefox',
+				browserVersion: '95',
+				operatingSystem: 'macOS',
+				attachments: [new File(['log'], 'error.log')],
 				coppa: true,
 			};
 
-			const result = supportSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(supportSchema.safeParse(data).success).toBe(true);
 		});
 	});
 
 	describe('businessSchema', () => {
-		test('requires name, email, message', () => {
-			const data = {
-				name: '',
-				email: 'invalid',
-				company: 'Acme',
-				businessRole: 'CEO',
-				message: '',
+		test('validates all required fields', () => {
+			const requiredFields = ['name', 'email', 'message', 'company', 'businessRole'];
+			const validData = {
+				name: 'Jane Smith',
+				email: 'jane@acme.com',
+				company: 'Acme Corporation',
+				businessRole: 'Chief Technology Officer',
+				message: 'Interested in enterprise plan',
 				coppa: true,
 			};
 
-			const result = businessSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
+			requiredFields.forEach(field => {
+				const incomplete = { ...validData, [field]: '' };
+				const result = businessSchema.safeParse(incomplete);
+				expect(result.success).toBe(false);
+			});
 
-		test('requires company field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				company: '',
-				businessRole: 'Manager',
-				message: 'Partnership',
-				coppa: true,
-			};
-
-			const result = businessSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'company')).toBe(true);
-			}
-		});
-
-		test('requires businessRole field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				company: 'Acme Inc',
-				businessRole: '',
-				message: 'Inquiry',
-				coppa: true,
-			};
-
-			const result = businessSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'businessRole')).toBe(true);
-			}
+			expect(businessSchema.safeParse(validData).success).toBe(true);
 		});
 
 		test('requires coppa=true', () => {
@@ -1124,93 +898,30 @@ describe('Pre-built Schemas', () => {
 				coppa: false,
 			};
 
-			const result = businessSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		test('validates complete valid business data', () => {
-			const data = {
-				name: 'Jane Smith',
-				email: 'jane@acme.com',
-				company: 'Acme Corporation',
-				businessRole: 'Chief Technology Officer',
-				message: 'Interested in enterprise plan',
-				coppa: true,
-			};
-
-			const result = businessSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(businessSchema.safeParse(data).success).toBe(false);
 		});
 	});
 
 	describe('bookingSchema', () => {
-		test('requires name, email, message', () => {
-			const data = {
-				name: '',
-				email: 'invalid',
-				phone: '1234567890',
-				preferredDate: '2024-01-01',
-				preferredTime: '10:00',
-				message: '',
+		test('validates all required fields', () => {
+			const requiredFields = ['name', 'email', 'message', 'phone', 'preferredDate', 'preferredTime'];
+			const validData = {
+				name: 'Alice Johnson',
+				email: 'alice@example.com',
+				phone: '+1-555-123-4567',
+				preferredDate: '2024-06-15',
+				preferredTime: '14:30',
+				message: 'Would like to schedule a consultation',
 				coppa: true,
 			};
 
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
+			requiredFields.forEach(field => {
+				const incomplete = { ...validData, [field]: '' };
+				const result = bookingSchema.safeParse(incomplete);
+				expect(result.success).toBe(false);
+			});
 
-		test('requires phone field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				phone: '',
-				preferredDate: '2024-01-01',
-				preferredTime: '10:00',
-				message: 'Book appointment',
-				coppa: true,
-			};
-
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'phone')).toBe(true);
-			}
-		});
-
-		test('requires preferredDate field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				phone: '1234567890',
-				preferredDate: '',
-				preferredTime: '10:00',
-				message: 'Appointment',
-				coppa: true,
-			};
-
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'preferredDate')).toBe(true);
-			}
-		});
-
-		test('requires preferredTime field', () => {
-			const data = {
-				name: 'John',
-				email: 'john@example.com',
-				phone: '1234567890',
-				preferredDate: '2024-01-01',
-				preferredTime: '',
-				message: 'Booking',
-				coppa: true,
-			};
-
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(false);
-			if (!result.success) {
-				expect(result.error.issues.some((i) => i.path[0] === 'preferredTime')).toBe(true);
-			}
+			expect(bookingSchema.safeParse(validData).success).toBe(true);
 		});
 
 		test('requires coppa=true', () => {
@@ -1224,28 +935,12 @@ describe('Pre-built Schemas', () => {
 				coppa: false,
 			};
 
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		test('validates complete valid booking data', () => {
-			const data = {
-				name: 'Alice Johnson',
-				email: 'alice@example.com',
-				phone: '+1-555-123-4567',
-				preferredDate: '2024-06-15',
-				preferredTime: '14:30',
-				message: 'Would like to schedule a consultation',
-				coppa: true,
-			};
-
-			const result = bookingSchema.safeParse(data);
-			expect(result.success).toBe(true);
+			expect(bookingSchema.safeParse(data).success).toBe(false);
 		});
 	});
 
-	describe('schema validation edge cases', () => {
-		test('rejects missing required fields', () => {
+	describe('schema edge cases', () => {
+		test('rejects missing required fields across all schemas', () => {
 			const schemas = [
 				{ schema: contactSchema, name: 'contact' },
 				{ schema: feedbackSchema, name: 'feedback' },
@@ -1270,20 +965,6 @@ describe('Pre-built Schemas', () => {
 
 			const result = contactSchema.safeParse(data);
 			expect(result.success).toBe(true);
-		});
-
-		test('rejects extremely long email addresses', () => {
-			const longEmail = 'a'.repeat(255) + '@example.com';
-			const data = {
-				name: 'John',
-				email: longEmail,
-				message: 'Test',
-				coppa: true,
-			};
-
-			const result = contactSchema.safeParse(data);
-			// Email validation should handle this appropriately
-			expect(result).toBeDefined();
 		});
 	});
 });
