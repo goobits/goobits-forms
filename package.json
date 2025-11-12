@@ -15,7 +15,7 @@
 		"test:run": "vitest run",
 		"test:ui": "vitest --ui",
 		"test:coverage": "vitest run --coverage",
-		"validate:exports": "node tests/exports.test.js",
+		"validate:exports": "node tests/exports.validate.js",
 		"validate:docs": "node tests/docs-validator.js",
 		"validate": "pnpm run validate:exports && pnpm run validate:docs",
 		"lint": "eslint . --ext .js,.ts,.svelte",

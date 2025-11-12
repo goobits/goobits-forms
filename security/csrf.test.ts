@@ -76,7 +76,7 @@ function createMockEvent(
 
 // Helper to create mock resolve function
 function createMockResolve() {
-	return vi.fn(async (event: RequestEvent) => {
+	return vi.fn(async (_event: RequestEvent) => {
 		return new Response('OK', { status: 200 });
 	});
 }

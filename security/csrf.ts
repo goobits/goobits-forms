@@ -136,13 +136,3 @@ export function validateCsrfToken(request: Request, cookieToken?: string): boole
 	}
 	return cookieToken === headerToken;
 }
-
-/**
- * Creates a response with CSRF protection
- */
-export function createCsrfProtectedResponse(
-	body: BodyInit,
-	init?: ResponseInit
-): Response {
-	return new Response(body, init);
-}

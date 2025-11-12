@@ -3,12 +3,12 @@ import { vi } from 'vitest';
 
 // Mock localStorage API
 const localStorageMock = {
-	getItem: vi.fn((key: string) => null),
-	setItem: vi.fn((key: string, value: string) => {}),
-	removeItem: vi.fn((key: string) => {}),
+	getItem: vi.fn((_key: string) => null),
+	setItem: vi.fn((_key: string, _value: string) => {}),
+	removeItem: vi.fn((_key: string) => {}),
 	clear: vi.fn(() => {}),
 	length: 0,
-	key: vi.fn((index: number) => null)
+	key: vi.fn((_index: number) => null)
 };
 
 Object.defineProperty(window, 'localStorage', {
@@ -18,12 +18,12 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock sessionStorage API
 const sessionStorageMock = {
-	getItem: vi.fn((key: string) => null),
-	setItem: vi.fn((key: string, value: string) => {}),
-	removeItem: vi.fn((key: string) => {}),
+	getItem: vi.fn((_key: string) => null),
+	setItem: vi.fn((_key: string, _value: string) => {}),
+	removeItem: vi.fn((_key: string) => {}),
 	clear: vi.fn(() => {}),
 	length: 0,
-	key: vi.fn((index: number) => null)
+	key: vi.fn((_index: number) => null)
 };
 
 Object.defineProperty(window, 'sessionStorage', {
@@ -32,7 +32,7 @@ Object.defineProperty(window, 'sessionStorage', {
 });
 
 // Mock fetch API
-global.fetch = vi.fn((url: string | Request, init?: RequestInit) =>
+global.fetch = vi.fn((_url: string | Request, _init?: RequestInit) =>
 	Promise.resolve(
 		new Response(JSON.stringify({}), {
 			status: 200,
@@ -58,8 +58,8 @@ declare global {
 }
 
 global.grecaptcha = {
-	ready: vi.fn((callback: () => void) => {
-		callback();
+	ready: vi.fn((_callback: () => void) => {
+		_callback();
 	}),
 	execute: vi.fn(() => Promise.resolve('mock-recaptcha-token')),
 	reset: vi.fn(),

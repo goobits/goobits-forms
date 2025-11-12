@@ -45,7 +45,6 @@ export {
 	validateCsrfToken,
 	setCsrfCookie,
 	getCsrfToken,
-	createCsrfProtectedResponse,
 	createCsrfProtection
 } from './security/csrf.js';
 

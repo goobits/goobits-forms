@@ -7,6 +7,13 @@ export default defineConfig({
 	test: {
 		globals: true,
 		environment: 'jsdom',
+		pool: 'vmThreads',
+		poolOptions: {
+			vmThreads: {
+				maxThreads: 2,
+				minThreads: 1
+			}
+		},
 		setupFiles: ['./tests/setup.ts'],
 		include: ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'],
 		exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*'],

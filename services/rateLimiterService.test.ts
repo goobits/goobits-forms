@@ -11,7 +11,8 @@ import {
 	clearAllRateLimits,
 	getRateLimitStats,
 	resetIpRateLimit,
-	resetEmailRateLimit
+	resetEmailRateLimit,
+	restartCleanup
 } from './rateLimiterService';
 
 describe('rateLimitFormSubmission', () => {
@@ -1226,6 +1227,8 @@ describe('cleanup behavior', () => {
 	beforeEach(() => {
 		clearAllRateLimits();
 		vi.useFakeTimers();
+		// Restart cleanup timer so it's controlled by fake timers
+		restartCleanup();
 	});
 
 	afterEach(() => {
@@ -1247,12 +1250,10 @@ describe('cleanup behavior', () => {
 		expect(statsAfter.emailEntries).toBe(statsBefore.emailEntries);
 	});
 
-	test.skip('old entries are cleaned up after 1 hour + cleanup interval', () => {
-		// Note: This test is skipped because the cleanup timer uses setInterval
-		// which starts when the module loads, making it difficult to test reliably
-		// with fake timers. The cleanup behavior is verified manually and through
-		// integration testing. The cleanup prevents memory leaks by removing
-		// entries older than 1 hour every 5 minutes.
+	test('old entries are cleaned up after 1 hour + cleanup interval', () => {
+		// Note: The cleanup timer uses setInterval which starts when the module loads.
+		// We need to advance time by enough to trigger the cleanup interval.
+		// The cleanup prevents memory leaks by removing entries older than 1 hour every 5 minutes.
 		rateLimitFormSubmission('192.168.22.2', 'old@example.com', 'contact');
 
 		const statsBefore = getRateLimitStats();
