@@ -99,7 +99,7 @@
 		"CHANGELOG.md"
 	],
 	"dependencies": {
-		"@sveltejs/kit": "^2.38.0",
+		"@sveltejs/kit": "^2.48.4",
 		"formsnap": "^2.0.1",
 		"nanoid": "^5.0.0",
 		"svelte": "^5.38.8",
