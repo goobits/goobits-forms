@@ -10,7 +10,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"prepublishOnly": "pnpm run lint",
+		"prepublishOnly": "pnpm run lint && pnpm run test:run",
 		"test": "vitest",
 		"test:run": "vitest run",
 		"test:ui": "vitest --ui",

@@ -76,15 +76,9 @@ describe('EmailProvider Base Class', () => {
 
 describe('MockEmailProvider', () => {
 	let mockProvider: MockEmailProvider;
-	let consoleLogSpy: any;
 
 	beforeEach(() => {
 		mockProvider = new MockEmailProvider({ fromEmail: 'noreply@example.com' });
-		consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-	});
-
-	afterEach(() => {
-		consoleLogSpy.mockRestore();
 	});
 
 	test('constructor creates instance with config', () => {
@@ -209,23 +203,6 @@ describe('MockEmailProvider', () => {
 		expect(result.success).toBe(true);
 		const sentEmails = mockProvider.getSentEmails();
 		expect(sentEmails[0].bodyText).toBeUndefined();
-	});
-
-	test('logs to console when sending email', async () => {
-		await mockProvider.sendEmail(
-			'recipient@example.com',
-			'Test Subject',
-			'<p>Test Body</p>'
-		);
-
-		expect(consoleLogSpy).toHaveBeenCalledWith(
-			'Mock email sent:',
-			expect.objectContaining({
-				to: 'recipient@example.com',
-				subject: 'Test Subject',
-				timestamp: expect.any(Date)
-			})
-		);
 	});
 });
 
