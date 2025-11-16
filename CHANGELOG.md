@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-16
+
+### Added
+- **New FormLabel component** - Generic form field wrapper using Svelte 5 Snippets
+  - Wraps inputs with label, help text, and error/success messages
+  - Flexible composition pattern for custom form layouts
+  - Built-in error/success icons with SVG
+  - Configurable optional text indicator
+  - Inline and block layout modes
+  - Full BEM naming methodology
+  - High contrast mode support
+- **Input component enhancements**
+  - Added `hasError` prop for explicit error state (ARIA support)
+  - Added `describedBy` prop for linking to error/help text elements
+  - Added `data-testid` prop for automated testing support
+  - Added `aria-invalid` and `aria-describedby` attributes
+  - Improved screen reader announcements for validation errors
+- **Textarea component enhancements**
+  - Added `hasError` prop for explicit error state (ARIA support)
+  - Added `describedBy` prop for linking to error/help text elements
+  - Added `aria-invalid` and `aria-describedby` attributes
+  - Matches Input component accessibility improvements
+
+### Changed
+- **BEM naming refactor** - Migrated to consistent BEM methodology
+  - Input: `.input-group` → `.input__group`, `.input-sm` → `.input--sm`, etc.
+  - Textarea: Established `.textarea__input` namespace, `.char-counter` → `.textarea__char-counter`, etc.
+  - Clear distinction between elements (`__`) and modifiers (`--`)
+  - Better CSS isolation and maintainability
+  - ⚠️ **Breaking**: CSS class names changed (see CONTRIBUTION.md for migration guide)
+
+### Documentation
+- Added comprehensive CONTRIBUTION.md with migration guide
+- Documented all accessibility improvements
+- Provided usage examples for new props
+- Included backward compatibility notes
+
 ## [1.2.3] - 2025-11-16
 
 ### Added
