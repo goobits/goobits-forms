@@ -5,6 +5,7 @@
  */
 
 import type { SES } from '@aws-sdk/client-ses';
+// @ts-expect-error - nodemailer is an optional peer dependency
 import type * as NodemailerType from 'nodemailer';
 import { createLogger } from '../utils/logger.ts';
 
@@ -57,6 +58,7 @@ export async function getAwsDependencies(): Promise<AwsDependencies> {
 	try {
 		// Import the AWS SDK v3 and nodemailer
 		const { SES } = await import('@aws-sdk/client-ses');
+		// @ts-expect-error - nodemailer is an optional peer dependency
 		const nodemailerModule = await import('nodemailer');
 
 		return {

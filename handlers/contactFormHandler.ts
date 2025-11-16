@@ -7,7 +7,10 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
 import { createLogger } from '../utils/logger.ts';
 import { sanitizeFormData } from '../utils/sanitizeInput.ts';
-import { rateLimitFormSubmission } from '../services/rateLimiterService.ts';
+import {
+	rateLimitFormSubmission,
+	type RateLimitResult
+} from '../services/rateLimiterService.ts';
 import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.ts';
 import { validateCsrfToken } from '../security/csrf.js';
 import sendEmail from '../services/emailService.ts';
@@ -15,14 +18,9 @@ import sendEmail from '../services/emailService.ts';
 const logger = createLogger('ContactFormHandler');
 
 /**
- * Rate limiting result interface
+ * Re-export RateLimitResult from services
  */
-export interface RateLimitResult {
-	/** Whether the request is allowed */
-	allowed: boolean;
-	/** Time to wait before retry (in seconds) */
-	retryAfter?: number;
-}
+export type { RateLimitResult };
 
 /**
  * Custom validation function type
@@ -67,6 +65,8 @@ export interface ContactFormData {
 	category?: string;
 	/** reCAPTCHA token */
 	recaptchaToken?: string;
+	/** Index signature for additional fields */
+	[key: string]: any;
 }
 
 /**
@@ -229,7 +229,10 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 			}
 
 			// Verify reCAPTCHA if token provided
-			if (sanitizedData.recaptchaToken) {
+			if (
+				sanitizedData.recaptchaToken &&
+				typeof sanitizedData.recaptchaToken === 'string'
+			) {
 				const isValidRecaptcha = await verifyRecaptchaToken(sanitizedData.recaptchaToken, {
 					secretKey: recaptchaSecretKey,
 					minScore: recaptchaMinScore
@@ -246,13 +249,25 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 
 			// Validate required fields
 			const errors: Record<string, string> = {};
-			if (!sanitizedData.name || sanitizedData.name.trim().length === 0) {
+			if (
+				!sanitizedData.name ||
+				typeof sanitizedData.name !== 'string' ||
+				sanitizedData.name.trim().length === 0
+			) {
 				errors.name = 'Name is required';
 			}
-			if (!sanitizedData.email || sanitizedData.email.trim().length === 0) {
+			if (
+				!sanitizedData.email ||
+				typeof sanitizedData.email !== 'string' ||
+				sanitizedData.email.trim().length === 0
+			) {
 				errors.email = 'Email is required';
 			}
-			if (!sanitizedData.message || sanitizedData.message.trim().length === 0) {
+			if (
+				!sanitizedData.message ||
+				typeof sanitizedData.message !== 'string' ||
+				sanitizedData.message.trim().length === 0
+			) {
 				errors.message = 'Message is required';
 			}
 

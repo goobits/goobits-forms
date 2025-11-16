@@ -6,7 +6,7 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import type { ActionResult } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { createLogger } from '../utils/logger.ts';
 import { validateCsrfToken } from '../security/csrf.js';
 
@@ -62,7 +62,7 @@ export type SubmissionHandlerCreator = (
 export type ErrorHandler = (
 	error: Error,
 	context: { data: Record<string, any>; slug: string }
-) => Promise<ActionResult | null>;
+) => Promise<SubmissionResult | null>;
 
 /**
  * Configuration object for the category router
@@ -243,7 +243,6 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 		request,
 		url,
 		params,
-		redirect,
 		locals = {}
 	}: RequestEvent): Promise<SubmissionResult> {
 		try {
@@ -311,6 +310,11 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 				// Redirect to success page
 				throw redirect(303, `/${lang}${successPath}?category=${slug}`);
 			} catch (error) {
+				// Don't catch redirects - re-throw them immediately
+				if (error && typeof error === 'object' && 'status' in error && error.status === 303) {
+					throw error;
+				}
+
 				logger.error('Form submission error', { error });
 
 				// Check if reCAPTCHA validation failed

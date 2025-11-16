@@ -104,6 +104,6 @@ $$
 
 ## Links
 
-Check out the [Cookbook](../../docs/cookbook.md) for practical recipes.
+Check out the [Cookbook](../../../../docs/cookbook.md) for practical recipes.
 
-Or explore the [API Reference](../../docs/api-reference.md) for complete documentation.
+Or explore the [API Reference](../../../../docs/api-reference.md) for complete documentation.
