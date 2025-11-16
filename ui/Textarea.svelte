@@ -37,6 +37,10 @@
 		cols?: number;
 		/** Wrap attribute */
 		wrap?: 'hard' | 'soft' | 'off';
+		/** Whether the textarea has an error (for ARIA) */
+		hasError?: boolean;
+		/** ID of the element describing this textarea (for ARIA) */
+		describedBy?: string;
 	}
 	let {
 		size = 'md',
@@ -55,6 +59,8 @@
 		rows = 4,
 		cols,
 		wrap,
+		hasError = false,
+		describedBy,
 		...restProps
 	}: Props = $props();
 
@@ -87,15 +93,15 @@
 		}
 	});
 
-	// Combine CSS classes
+	// Combine CSS classes using BEM methodology
 	const textareaClasses = $derived(
 		[
 			'textarea',
-			'input',
-			`input-${size}`,
-			variant === 'error' && 'input-error',
-			variant === 'success' && 'input-success',
-			autoResize && 'textarea-auto-resize',
+			'textarea__input',
+			`textarea__input--${size}`,
+			variant === 'error' && 'textarea__input--error',
+			variant === 'success' && 'textarea__input--success',
+			autoResize && 'textarea--auto-resize',
 			className
 		]
 			.filter(Boolean)
@@ -126,18 +132,20 @@
 		{cols}
 		{wrap}
 		maxlength={maxLength}
+		aria-invalid={hasError || variant === 'error'}
+		aria-describedby={describedBy}
 		{...restProps}
 	></textarea>
 	{#if showCharCount && maxLength}
-		<div class="char-counter {isOverLimit ? 'char-counter-error' : ''}">
+		<div class="textarea__char-counter {isOverLimit ? 'textarea__char-counter--error' : ''}">
 			{currentLength}/{maxLength}
 		</div>
 	{/if}
 </div>
 
 <style>
-	/* Input base styles (shared with Input component) */
-	.input {
+	/* Textarea input base styles */
+	.textarea__input {
 		display: block;
 		width: 100%;
 		padding: var(--space-2) var(--space-3);
@@ -152,50 +160,50 @@
 		box-shadow: var(--shadow-sm);
 	}
 
-	.input::placeholder {
+	.textarea__input::placeholder {
 		color: var(--color-text-tertiary);
 	}
 
-	.input:focus {
+	.textarea__input:focus {
 		outline: none;
 		border-color: var(--color-primary-500);
 		box-shadow: 0 0 0 3px var(--color-primary-100);
 	}
 
-	.input:disabled {
+	.textarea__input:disabled {
 		background-color: var(--color-background-secondary);
 		color: var(--color-text-disabled);
 		cursor: not-allowed;
 	}
 
 	/* Input size variants */
-	.input-sm {
+	.textarea__input--sm {
 		padding: var(--space-1) var(--space-2);
 		font-size: var(--font-size-sm, 14px);
 	}
 
-	.input-lg {
+	.textarea__input--lg {
 		padding: var(--space-3) var(--space-4);
 		font-size: var(--font-size-lg, 18px);
 	}
 
 	/* Input state variants */
-	.input-error {
+	.textarea__input--error {
 		border-color: var(--color-error-500);
 		box-shadow: 0 0 0 3px var(--color-error-100);
 	}
 
-	.input-error:focus {
+	.textarea__input--error:focus {
 		border-color: var(--color-error-600);
 		box-shadow: 0 0 0 3px var(--color-error-200);
 	}
 
-	.input-success {
+	.textarea__input--success {
 		border-color: var(--color-success-500);
 		box-shadow: 0 0 0 3px var(--color-success-100);
 	}
 
-	.input-success:focus {
+	.textarea__input--success:focus {
 		border-color: var(--color-success-600);
 		box-shadow: 0 0 0 3px var(--color-success-200);
 	}
@@ -206,42 +214,42 @@
 		min-height: 80px;
 	}
 
-	.textarea-auto-resize {
+	.textarea--auto-resize {
 		resize: none;
 		overflow: hidden;
 	}
 
 	/* Character counter */
-	.char-counter {
+	.textarea__char-counter {
 		font-size: var(--font-size-xs, 12px);
 		color: var(--color-text-tertiary);
 		text-align: right;
 		margin-top: var(--space-1);
 	}
 
-	.char-counter-error {
+	.textarea__char-counter--error {
 		color: var(--color-error-600);
 	}
 
 	/* High contrast mode adjustments */
 	@media (prefers-contrast: high) {
-		.input {
+		.textarea__input {
 			border-width: 2px;
 		}
 
-		.input:focus {
+		.textarea__input:focus {
 			box-shadow: 0 0 0 3px var(--color-text-primary);
 		}
 
-		.input-error:focus {
+		.textarea__input--error:focus {
 			box-shadow: 0 0 0 3px var(--color-error-800);
 		}
 
-		.input-success:focus {
+		.textarea__input--success:focus {
 			box-shadow: 0 0 0 3px var(--color-success-800);
 		}
 
-		.char-counter-error {
+		.textarea__char-counter--error {
 			color: var(--color-error-800);
 		}
 	}

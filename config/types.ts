@@ -21,6 +21,7 @@ export interface FieldConfig {
 	accept?: string;
 	maxFiles?: number;
 	maxSize?: number;
+	autoDetect?: boolean;
 }
 
 export interface CategoryConfig {

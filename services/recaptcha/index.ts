@@ -4,6 +4,10 @@
  * Supports Google reCAPTCHA v3 and no-op providers
  */
 
+import { createLogger } from '../../utils/logger.ts';
+
+const logger = createLogger('RecaptchaService');
+
 /**
  * reCAPTCHA provider configuration interface
  */
@@ -363,7 +367,7 @@ export class GoogleRecaptchaV3Provider extends RecaptchaProvider {
 			const result: RecaptchaVerificationResult = await response.json();
 			return result.success && (result.score || 0) >= (this.config.minScore || 0.5);
 		} catch (error) {
-			console.error('reCAPTCHA verification failed:', error);
+			logger.error('reCAPTCHA verification failed:', error);
 			return false;
 		}
 	}

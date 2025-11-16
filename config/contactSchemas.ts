@@ -602,7 +602,7 @@ export function initContactFormConfig(
 		// Create a submission handler
 		createSubmissionHandler: async (): Promise<SubmissionHandler> => {
 			// Return a function that will handle form submissions
-			return async (data: FormData, categorySlug: string): Promise<SubmissionResult> => {
+			return async (_data: FormData, categorySlug: string): Promise<SubmissionResult> => {
 				// This function should be customized by the consumer
 				// It could send emails, store in database, etc.
 				logger.info('Form submission handler called', {

@@ -40,11 +40,11 @@ interface FormData {
  * Local error handling implementation
  *
  * @internal
- * @param moduleName - Name of the module where error occurred
+ * @param _moduleName - Name of the module where error occurred
  * @param error - Error instance to handle
  * @returns The original error for re-throwing if needed
  */
-function handleError(moduleName: string, error: Error): Error {
+function handleError(_moduleName: string, error: Error): Error {
 	logger.error('Error:', error);
 	return error;
 }
@@ -236,12 +236,12 @@ export function sanitize(input: SanitizableValue): SanitizableValue {
 	try {
 		// Handle primitives
 		if (typeof input !== 'object' || input === null) {
-			return typeof input === 'string' ? escapeHTML(input) : input;
+			return (typeof input === 'string' ? escapeHTML(input) : input) as SanitizableValue;
 		}
 
 		// Handle arrays
 		if (Array.isArray(input)) {
-			return input.map((item) => sanitize(item));
+			return input.map((item) => sanitize(item)) as SanitizableValue[];
 		}
 
 		// Handle objects

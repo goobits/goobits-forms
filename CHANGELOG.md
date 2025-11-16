@@ -5,6 +5,71 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-16
+
+### Added
+- **New FormLabel component** - Generic form field wrapper using Svelte 5 Snippets
+  - Wraps inputs with label, help text, and error/success messages
+  - Flexible composition pattern for custom form layouts
+  - Built-in error/success icons with SVG
+  - Configurable optional text indicator
+  - Inline and block layout modes
+  - Full BEM naming methodology
+  - High contrast mode support
+- **Input component enhancements**
+  - Added `hasError` prop for explicit error state (ARIA support)
+  - Added `describedBy` prop for linking to error/help text elements
+  - Added `data-testid` prop for automated testing support
+  - Added `aria-invalid` and `aria-describedby` attributes
+  - Improved screen reader announcements for validation errors
+- **Textarea component enhancements**
+  - Added `hasError` prop for explicit error state (ARIA support)
+  - Added `describedBy` prop for linking to error/help text elements
+  - Added `aria-invalid` and `aria-describedby` attributes
+  - Matches Input component accessibility improvements
+
+### Changed
+- **BEM naming refactor** - Migrated to consistent BEM methodology
+  - Input: `.input-group` → `.input__group`, `.input-sm` → `.input--sm`, etc.
+  - Textarea: Established `.textarea__input` namespace, `.char-counter` → `.textarea__char-counter`, etc.
+  - Clear distinction between elements (`__`) and modifiers (`--`)
+  - Better CSS isolation and maintainability
+  - ⚠️ **Breaking**: CSS class names changed (see CONTRIBUTION.md for migration guide)
+
+### Documentation
+- Added comprehensive CONTRIBUTION.md with migration guide
+- Documented all accessibility improvements
+- Provided usage examples for new props
+- Included backward compatibility notes
+
+## [1.2.3] - 2025-11-16
+
+### Added
+- **TypeScript configuration** - Added `tsconfig.json` with strict type checking
+  - Enabled strict mode with comprehensive compiler options
+  - Configured to check source files while excluding tests and demo folder
+  - Added Node.js types support for process and environment variables
+
+### Fixed
+- **TypeScript errors** - Resolved all 98 TypeScript errors across the codebase
+  - Fixed module imports for zod, @sveltejs/kit, nanoid, and AWS dependencies
+  - Corrected null/undefined handling throughout the codebase
+  - Added missing type definitions and properties (e.g., `autoDetect` in FieldConfig)
+  - Fixed tooltip event handler type signatures and property access
+  - Resolved duplicate RateLimitResult export issue
+  - Fixed implicit any types with proper type annotations
+  - Updated test mocks to match new implementation signatures
+- **Linting compliance** - Replaced `@ts-ignore` with `@ts-expect-error` for better type safety
+  - Ensures TypeScript comments fail if the following line has no errors
+  - Applied to optional peer dependency imports (nodemailer)
+
+### Changed
+- **Type safety improvements** - Enhanced type definitions across handlers and services
+  - Added index signature to ContactFormData for type compatibility
+  - Made `categoryToFieldMap` optional in ValidationConfig
+  - Fixed SvelteKit redirect import usage (function, not RequestEvent property)
+  - Improved null checking and type guards for string operations
+
 ## [1.2.2] - 2025-11-16
 
 ### Fixed
@@ -127,6 +192,7 @@ Initial release of @goobits/forms - A comprehensive Svelte 5 forms library.
 - Screen reader accessibility features
 - Custom styling with CSS variables and BEM methodology
 
+[1.2.3]: https://github.com/goobits/forms/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/goobits/forms/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/goobits/forms/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/goobits/forms/compare/v1.1.0...v1.2.0

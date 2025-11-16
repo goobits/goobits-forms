@@ -4,6 +4,9 @@
  */
 
 import type { SESClientConfig } from '@aws-sdk/client-ses';
+import { createLogger } from '../utils/logger.ts';
+
+const logger = createLogger('EmailService');
 
 /**
  * Email provider configuration interface
@@ -166,7 +169,8 @@ export class AwsSesProvider extends EmailProvider {
 		if (this.initialized) return;
 
 		try {
-			const { aws, nodemailer } = await import('./awsImports.ts');
+			const { getAwsDependencies } = await import('./awsImports.ts');
+			const { aws, nodemailer } = await getAwsDependencies();
 
 			const sesConfig: SESClientConfig = {
 				apiVersion: this.config.apiVersion || 'latest',
@@ -190,7 +194,7 @@ export class AwsSesProvider extends EmailProvider {
 
 			this.initialized = true;
 		} catch (error) {
-			console.error('Failed to initialize AWS SES provider:', error);
+			logger.error('Failed to initialize AWS SES provider:', error);
 			throw error;
 		}
 	}
@@ -325,7 +329,7 @@ export class MockEmailProvider extends EmailProvider {
 
 		this.sentEmails.push(email);
 
-		console.log('Mock email sent:', {
+		logger.info('Mock email sent:', {
 			to,
 			subject,
 			timestamp: email.timestamp

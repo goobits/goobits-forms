@@ -41,6 +41,12 @@
 		pattern?: string;
 		/** Autocomplete attribute */
 		autocomplete?: string;
+		/** Whether the input has an error (for ARIA) */
+		hasError?: boolean;
+		/** ID of the element describing this input (for ARIA) */
+		describedBy?: string;
+		/** Test ID for automated testing */
+		'data-testid'?: string;
 	}
 	let {
 		size = 'md',
@@ -62,21 +68,24 @@
 		step,
 		pattern,
 		autocomplete,
+		hasError = false,
+		describedBy,
+		'data-testid': dataTestId,
 		...restProps
 	}: Props = $props();
 
 	// Input element reference
 	let inputElement: HTMLInputElement | undefined = $state();
 
-	// Combine CSS classes
+	// Combine CSS classes using BEM methodology
 	const inputClasses = $derived(
 		[
 			'input',
-			`input-${size}`,
-			variant === 'error' && 'input-error',
-			variant === 'success' && 'input-success',
-			prefix && 'input-with-prefix',
-			suffix && 'input-with-suffix',
+			`input--${size}`,
+			variant === 'error' && 'input--error',
+			variant === 'success' && 'input--success',
+			prefix && 'input--with-prefix',
+			suffix && 'input--with-suffix',
 			className
 		]
 			.filter(Boolean)
@@ -88,9 +97,9 @@
 </script>
 
 {#if prefix || suffix}
-	<div class="input-group">
+	<div class="input__group">
 		{#if prefix}
-			<span class="input-group-prefix">
+			<span class="input__prefix">
 				{prefix}
 			</span>
 		{/if}
@@ -98,7 +107,7 @@
 			<input
 				bind:this={inputElement}
 				bind:checked={value}
-				class="{inputClasses} input-group-input"
+				class="{inputClasses} input__input"
 				type="checkbox"
 				{placeholder}
 				{disabled}
@@ -112,13 +121,16 @@
 				{step}
 				{pattern}
 				{autocomplete}
+				aria-invalid={hasError || variant === 'error'}
+				aria-describedby={describedBy}
+				data-testid={dataTestId}
 				{...restProps}
 			/>
 		{:else}
 			<input
 				bind:this={inputElement}
 				bind:value
-				class="{inputClasses} input-group-input"
+				class="{inputClasses} input__input"
 				{type}
 				{placeholder}
 				{disabled}
@@ -132,11 +144,14 @@
 				{step}
 				{pattern}
 				{autocomplete}
+				aria-invalid={hasError || variant === 'error'}
+				aria-describedby={describedBy}
+				data-testid={dataTestId}
 				{...restProps}
 			/>
 		{/if}
 		{#if suffix}
-			<span class="input-group-suffix">
+			<span class="input__suffix">
 				{suffix}
 			</span>
 		{/if}
@@ -159,6 +174,9 @@
 		{step}
 		{pattern}
 		{autocomplete}
+		aria-invalid={hasError || variant === 'error'}
+		aria-describedby={describedBy}
+		data-testid={dataTestId}
 		{...restProps}
 	/>
 {:else}
@@ -179,6 +197,9 @@
 		{step}
 		{pattern}
 		{autocomplete}
+		aria-invalid={hasError || variant === 'error'}
+		aria-describedby={describedBy}
+		data-testid={dataTestId}
 		{...restProps}
 	/>
 {/if}
@@ -217,49 +238,49 @@
 	}
 
 	/* Input size variants */
-	.input-sm {
+	.input--sm {
 		padding: var(--space-1) var(--space-2);
 		font-size: var(--font-size-sm, 14px);
 	}
 
-	.input-lg {
+	.input--lg {
 		padding: var(--space-3) var(--space-4);
 		font-size: var(--font-size-lg, 18px);
 	}
 
 	/* Input state variants */
-	.input-error {
+	.input--error {
 		border-color: var(--color-error-500);
 		box-shadow: 0 0 0 3px var(--color-error-100);
 	}
 
-	.input-error:focus {
+	.input--error:focus {
 		border-color: var(--color-error-600);
 		box-shadow: 0 0 0 3px var(--color-error-200);
 	}
 
-	.input-success {
+	.input--success {
 		border-color: var(--color-success-500);
 		box-shadow: 0 0 0 3px var(--color-success-100);
 	}
 
-	.input-success:focus {
+	.input--success:focus {
 		border-color: var(--color-success-600);
 		box-shadow: 0 0 0 3px var(--color-success-200);
 	}
 
 	/* Input group (for inputs with prefix/suffix) */
-	.input-group {
+	.input__group {
 		position: relative;
 		display: flex;
 		align-items: center;
 	}
 
-	.input-group-input {
+	.input__input {
 		flex: 1;
 	}
 
-	.input-group-prefix {
+	.input__prefix {
 		position: absolute;
 		left: var(--space-3);
 		color: var(--color-text-tertiary);
@@ -268,7 +289,7 @@
 		z-index: 1;
 	}
 
-	.input-group-suffix {
+	.input__suffix {
 		position: absolute;
 		right: var(--space-3);
 		color: var(--color-text-tertiary);
@@ -277,11 +298,11 @@
 		z-index: 1;
 	}
 
-	.input-with-prefix {
+	.input--with-prefix {
 		padding-left: var(--space-10);
 	}
 
-	.input-with-suffix {
+	.input--with-suffix {
 		padding-right: var(--space-10);
 	}
 
@@ -295,11 +316,11 @@
 			box-shadow: 0 0 0 3px var(--color-text-primary);
 		}
 
-		.input-error:focus {
+		.input--error:focus {
 			box-shadow: 0 0 0 3px var(--color-error-800);
 		}
 
-		.input-success:focus {
+		.input--success:focus {
 			box-shadow: 0 0 0 3px var(--color-success-800);
 		}
 	}
