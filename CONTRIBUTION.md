@@ -1,7 +1,7 @@
 # Contribution: Form Component Improvements
 
 ## Overview
-This contribution enhances the `Input.svelte` and `Textarea.svelte` components with improved accessibility, consistent BEM naming, and better testing support.
+This contribution enhances the `Input.svelte` and `Textarea.svelte` components with improved accessibility, consistent BEM naming, and better testing support. It also adds a new `FormLabel.svelte` component for flexible form field composition using Svelte 5 Snippets.
 
 ## Changes Made
 
@@ -108,6 +108,79 @@ Changed from mixed naming to consistent BEM:
 - All classes follow BEM convention
 - Easier to maintain and override styles
 - Clear component boundaries
+
+---
+
+### 3. FormLabel.svelte (New Component)
+
+A new generic form field wrapper component using Svelte 5 Snippets for flexible composition.
+
+#### Features
+- **Snippet-based composition**: Wraps any form input with label, help text, and messages
+- **No framework lock-in**: No i18n dependencies - fully customizable
+- **Built-in validation UI**: Error and success messages with SVG icons
+- **Flexible layouts**: Inline and block modes
+- **BEM naming**: Consistent `.form-label__*` namespace
+- **Accessibility**: Proper label-input association, role="alert" for errors
+
+#### Props
+- `label` (string): Label text
+- `id` (string): Field ID for label-input linking
+- `required` (boolean): Shows required indicator (*)
+- `optional` (boolean): Shows optional indicator
+- `helpText` (string): Help text shown below input
+- `error` (string): Error message (with icon)
+- `success` (string): Success message (with icon)
+- `inline` (boolean): Horizontal layout
+- `optionalText` (string): Custom optional indicator text (default: "(optional)")
+- `children` (Snippet): The form input element
+
+#### Usage Example
+```svelte
+<script>
+  import { Input, FormLabel } from '@goobits/forms/ui';
+
+  let email = '';
+  let emailError = '';
+</script>
+
+<FormLabel
+  label="Email Address"
+  id="email"
+  required
+  helpText="We'll never share your email"
+  error={emailError}
+>
+  <Input
+    id="email"
+    type="email"
+    bind:value={email}
+    hasError={!!emailError}
+    describedBy={emailError ? 'email-error' : 'email-help'}
+    placeholder="you@example.com"
+  />
+</FormLabel>
+```
+
+#### BEM Classes
+```css
+.form-label              /* Block */
+.form-label--inline      /* Modifier: horizontal layout */
+.form-label__text        /* Element: label text */
+.form-label__text--required   /* Modifier: required field */
+.form-label__optional    /* Element: optional indicator */
+.form-label__help        /* Element: help text */
+.form-label__error       /* Element: error message */
+.form-label__success     /* Element: success message */
+.form-label__icon        /* Element: SVG icons */
+```
+
+**Benefits:**
+- Modern Svelte 5 pattern (Snippets)
+- No external dependencies
+- Consistent with Input/Textarea BEM naming
+- Fully customizable and reusable
+- Works with any input component
 
 ---
 
@@ -259,11 +332,17 @@ If you have custom CSS targeting these components, you'll need to update selecto
 ## Files Changed
 - `ui/Input.svelte` - Added props, ARIA attributes, BEM naming
 - `ui/Textarea.svelte` - Added props, ARIA attributes, BEM naming
+- `ui/FormLabel.svelte` - New component (Svelte 5 Snippet-based wrapper)
+- `ui/index.ts` - Added FormLabel export
+- `package.json` - Version bump to 1.3.0
+- `CHANGELOG.md` - Documented v1.3.0 changes
 
 ## Lines Changed
 - Input.svelte: ~50 lines (props, attributes, CSS)
 - Textarea.svelte: ~40 lines (props, attributes, CSS)
-- Total: ~90 lines of improvements
+- FormLabel.svelte: ~190 lines (new component)
+- Documentation: ~300 lines (CHANGELOG, CONTRIBUTION.md updates)
+- Total: ~580 lines of improvements
 
 ---
 
