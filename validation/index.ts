@@ -23,7 +23,7 @@ export interface ValidationConfig {
 		categories?: Record<string, z.ZodObject<any>>;
 	};
 	/** Mapping of categories to their required fields */
-	categoryToFieldMap: Record<string, string[]>;
+	categoryToFieldMap?: Record<string, string[]>;
 }
 
 /**
@@ -92,7 +92,11 @@ export function createValidationSchemaForCategory(
 	}
 
 	// Fallback to creating from field map if schema not available
-	if (config.categoryToFieldMap[category] && config.schemas?.complete) {
+	if (
+		config.categoryToFieldMap &&
+		config.categoryToFieldMap[category] &&
+		config.schemas?.complete
+	) {
 		return config.schemas.complete.pick(
 			Object.fromEntries(config.categoryToFieldMap[category].map((field) => [field, true]))
 		);

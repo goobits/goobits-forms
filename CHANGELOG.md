@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **TypeScript configuration** - Added `tsconfig.json` with strict type checking
+  - Enabled strict mode with comprehensive compiler options
+  - Configured to check source files while excluding tests and demo folder
+  - Added Node.js types support for process and environment variables
+
+### Fixed
+- **TypeScript errors** - Resolved all 98 TypeScript errors across the codebase
+  - Fixed module imports for zod, @sveltejs/kit, nanoid, and AWS dependencies
+  - Corrected null/undefined handling throughout the codebase
+  - Added missing type definitions and properties (e.g., `autoDetect` in FieldConfig)
+  - Fixed tooltip event handler type signatures and property access
+  - Resolved duplicate RateLimitResult export issue
+  - Fixed implicit any types with proper type annotations
+  - Updated test mocks to match new implementation signatures
+- **Linting compliance** - Replaced `@ts-ignore` with `@ts-expect-error` for better type safety
+  - Ensures TypeScript comments fail if the following line has no errors
+  - Applied to optional peer dependency imports (nodemailer)
+
+### Changed
+- **Type safety improvements** - Enhanced type definitions across handlers and services
+  - Added index signature to ContactFormData for type compatibility
+  - Made `categoryToFieldMap` optional in ValidationConfig
+  - Fixed SvelteKit redirect import usage (function, not RequestEvent property)
+  - Improved null checking and type guards for string operations
+
 ## [1.2.2] - 2025-11-16
 
 ### Fixed

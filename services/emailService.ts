@@ -166,7 +166,8 @@ export class AwsSesProvider extends EmailProvider {
 		if (this.initialized) return;
 
 		try {
-			const { aws, nodemailer } = await import('./awsImports.ts');
+			const { getAwsDependencies } = await import('./awsImports.ts');
+			const { aws, nodemailer } = await getAwsDependencies();
 
 			const sesConfig: SESClientConfig = {
 				apiVersion: this.config.apiVersion || 'latest',

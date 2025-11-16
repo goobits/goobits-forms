@@ -159,7 +159,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 	// Calculate advanced position using new positioning engine
 	const positionCalculation = calculateAdvancedPosition({
 		targetElement: element,
-		tooltipElement: currentTooltipElement,
+		tooltipElement: currentTooltipElement ?? undefined,
 		preferredPosition: options.position,
 		offset: options.offset,
 		stickToEdge: options.stickToEdge,
@@ -329,12 +329,14 @@ function hideTooltip(): void {
 					visible: false,
 					transitioning: false,
 					position: { x: 0, y: 0 },
-					text: '',
+					content: '',
 					targetElement: null,
 					finalPosition: 'top',
 					arrowPosition: { x: 0, y: 0 },
 					direction: 'ltr',
 					actualDimensions: { width: 200, height: 40 },
+					showMode: 'hover',
+					hideCallbacks: [],
 					disableTransition: false,
 					allowPointerEvents: false,
 					arrowVisible: true,
@@ -355,7 +357,7 @@ function updateTooltipPosition(): void {
 
 	const positionCalculation = calculateAdvancedPosition({
 		targetElement: globalTooltipState.targetElement,
-		tooltipElement: currentTooltipElement,
+		tooltipElement: currentTooltipElement ?? undefined,
 		preferredPosition: 'auto',
 		offset: 8,
 		lastPosition: globalTooltipState.position
@@ -402,10 +404,21 @@ export function getTooltipState(): TooltipState {
  * Tooltip manager for external access
  */
 export const tooltipManager: TooltipManager = {
-	show: showTooltip,
+	show: (element: HTMLElement | TooltipOptions, options?: TooltipOptions) => {
+		if (element instanceof HTMLElement) {
+			showTooltip(element, options || {});
+		} else {
+			// If first param is options, treat it as default tooltip options
+			showTooltip(document.body, element);
+		}
+	},
 	hide: hideTooltip,
 	updatePosition: updateTooltipPosition,
-	getState: getTooltipState
+	getState: getTooltipState,
+	ping: () => updateTooltipPosition(),
+	destroy: () => hideTooltip(),
+	enabled: true,
+	setEnabled: () => {}
 };
 
 /**

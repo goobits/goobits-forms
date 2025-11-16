@@ -682,7 +682,7 @@ describe('createFormSubmitHandler', () => {
 
 			expect(mockPrepareFormData).toHaveBeenCalledWith(
 				{ name: 'John' },
-				null
+				undefined
 			);
 		});
 
@@ -721,7 +721,7 @@ describe('createFormSubmitHandler', () => {
 
 			expect(mockPrepareFormData).toHaveBeenCalledWith(
 				{ name: 'John', email: 'john@example.com' },
-				null
+				undefined
 			);
 		});
 
