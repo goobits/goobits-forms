@@ -1,5 +1,6 @@
 # Development files
 dev/
+demo/
 node_modules/
 .git/
 .gitignore
@@ -10,6 +11,8 @@ tsconfig.json
 eslint.config.js
 .prettierrc
 bun.lock
+pnpm-workspace.yaml
+vitest.config.ts
 
 # Build artifacts that shouldn't be in npm
 dist/
@@ -23,5 +26,8 @@ dist/
 vm.yaml
 
 # Test files
+tests/
 **/*.test.ts
+**/*.test.js
 **/*.spec.ts
+**/*.spec.js
