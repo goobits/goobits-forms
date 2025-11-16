@@ -5,7 +5,7 @@
  * These tests verify behavior and security outcomes, not implementation details.
  */
 
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { escapeHTML, sanitizeURL, sanitize, sanitizeFormData, DANGEROUS_PROTOCOLS } from './sanitizeInput';
 
 describe('escapeHTML', () => {
@@ -710,6 +710,17 @@ describe('sanitizeFormData', () => {
 	});
 
 	describe('edge cases', () => {
+		let loggerErrorSpy: any;
+
+		beforeEach(() => {
+			// Suppress error logs for edge case tests that intentionally trigger errors
+			loggerErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+		});
+
+		afterEach(() => {
+			loggerErrorSpy.mockRestore();
+		});
+
 		test('handles empty form data', () => {
 			const result = sanitizeFormData({});
 			expect(result).toEqual({});
