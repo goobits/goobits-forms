@@ -36,6 +36,7 @@
 </script>
 
 <button
+	type="button"
 	class="toggle-switch toggle-switch--{variant} toggle-switch--{size} {checked
 		? 'active'
 		: ''} {className}"

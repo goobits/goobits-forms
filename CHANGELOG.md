@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-11-16
+
+### Fixed
+- **ToggleSwitch form submission bug** - Added `type="button"` attribute to prevent toggle from submitting parent forms
+  - HTML buttons default to `type="submit"` inside forms, causing toggles to unexpectedly trigger form submissions
+  - This fix eliminates the need for workarounds like `event.preventDefault()` in consuming applications
+
 ## [1.2.1] - 2025-11-12
 
 ### Changed
@@ -120,6 +127,7 @@ Initial release of @goobits/forms - A comprehensive Svelte 5 forms library.
 - Screen reader accessibility features
 - Custom styling with CSS variables and BEM methodology
 
+[1.2.2]: https://github.com/goobits/forms/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/goobits/forms/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/goobits/forms/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/goobits/forms/compare/v1.0.1...v1.1.0
