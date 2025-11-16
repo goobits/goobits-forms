@@ -30,13 +30,21 @@ vi.mock('./awsImports.ts', () => {
 		}
 	}
 
+	const mockAws = {
+		SES: MockSES
+	};
+
+	const mockNodemailer = {
+		createTransport: vi.fn().mockReturnValue(mockTransporter)
+	};
+
 	return {
-		aws: {
-			SES: MockSES
-		},
-		nodemailer: {
-			createTransport: vi.fn().mockReturnValue(mockTransporter)
-		}
+		aws: mockAws,
+		nodemailer: mockNodemailer,
+		getAwsDependencies: vi.fn().mockResolvedValue({
+			aws: mockAws,
+			nodemailer: mockNodemailer
+		})
 	};
 });
 

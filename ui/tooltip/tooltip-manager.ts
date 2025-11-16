@@ -8,7 +8,7 @@ import type {
 	TooltipOptions,
 	TooltipState,
 	TooltipContent,
-	TooltipManager
+	TooltipManager as TooltipManagerType
 } from './tooltip.types.js';
 
 import { calculateAdvancedPosition } from './positioning-engine.js';
@@ -119,8 +119,8 @@ function calculatePosition(
 		}
 
 		return calculateAdvancedPosition({
-			targetElement: null,
-			tooltipElement: _tooltipElement,
+			targetElement: null as any,
+			tooltipElement: _tooltipElement ?? undefined,
 			preferredPosition: options.position,
 			offset: options.offset,
 			stickToEdge: options.stickToEdge,
@@ -133,7 +133,7 @@ function calculatePosition(
 	if (_currentState?.targetElement) {
 		return calculateAdvancedPosition({
 			targetElement: _currentState.targetElement,
-			tooltipElement: _tooltipElement,
+			tooltipElement: _tooltipElement ?? undefined,
 			preferredPosition: options.position,
 			offset: options.offset,
 			stickToEdge: options.stickToEdge,
@@ -183,7 +183,7 @@ function showTooltipInternal(
 		tooltipOptions = options || {};
 	} else {
 		tooltipOptions = elementOrOptions;
-		targetElement = tooltipOptions.targetElement || _currentState?.targetElement || null;
+		targetElement = _currentState?.targetElement || null;
 	}
 
 	// Process content
@@ -286,7 +286,7 @@ function executeHideCallbacks(): void {
 /**
  * Global tooltip manager instance
  */
-export const TooltipManager: TooltipManager = {
+export const TooltipManager: TooltipManagerType = {
 	show(elementOrOptions: HTMLElement | TooltipOptions, options?: TooltipOptions): void {
 		// Clear show timer if exists
 		if (_showTimer) {
@@ -422,9 +422,9 @@ export function tooltip(
 	destroy: () => void;
 } {
 	let currentOptions = { ...options };
-	let clickHandler: (() => void) | null = null;
-	let hoverHandler: (() => void) | null = null;
-	let leaveHandler: (() => void) | null = null;
+	let clickHandler: ((event: Event) => void) | null = null;
+	let hoverHandler: ((event: Event) => void) | null = null;
+	let leaveHandler: ((event: MouseEvent) => void) | null = null;
 	let isClickMode = false;
 
 	// Click handler

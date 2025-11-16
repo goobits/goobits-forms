@@ -227,7 +227,7 @@ function buildValidationSchemas(config: ContactFormConfig) {
 	Object.entries(fieldConfigs).forEach(([fieldName, fieldConfig]) => {
 		const type = fieldConfig.type || 'text';
 		const builderFn = builder[type] || builder.text;
-		let schema = builderFn(fieldName);
+		let schema = builderFn();
 
 		// Add required validation if needed
 		if (fieldConfig.required) {

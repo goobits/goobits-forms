@@ -33,9 +33,9 @@ function getSchemaDefaults(schema: ZodSchema): Record<string, any> {
 	const defaults: Record<string, any> = {};
 
 	try {
-		if (schema && schema._def && schema._def.shape) {
+		if (schema && schema._def && 'shape' in schema._def) {
 			// Handle ZodObject schemas
-			const shape = schema._def.shape;
+			const shape = (schema._def as any).shape;
 			Object.keys(shape).forEach((key) => {
 				const field = shape[key];
 				if (field._def) {
@@ -199,7 +199,7 @@ export function initializeForm({
 
 		return superForm(mergedData, {
 			dataType: 'json',
-			validators: zod4(schema),
+			validators: zod4(schema as any),
 			resetForm: false,
 			taintedMessage: false,
 			multipleSubmits: 'prevent',
@@ -358,7 +358,10 @@ export function createFormSubmitHandler(options: FormSubmitHandlerOptions) {
 			}
 
 			// Prepare, sanitize and submit
-			const preparedData = await prepareFormData(formData, recaptchaToken);
+			const preparedData = await prepareFormData(
+				formData,
+				recaptchaToken ?? undefined
+			);
 			const sanitizedData = sanitizeFormData(preparedData);
 			const response = await submitForm(sanitizedData);
 
@@ -377,7 +380,11 @@ export function createFormSubmitHandler(options: FormSubmitHandlerOptions) {
 			const standardizedError =
 				error instanceof Error && error.name === 'ContactFormError'
 					? error
-					: handleError(error, 'FormSubmission', { formData });
+					: handleError(
+							error instanceof Error ? error : String(error),
+							'FormSubmission',
+							{ formData }
+						);
 			onError(standardizedError);
 			return { success: false, error: standardizedError };
 		}
