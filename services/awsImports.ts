@@ -6,6 +6,9 @@
 
 import type { SES } from '@aws-sdk/client-ses';
 import type * as NodemailerType from 'nodemailer';
+import { createLogger } from '../utils/logger.ts';
+
+const logger = createLogger('AwsImports');
 
 /**
  * AWS dependencies interface
@@ -61,7 +64,7 @@ export async function getAwsDependencies(): Promise<AwsDependencies> {
 			nodemailer: nodemailerModule.default || nodemailerModule
 		};
 	} catch (error) {
-		console.error('Failed to import AWS dependencies:', error);
+		logger.error('Failed to import AWS dependencies:', error);
 		throw new Error(
 			'Missing AWS dependencies. Please install @aws-sdk/client-ses and nodemailer to use AWS SES email provider.'
 		);
@@ -85,5 +88,5 @@ getAwsDependencies()
 		Object.assign(nodemailer, deps.nodemailer);
 	})
 	.catch((err) => {
-		console.warn('AWS dependencies not available:', err.message);
+		logger.warn('AWS dependencies not available:', err.message);
 	});

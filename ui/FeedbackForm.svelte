@@ -16,13 +16,13 @@
 	} from '../services/formService.ts';
 
 	// Import logger utility
-	// import { createLogger } from '../utils/logger.ts';
+	import { createLogger } from '../utils/logger.ts';
 
 	// Import message helpers
 	import { createMessageGetter } from '../utils/messages.ts';
 	import { defaultMessages } from '../config/defaultMessages';
 
-	// const _logger = createLogger('FeedbackForm');
+	const logger = createLogger('FeedbackForm');
 
 	// Props - must be declared at top level with $props()
 	const {
@@ -201,7 +201,7 @@
 					csrfToken = data.csrfToken || '';
 				}
 			} catch (error) {
-				console.error('Failed to fetch CSRF token:', error);
+				logger.error('Failed to fetch CSRF token:', error);
 			}
 		}
 
