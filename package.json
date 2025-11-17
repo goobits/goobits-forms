@@ -35,20 +35,34 @@
 			"svelte": "./ui/index.ts",
 			"default": "./ui/index.ts"
 		},
-		"./ui/*": "./ui/*",
+		"./ui/*": {
+			"svelte": "./ui/*",
+			"default": "./ui/*"
+		},
 		"./ui/index.css": "./ui/index.css",
 		"./ui/menu": {
 			"types": "./ui/menu/index.ts",
 			"svelte": "./ui/menu/index.ts",
 			"default": "./ui/menu/index.ts"
 		},
-		"./ui/menu/*": "./ui/menu/*",
+		"./ui/menu/*": {
+			"svelte": "./ui/menu/*",
+			"default": "./ui/menu/*"
+		},
 		"./ui/modals": {
 			"types": "./ui/modals/index.ts",
 			"svelte": "./ui/modals/index.ts",
 			"default": "./ui/modals/index.ts"
 		},
-		"./ui/modals/*": "./ui/modals/*",
+		"./ui/modals/*": {
+			"svelte": "./ui/modals/*",
+			"default": "./ui/modals/*"
+		},
+		"./ui/tooltip": {
+			"types": "./ui/tooltip/index.ts",
+			"svelte": "./ui/tooltip/index.ts",
+			"default": "./ui/tooltip/index.ts"
+		},
 		"./config": {
 			"types": "./config/index.ts",
 			"default": "./config/index.ts"
