@@ -30,7 +30,7 @@ Before starting this recipe, ensure you have:
 
 **Step 1: Install package**
 ```bash
-npm install @goobits/forms
+npm install @goobits/ui
 ```
 
 **Step 2: Create configuration**
@@ -50,7 +50,7 @@ export const contactConfig = {
 
 ```typescript tab="TypeScript"
 // src/lib/contact-config.ts
-import type { ContactConfig } from '@goobits/forms/config';
+import type { ContactConfig } from '@goobits/ui/config';
 
 export const contactConfig: ContactConfig = {
 	appName: 'My App',
@@ -68,7 +68,7 @@ export const contactConfig: ContactConfig = {
 ````tabs
 ```javascript tab="JavaScript"
 // src/hooks.server.js
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 import { contactConfig } from '$lib/contact-config.js';
 
 initContactFormConfig(contactConfig);
@@ -81,7 +81,7 @@ export async function handle({ event, resolve }) {
 ```typescript tab="TypeScript"
 // src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 import { contactConfig } from '$lib/contact-config';
 
 initContactFormConfig(contactConfig);
@@ -96,7 +96,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 ````tabs
 ```javascript tab="JavaScript"
 // src/routes/api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
@@ -119,7 +119,7 @@ export const POST = createContactApiHandler({
 ```typescript tab="TypeScript"
 // src/routes/api/contact/+server.ts
 import type { RequestHandler } from './$types';
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL!,
@@ -153,9 +153,9 @@ SMTP_APP_PASSWORD=your-16-char-app-password
 ```svelte
 <!-- src/routes/contact/+page.svelte -->
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { ContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <h1>Contact Us</h1>
@@ -235,7 +235,7 @@ export const contactConfig = {
 
 ```typescript tab="TypeScript"
 // src/lib/contact-config.ts
-import type { ContactConfig } from '@goobits/forms/config';
+import type { ContactConfig } from '@goobits/ui/config';
 
 export const contactConfig: ContactConfig = {
 	appName: 'My App',
@@ -260,7 +260,7 @@ export const contactConfig: ContactConfig = {
 ````tabs
 ```javascript tab="JavaScript"
 // src/routes/api/csrf/+server.js
-import { setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/ui/security/csrf';
 
 export async function GET(event) {
 	const token = setCsrfCookie(event);
@@ -273,7 +273,7 @@ export async function GET(event) {
 ```typescript tab="TypeScript"
 // src/routes/api/csrf/+server.ts
 import type { RequestEvent } from '@sveltejs/kit';
-import { setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/ui/security/csrf';
 
 export async function GET(event: RequestEvent) {
 	const token = setCsrfCookie(event);
@@ -288,7 +288,7 @@ export async function GET(event: RequestEvent) {
 ````tabs
 ```javascript tab="JavaScript"
 // src/routes/api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
@@ -319,7 +319,7 @@ export const POST = createContactApiHandler({
 ```typescript tab="TypeScript"
 // src/routes/api/contact/+server.ts
 import type { RequestHandler } from './$types';
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL!,
@@ -366,9 +366,9 @@ RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
 <!-- src/routes/contact/+page.svelte -->
 <!-- No changes needed - security is handled automatically -->
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { ContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <ContactForm apiEndpoint="/api/contact" />
@@ -411,7 +411,7 @@ src/
 
 ```javascript
 // src/routes/contact/+page.server.js
-import { setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/ui/security/csrf';
 
 export async function load(event) {
 	const csrfToken = setCsrfCookie(event);
@@ -462,7 +462,7 @@ export const contactConfig = {
 
 ```typescript tab="TypeScript"
 // src/lib/contact-config.ts
-import type { ContactConfig } from '@goobits/forms/config';
+import type { ContactConfig } from '@goobits/ui/config';
 
 export const contactConfig: ContactConfig = {
 	appName: 'My App',
@@ -492,9 +492,9 @@ export const contactConfig: ContactConfig = {
 <!-- src/routes/contact/+page.svelte -->
 <script>
 	// Change to CategoryContactForm
-	import { CategoryContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { CategoryContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <h1>Contact Us</h1>
@@ -631,7 +631,7 @@ export const contactConfig = {
 
 ```typescript tab="TypeScript"
 // src/lib/contact-config.ts
-import type { ContactConfig } from '@goobits/forms/config';
+import type { ContactConfig } from '@goobits/ui/config';
 
 export const contactConfig: ContactConfig = {
 	appName: 'My App',
@@ -686,9 +686,9 @@ export const POST = createContactApiHandler({
 <!-- src/routes/contact/+page.svelte -->
 <!-- File upload UI appears automatically when 'attachments' in fields -->
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { ContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <ContactForm apiEndpoint="/api/contact" />
@@ -776,7 +776,7 @@ Before starting this recipe, ensure you have:
 **Step 1: Add custom validation to API handler**
 ```javascript
 // src/routes/api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,

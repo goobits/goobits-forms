@@ -1,6 +1,6 @@
 # Getting Started
 
-Build your first form with @goobits/forms in 10 minutes.
+Build your first form with @goobits/ui in 10 minutes.
 
 **Prerequisites:** SvelteKit project with Node.js ≥18 and pnpm ≥9
 
@@ -11,7 +11,7 @@ Build your first form with @goobits/forms in 10 minutes.
 Install the package:
 
 ```bash
-npm install @goobits/forms
+npm install @goobits/ui
 ```
 
 All required dependencies (@sveltejs/kit, svelte, formsnap, sveltekit-superforms, zod, @lucide/svelte) install automatically.
@@ -50,7 +50,7 @@ Initialize in your app:
 
 ```javascript
 // src/hooks.server.js
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 import { contactConfig } from '$lib/contact-config.js';
 
 initContactFormConfig(contactConfig);
@@ -78,7 +78,7 @@ Create server endpoint to process form submissions:
 
 ```javascript
 // src/routes/api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
@@ -105,9 +105,9 @@ Use the form component:
 ```svelte
 <!-- src/routes/contact/+page.svelte -->
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { ContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <h1>Contact Us</h1>
@@ -172,7 +172,7 @@ Protect against cross-site request forgery.
 **1. Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { generateCsrfToken, setCsrfCookie } from '@goobits/forms/security/csrf';
+import { generateCsrfToken, setCsrfCookie } from '@goobits/ui/security/csrf';
 
 export async function GET({ cookies }) {
 	const token = generateCsrfToken();
@@ -187,7 +187,7 @@ export async function GET({ cookies }) {
 **2. Pass token to form:**
 ```svelte
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
+	import { ContactForm } from '@goobits/ui/ui';
 	export let data; // From +page.server.js
 </script>
 
@@ -200,7 +200,7 @@ export async function GET({ cookies }) {
 **3. Generate token on page load:**
 ```javascript
 // src/routes/contact/+page.server.js
-import { generateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken } from '@goobits/ui/security/csrf';
 
 export async function load({ cookies }) {
 	const csrfToken = generateCsrfToken();
@@ -338,8 +338,8 @@ export const POST = createContactApiHandler({
 
 ```svelte
 <script>
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 ```
 
@@ -399,7 +399,7 @@ Override specific messages directly:
 
 ```svelte
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
+	import { ContactForm } from '@goobits/ui/ui';
 
 	const customMessages = {
 		howCanWeHelp: '¿Cómo podemos ayudarte?',
@@ -450,7 +450,7 @@ export const contactConfig = {
 Use CategoryContactForm:
 ```svelte
 <script>
-	import { CategoryContactForm } from '@goobits/forms/ui';
+	import { CategoryContactForm } from '@goobits/ui/ui';
 </script>
 
 <CategoryContactForm apiEndpoint="/api/contact" />
@@ -480,11 +480,11 @@ Use CategoryContactForm:
 
 | Task | Code |
 |------|------|
-| Install | `npm install @goobits/forms` |
+| Install | `npm install @goobits/ui` |
 | Configure | `initContactFormConfig(config)` in `hooks.server.js` |
 | Create API | `createContactApiHandler()` in `/api/contact/+server.js` |
 | Add form | `<ContactForm apiEndpoint="/api/contact" />` |
-| Import styles | `import '@goobits/forms/ui/ContactForm.css'` |
+| Import styles | `import '@goobits/ui/ui/ContactForm.css'` |
 | Enable reCAPTCHA | Add `recaptcha: { enabled: true, ... }` to config |
 | Enable CSRF | Create `/api/csrf/+server.js` endpoint |
 | Customize colors | Override `--color-primary-500` in `.forms-scope` |

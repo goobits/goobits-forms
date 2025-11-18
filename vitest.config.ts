@@ -3,7 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 
 export default defineConfig({
-	plugins: [svelte({ hot: !process.env.VITEST })],
+	plugins: [svelte({ hot: !process.env.VITEST, compilerOptions: { dev: true } })],
 	test: {
 		globals: true,
 		environment: 'jsdom',
@@ -15,63 +15,87 @@ export default defineConfig({
 			}
 		},
 		setupFiles: ['./tests/setup.ts'],
-		include: ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'],
-		exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*'],
+		include: ['src/**/*.test.ts', 'src/**/*.test.js', 'src/**/*.spec.ts', 'src/**/*.spec.js'],
+		exclude: ['node_modules', 'dist', 'build', '.svelte-kit', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*', 'e2e/**/*', 'playwright-report/**/*', 'coverage/**/*'],
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html', 'json-summary', 'text-summary'],
 			reportsDirectory: './coverage',
 			include: [
-				// Only include files that have tests (focused security testing)
-				'security/csrf.ts',
-				'config/secureDeepMerge.ts',
-				'utils/sanitizeInput.ts',
-				'services/rateLimiterService.ts'
+				// Security-critical code (high priority for testing)
+				'src/lib/security/csrf.ts',
+				'src/lib/config/secureDeepMerge.ts',
+				'src/lib/utils/sanitizeInput.ts',
+				'src/lib/services/rateLimiterService.ts',
+				// UI components and utilities
+				'src/lib/ui/**/*.{ts,svelte}',
+				'src/lib/validation/**/*.ts',
+				'src/lib/handlers/**/*.ts'
 			],
 			exclude: [
 				'**/*.d.ts',
+				'**/*.test.{ts,js}',
+				'**/*.spec.{ts,js}',
 				'**/types.ts',
 				'**/index.ts',
-				'utils/logger.ts',
-				'utils/debounce.ts',
-				'utils/constants.ts',
-				'utils/messages.ts',
-				'config/defaults.ts',
-				'config/defaultMessages.ts',
-				'config/contactSchemas.ts'
+				'**/test-utils.ts',
+				'**/test-setup.ts',
+				'src/lib/utils/logger.ts',
+				'src/lib/utils/debounce.ts',
+				'src/lib/utils/constants.ts',
+				'src/lib/utils/messages.ts',
+				'src/lib/config/defaults.ts',
+				'src/lib/config/defaultMessages.ts',
+				'src/lib/config/contactSchemas.ts',
+				// Demo and documentation files
+				'src/lib/ui/DemoPlayground.svelte',
+				'**/demo/**',
+				'**/docs/**',
+				'**/examples/**'
 			],
 			// Per-file thresholds for security-critical code
 			thresholds: {
-				'security/csrf.ts': {
+				// Security-critical files (high thresholds)
+				'src/lib/security/csrf.ts': {
 					lines: 95,
 					functions: 85,
 					branches: 95,
 					statements: 95
 				},
-				'config/secureDeepMerge.ts': {
+				'src/lib/config/secureDeepMerge.ts': {
 					lines: 100,
 					functions: 100,
 					branches: 100,
 					statements: 100
 				},
-				'utils/sanitizeInput.ts': {
+				'src/lib/utils/sanitizeInput.ts': {
 					lines: 85,
 					functions: 100,
 					branches: 85,
 					statements: 85
 				},
-				'services/rateLimiterService.ts': {
+				'src/lib/services/rateLimiterService.ts': {
 					lines: 85,
 					functions: 85,
 					branches: 85,
 					statements: 85
-				}
+				},
+				// Global thresholds for UI components (moderate)
+				lines: 80,
+				functions: 80,
+				branches: 75,
+				statements: 80
 			}
 		}
 	},
 	resolve: {
 		alias: {
-			$lib: path.resolve(__dirname, './src/lib')
-		}
+			$lib: path.resolve(__dirname, './src/lib'),
+			'$app/environment': path.resolve(__dirname, './tests/mocks/app-environment.ts'),
+			'$app/stores': path.resolve(__dirname, './tests/mocks/app-stores.ts'),
+			'$app/navigation': path.resolve(__dirname, './tests/mocks/app-navigation.ts'),
+			'$app/forms': path.resolve(__dirname, './tests/mocks/app-forms.ts')
+		},
+		conditions: ['browser']
 	}
 });

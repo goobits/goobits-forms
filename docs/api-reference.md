@@ -1,6 +1,6 @@
 # API Reference
 
-Reference for all components, handlers, and utilities in @goobits/forms.
+Reference for all components, handlers, and utilities in @goobits/ui.
 
 ## TOC
 
@@ -106,7 +106,7 @@ Main form component with validation, CSRF protection, and category-based field r
 
 **Import:**
 ```javascript
-import { ContactForm } from '@goobits/forms/ui';
+import { ContactForm } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -122,7 +122,7 @@ import { ContactForm } from '@goobits/forms/ui';
 **Usage:**
 ```svelte
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
+	import { ContactForm } from '@goobits/ui/ui';
 </script>
 
 <ContactForm
@@ -148,7 +148,7 @@ Form with category selection dropdown for multiple form types.
 
 **Import:**
 ```javascript
-import { CategoryContactForm } from '@goobits/forms/ui';
+import { CategoryContactForm } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -164,7 +164,7 @@ import { CategoryContactForm } from '@goobits/forms/ui';
 **Usage:**
 ```svelte
 <script>
-	import { CategoryContactForm } from '@goobits/forms/ui';
+	import { CategoryContactForm } from '@goobits/ui/ui';
 </script>
 
 <CategoryContactForm
@@ -183,7 +183,7 @@ Feedback widget for collecting user input.
 
 **Import:**
 ```javascript
-import { FeedbackForm } from '@goobits/forms/ui';
+import { FeedbackForm } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -202,7 +202,7 @@ import { FeedbackForm } from '@goobits/forms/ui';
 **Usage:**
 ```svelte
 <script>
-	import { FeedbackForm } from '@goobits/forms/ui';
+	import { FeedbackForm } from '@goobits/ui/ui';
 </script>
 
 <FeedbackForm
@@ -219,7 +219,7 @@ Page layout with form, header, and footer.
 
 **Import:**
 ```javascript
-import { ContactFormPage } from '@goobits/forms/ui';
+import { ContactFormPage } from '@goobits/ui/ui';
 ```
 
 **Props:** Same as ContactForm plus additional layout props.
@@ -237,7 +237,7 @@ Reusable field component for custom forms.
 
 **Import:**
 ```javascript
-import { FormField } from '@goobits/forms/ui';
+import { FormField } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -259,7 +259,7 @@ Image upload component with preview and validation.
 
 **Import:**
 ```javascript
-import { UploadImage } from '@goobits/forms/ui';
+import { UploadImage } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -275,7 +275,7 @@ import { UploadImage } from '@goobits/forms/ui';
 **Usage:**
 ```svelte
 <script>
-	import { UploadImage } from '@goobits/forms/ui';
+	import { UploadImage } from '@goobits/ui/ui';
 	let file = $state(null);
 </script>
 
@@ -296,7 +296,7 @@ Text input component with validation styling.
 
 **Import:**
 ```javascript
-import { Input } from '@goobits/forms/ui';
+import { Input } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -318,7 +318,7 @@ Multi-line text input component.
 
 **Import:**
 ```javascript
-import { Textarea } from '@goobits/forms/ui';
+import { Textarea } from '@goobits/ui/ui';
 ```
 
 **Props:** Same as Input plus:
@@ -336,7 +336,7 @@ Dropdown select component.
 
 **Import:**
 ```javascript
-import { SelectMenu } from '@goobits/forms/ui';
+import { SelectMenu } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -356,7 +356,7 @@ Toggle switch component for boolean values.
 
 **Import:**
 ```javascript
-import { ToggleSwitch } from '@goobits/forms/ui';
+import { ToggleSwitch } from '@goobits/ui/ui';
 ```
 
 **Props:**
@@ -374,7 +374,7 @@ import { ToggleSwitch } from '@goobits/forms/ui';
 
 **Import:**
 ```javascript
-import { Modal, Alert, Confirm, AppleModal } from '@goobits/forms/ui/modals';
+import { Modal, Alert, Confirm, AppleModal } from '@goobits/ui/ui/modals';
 ```
 
 #### Modal
@@ -432,7 +432,7 @@ Apple-style modal with animations.
 
 **Import:**
 ```javascript
-import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/forms/ui';
+import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/ui/ui';
 ```
 
 #### Menu
@@ -475,7 +475,7 @@ Context menu with right-click trigger.
 
 **Import:**
 ```javascript
-import { tooltip, TooltipPortal } from '@goobits/forms/ui/tooltip';
+import { tooltip, TooltipPortal } from '@goobits/ui/ui/tooltip';
 ```
 
 #### tooltip (Svelte Action)
@@ -485,7 +485,7 @@ Use as Svelte action for hover tooltips.
 **Usage:**
 ```svelte
 <script>
-	import { tooltip, TooltipPortal } from '@goobits/forms/ui/tooltip';
+	import { tooltip, TooltipPortal } from '@goobits/ui/ui/tooltip';
 </script>
 
 <!-- Add portal to layout -->
@@ -522,7 +522,7 @@ Creates a SvelteKit API route handler for contact forms.
 
 **Import:**
 ```javascript
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 ```
 
 **Options:**
@@ -544,7 +544,7 @@ import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHand
 **Usage:**
 ```javascript
 // /api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
@@ -568,13 +568,13 @@ Initialize form configuration with categories and fields.
 
 **Import:**
 ```javascript
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 ```
 
 **Usage:**
 ```javascript
 // src/hooks.server.js or src/app.js
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 
 const contactConfig = {
 	appName: 'My App',
@@ -645,7 +645,7 @@ import {
 	generateCsrfToken,
 	validateCsrfToken,
 	createCsrfProtection
-} from '@goobits/forms/security/csrf';
+} from '@goobits/ui/security/csrf';
 ```
 
 **Usage:**
@@ -670,7 +670,7 @@ import {
 	handleFormI18n,
 	loadWithFormI18n,
 	createMessageGetter
-} from '@goobits/forms/i18n';
+} from '@goobits/ui/i18n';
 ```
 
 **Usage:**
@@ -689,7 +689,7 @@ export const load = async (event) => {
 };
 
 // Component - Message override
-import { createMessageGetter } from '@goobits/forms/i18n';
+import { createMessageGetter } from '@goobits/ui/i18n';
 const getMessage = createMessageGetter(customMessages);
 ```
 
@@ -699,13 +699,13 @@ const getMessage = createMessageGetter(customMessages);
 
 **Import:**
 ```javascript
-import { contactSchema, feedbackSchema } from '@goobits/forms/validation';
+import { contactSchema, feedbackSchema } from '@goobits/ui/validation';
 ```
 
 **Usage:**
 ```javascript
 import { z } from 'zod';
-import { contactSchema } from '@goobits/forms/validation';
+import { contactSchema } from '@goobits/ui/validation';
 
 // Extend existing schema
 const customSchema = contactSchema.extend({
@@ -736,7 +736,7 @@ import {
 	loadFormData,
 	clearFormData,
 	hasSavedData
-} from '@goobits/forms/services';
+} from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -759,7 +759,7 @@ Pre-fill forms with saved or test data.
 
 **Import:**
 ```javascript
-import { hydrateForm, getTestDataForCategory } from '@goobits/forms/services';
+import { hydrateForm, getTestDataForCategory } from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -783,7 +783,7 @@ import {
 	announce,
 	announceFormErrors,
 	announceFormStatus
-} from '@goobits/forms/services';
+} from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -806,7 +806,7 @@ Email delivery via Nodemailer, AWS SES, or mock provider.
 
 **Import:**
 ```javascript
-import { createEmailProvider } from '@goobits/forms/services';
+import { createEmailProvider } from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -838,7 +838,7 @@ IP and email-based rate limiting.
 
 **Import:**
 ```javascript
-import { rateLimitFormSubmission, resetIpRateLimit } from '@goobits/forms/services';
+import { rateLimitFormSubmission, resetIpRateLimit } from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -864,7 +864,7 @@ reCAPTCHA verification and provider creation.
 
 **Import:**
 ```javascript
-import { createRecaptchaProvider } from '@goobits/forms/services';
+import { createRecaptchaProvider } from '@goobits/ui/services';
 ```
 
 **Usage:**
@@ -898,13 +898,13 @@ import type {
 	CategoryConfig,
 	RecaptchaConfig,
 	FileSettings
-} from '@goobits/forms/config';
+} from '@goobits/ui/config';
 
 import type {
 	MenuItem,
 	MenuConfig,
 	TooltipOptions
-} from '@goobits/forms/ui';
+} from '@goobits/ui/ui';
 ```
 
 See [TypeScript Guide](./typescript.md) for type documentation.

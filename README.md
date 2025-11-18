@@ -1,9 +1,13 @@
-# @goobits/forms
+# @goobits/ui
 
-Production-ready forms for SvelteKit. Secure. Accessible. Done.
+Production-ready UI components for SvelteKit. Secure. Accessible. Done.
 
-[![npm version](https://img.shields.io/npm/v/@goobits/forms.svg)](https://www.npmjs.com/package/@goobits/forms)
+[![npm version](https://img.shields.io/npm/v/@goobits/ui.svg)](https://www.npmjs.com/package/@goobits/ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![WCAG 2.1 AA](https://img.shields.io/badge/WCAG-2.1%20AA-green.svg)](./docs/accessibility-testing.md)
+[![Accessibility Tests](https://img.shields.io/badge/a11y-axe--core-blue.svg)](./docs/accessibility-testing.md)
+
+> **Important:** This package was previously named `@goobits/forms`. Starting with v2.0.0, it has been renamed to `@goobits/ui` to reflect its expanded scope beyond forms to include modals, menus, tooltips, and other UI components. See [MIGRATION.md](./MIGRATION.md) for upgrade instructions.
 
 ---
 
@@ -21,7 +25,7 @@ Production-ready forms for SvelteKit. Secure. Accessible. Done.
 - **Bot Protection** - reCAPTCHA v3, rate limiting, CSRF tokens
 - **File Uploads** - Image uploads with preview and client-side validation
 - **Internationalization** - i18n with Paraglide integration and auto-detection
-- **Accessibility** - WCAG 2.1 compliant, tested with NVDA/JAWS/VoiceOver
+- **Accessibility** - WCAG 2.1 AA compliant with automated axe-core testing, keyboard navigation, and screen reader support
 
 ---
 
@@ -30,14 +34,14 @@ Production-ready forms for SvelteKit. Secure. Accessible. Done.
 ### Install
 
 ```bash
-npm install @goobits/forms
+npm install @goobits/ui
 ```
 
 ### Configure
 
 ```javascript
 // src/hooks.server.js
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 
 initContactFormConfig({
 	appName: 'My App',
@@ -54,7 +58,7 @@ initContactFormConfig({
 
 ```javascript
 // src/routes/api/contact/+server.js
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,
@@ -68,9 +72,9 @@ export const POST = createContactApiHandler({
 ```svelte
 <!-- src/routes/contact/+page.svelte -->
 <script>
-	import { ContactForm } from '@goobits/forms/ui';
-	import '@goobits/forms/ui/variables.css';
-	import '@goobits/forms/ui/ContactForm.css';
+	import { ContactForm } from '@goobits/ui/ui';
+	import '@goobits/ui/ui/variables.css';
+	import '@goobits/ui/ui/ContactForm.css';
 </script>
 
 <ContactForm apiEndpoint="/api/contact" />
@@ -110,6 +114,7 @@ See [Getting Started Guide](./docs/getting-started.md#security-features) for pro
 
 ### Guides
 - **[Testing](./docs/testing.md)** - Unit tests, E2E tests, mocking strategies
+- **[Accessibility Testing](./docs/accessibility-testing.md)** - WCAG compliance, axe-core integration, manual testing
 - **[Migration](./docs/migration.md)** - Upgrade guides between versions
 - **[Troubleshooting](./docs/troubleshooting.md)** - Common issues and solutions
 
@@ -130,7 +135,7 @@ import {
 	FeedbackForm,         // Quick feedback widget
 	FormField,            // Reusable field component
 	UploadImage           // File upload with preview
-} from '@goobits/forms/ui';
+} from '@goobits/ui/ui';
 ```
 
 ### UI Components
@@ -140,11 +145,11 @@ import {
 	Input, Textarea, SelectMenu, ToggleSwitch,  // Form inputs
 	FormErrors, ThankYou,                        // Status components
 	DemoPlayground                               // Interactive demo
-} from '@goobits/forms/ui';
+} from '@goobits/ui/ui';
 
-import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/forms/ui';
-import { Modal, Alert, Confirm, AppleModal } from '@goobits/forms/ui/modals';
-import { tooltip, TooltipPortal } from '@goobits/forms/ui/tooltip';
+import { Menu, ContextMenu, MenuItem, MenuSeparator } from '@goobits/ui/ui';
+import { Modal, Alert, Confirm, AppleModal } from '@goobits/ui/ui/modals';
+import { tooltip, TooltipPortal } from '@goobits/ui/ui/tooltip';
 ```
 
 See [API Reference](./docs/api-reference.md) for complete component documentation with props and usage.
@@ -156,8 +161,8 @@ See [API Reference](./docs/api-reference.md) for complete component documentatio
 Import base styles and customize with CSS variables:
 
 ```javascript
-import '@goobits/forms/ui/variables.css';
-import '@goobits/forms/ui/ContactForm.css';
+import '@goobits/ui/ui/variables.css';
+import '@goobits/ui/ui/ContactForm.css';
 ```
 
 ```css
@@ -233,7 +238,7 @@ See [Getting Started Guide](./docs/getting-started.md#email-configuration) for c
 
 ```javascript
 // hooks.server.js
-import { handleFormI18n } from '@goobits/forms/i18n';
+import { handleFormI18n } from '@goobits/ui/i18n';
 
 export async function handle({ event, resolve }) {
 	await handleFormI18n(event);
@@ -256,7 +261,7 @@ See [Getting Started Guide](./docs/getting-started.md#internationalization) for 
 All required dependencies install automatically:
 
 ```bash
-npm install @goobits/forms
+npm install @goobits/ui
 ```
 
 This includes: @sveltejs/kit, svelte, formsnap, sveltekit-superforms, zod, @lucide/svelte
@@ -284,7 +289,7 @@ MIT - see [LICENSE](./LICENSE) for details
 - **[Examples](./examples/)** - Real-world implementations
 - **[Changelog](./CHANGELOG.md)** - Version history and migration guides
 - **[GitHub Issues](https://github.com/goobits/forms/issues)** - Report bugs or request features
-- **[npm Package](https://www.npmjs.com/package/@goobits/forms)** - Latest releases
+- **[npm Package](https://www.npmjs.com/package/@goobits/ui)** - Latest releases
 
 ---
 

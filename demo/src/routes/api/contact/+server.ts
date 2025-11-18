@@ -1,4 +1,4 @@
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: 'demo@example.com',

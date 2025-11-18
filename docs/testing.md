@@ -1,6 +1,6 @@
 # Testing Guide
 
-Test forms built with @goobits/forms.
+Test forms built with @goobits/ui.
 
 ---
 
@@ -11,8 +11,8 @@ Test forms built with @goobits/forms.
 ```typescript
 // ContactForm.test.ts
 import { render, fireEvent, waitFor } from '@testing-library/svelte';
-import { ContactForm } from '@goobits/forms/ui';
-import { initContactFormConfig } from '@goobits/forms/config';
+import { ContactForm } from '@goobits/ui/ui';
+import { initContactFormConfig } from '@goobits/ui/config';
 
 beforeAll(() => {
 	initContactFormConfig({
@@ -86,7 +86,7 @@ test('displays validation errors', async () => {
 
 ```typescript
 // api/contact.test.ts
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 import { RequestEvent } from '@sveltejs/kit';
 
 describe('Contact API Handler', () => {
@@ -153,7 +153,7 @@ global.grecaptcha = {
 };
 
 // Or mock the verification service
-vi.mock('@goobits/forms/services/recaptchaVerifierService', () => ({
+vi.mock('@goobits/ui/services/recaptchaVerifierService', () => ({
 	verifyRecaptcha: vi.fn().mockResolvedValue({
 		success: true,
 		score: 0.9
@@ -164,7 +164,7 @@ vi.mock('@goobits/forms/services/recaptchaVerifierService', () => ({
 ### Test with reCAPTCHA
 
 ```typescript
-import { verifyRecaptcha } from '@goobits/forms/services/recaptchaVerifierService';
+import { verifyRecaptcha } from '@goobits/ui/services/recaptchaVerifierService';
 
 test('verifies reCAPTCHA token', async () => {
 	const handler = createContactApiHandler({
@@ -201,7 +201,7 @@ test('verifies reCAPTCHA token', async () => {
 ## CSRF Protection Tests
 
 ```typescript
-import { generateCsrfToken, validateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken, validateCsrfToken } from '@goobits/ui/security/csrf';
 
 test('generates valid CSRF token', () => {
 	const token = generateCsrfToken();
@@ -292,7 +292,7 @@ test('uploads file attachment', async ({ page }) => {
 ## Custom Validation Tests
 
 ```typescript
-import { contactSchema } from '@goobits/forms/validation';
+import { contactSchema } from '@goobits/ui/validation';
 import { z } from 'zod';
 
 test('validates required fields', () => {
@@ -344,12 +344,12 @@ test('rejects invalid email', () => {
 
 ```typescript
 // Mock rate limiter for tests
-vi.mock('@goobits/forms/services/rateLimiterService', () => ({
+vi.mock('@goobits/ui/services/rateLimiterService', () => ({
 	checkRateLimit: vi.fn().mockResolvedValue({ allowed: true })
 }));
 
 test('rate limits excessive requests', async () => {
-	const { checkRateLimit } = await import('@goobits/forms/services/rateLimiterService');
+	const { checkRateLimit } = await import('@goobits/ui/services/rateLimiterService');
 
 	// Allow first 5 requests
 	(checkRateLimit as any).mockResolvedValueOnce({ allowed: true });

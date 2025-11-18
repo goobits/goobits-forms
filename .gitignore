@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 .svelte-kit/
+package/
 
 # Environment files
 .env
@@ -66,3 +67,8 @@ dev/
 # Form uploads (sensitive)
 uploads/
 temp/
+
+# Playwright
+/playwright-report/
+/playwright/.cache/
+/test-results/

@@ -16,7 +16,7 @@ const PACKAGE_ROOT = path.join(__dirname, '..');
 const errors = [];
 const warnings = [];
 
-console.log('🧪 Validating @goobits/forms exports...\n');
+console.log('🧪 Validating @goobits/ui exports...\n');
 
 // Helper to check if file exists
 function fileExists(filePath) {

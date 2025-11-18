@@ -1,6 +1,6 @@
-# @goobits/forms Demo
+# @goobits/ui Demo
 
-This demo application showcases `@goobits/forms` with `@goobits/docs-engine` integration.
+This demo application showcases `@goobits/ui` with `@goobits/docs-engine` integration.
 
 ## Features
 
@@ -72,14 +72,14 @@ demo/
 ## Configuration
 
 The demo is configured to use:
-- **@goobits/forms**: Form components and handlers
+- **@goobits/ui**: Form components and handlers
 - **@goobits/docs-engine**: Documentation rendering with plugins
 - **MDsveX**: Markdown in Svelte
 - **Svelte 5**: Latest Svelte version
 
 ## Development
 
-The demo links to the local `@goobits/forms` package using `file:..` in package.json. Changes to the main package are automatically reflected in the demo.
+The demo links to the local `@goobits/ui` package using `file:..` in package.json. Changes to the main package are automatically reflected in the demo.
 
 ## Links
 

@@ -1,6 +1,6 @@
 # Configuration Guide
 
-Reference for configuring @goobits/forms.
+Reference for configuring @goobits/ui.
 
 ---
 
@@ -390,7 +390,7 @@ export const contactConfig = {
 };
 
 // Initialize in hooks.server.js
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 import { contactConfig } from '$lib/contact-config.js';
 
 initContactFormConfig(contactConfig);

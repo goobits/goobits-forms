@@ -1,6 +1,6 @@
 # Migration Guide
 
-Upgrade guides for @goobits/forms version migrations.
+Upgrade guides for @goobits/ui version migrations.
 
 ---
 
@@ -20,10 +20,10 @@ If you were using incorrect import paths (which would have caused errors), updat
 
 ```javascript
 // AVOID: Old (incorrect - would have errored)
-import { ContactForm } from '@goobits/forms';
+import { ContactForm } from '@goobits/ui';
 
 // RECOMMENDED: New (correct)
-import { ContactForm } from '@goobits/forms/ui';
+import { ContactForm } from '@goobits/ui/ui';
 ```
 
 **2. Configuration Property Names**
@@ -90,7 +90,7 @@ Security features are now built-in. No code changes needed if using standard API
 
 ```javascript
 // Still works the same
-import { generateCsrfToken, validateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken, validateCsrfToken } from '@goobits/ui/security/csrf';
 ```
 
 **2. Package Manager Change**
@@ -126,10 +126,10 @@ npm uninstall @goobits/security
 import { generateCsrfToken } from '@goobits/security';
 
 // RECOMMENDED: New
-import { generateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken } from '@goobits/ui/security/csrf';
 ```
 
-3. **Add nanoid dependency** (auto-installed with @goobits/forms@1.1.0+):
+3. **Add nanoid dependency** (auto-installed with @goobits/ui@1.1.0+):
 ```bash
 npm install nanoid
 ```
@@ -170,7 +170,7 @@ None - bug fix release.
 No changes required - update package version:
 
 ```bash
-npm install @goobits/forms@1.0.1
+npm install @goobits/ui@1.0.1
 ```
 
 ---
@@ -182,7 +182,7 @@ If upgrading from a pre-release version, follow these steps:
 ### 1. Update Package
 
 ```bash
-npm install @goobits/forms@latest
+npm install @goobits/ui@latest
 ```
 
 ### 2. Update Dependencies
@@ -199,19 +199,19 @@ Change to new import paths:
 
 ```javascript
 // Forms
-import { ContactForm, FeedbackForm } from '@goobits/forms/ui';
+import { ContactForm, FeedbackForm } from '@goobits/ui/ui';
 
 // Configuration
-import { initContactFormConfig } from '@goobits/forms/config';
+import { initContactFormConfig } from '@goobits/ui/config';
 
 // Handlers
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 // Security
-import { generateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken } from '@goobits/ui/security/csrf';
 
 // Validation
-import { contactSchema } from '@goobits/forms/validation';
+import { contactSchema } from '@goobits/ui/validation';
 ```
 
 ### 4. Update Configuration

@@ -1,0 +1,283 @@
+/**
+ * Radio Component Styles
+ * BEM naming convention with design tokens
+ */
+
+/* Radio Base Styles */
+.radio {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: var(--space-2, 8px);
+	position: relative;
+	cursor: pointer;
+}
+
+.radio__input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.radio__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	border: 2px solid var(--color-border, #d1d5db);
+	border-radius: 50%;
+	background-color: var(--color-surface, #ffffff);
+	transition: var(--transition-base, all 0.15s ease);
+	position: relative;
+	margin-top: 2px;
+}
+
+.radio__button::after {
+	content: '';
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: var(--color-primary-500, #3b82f6);
+	transform: scale(0);
+	transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.radio__input:checked + .radio__button {
+	border-color: var(--color-primary-500, #3b82f6);
+	background-color: var(--color-surface, #ffffff);
+}
+
+.radio__input:checked + .radio__button::after {
+	transform: scale(1);
+}
+
+.radio__label {
+	display: block;
+	font-size: var(--font-size-base, 16px);
+	font-family: var(--font-family-base, system-ui, sans-serif);
+	line-height: var(--line-height-normal, 1.5);
+	color: var(--color-text-primary, #111827);
+	cursor: pointer;
+	user-select: none;
+}
+
+/* Radio Focus State */
+.radio__input:focus-visible + .radio__button {
+	outline: none;
+	border-color: var(--color-primary-500, #3b82f6);
+	box-shadow: 0 0 0 3px var(--color-primary-100, #dbeafe);
+}
+
+/* Radio Hover State */
+.radio:hover:not(.radio--disabled) .radio__button {
+	border-color: var(--color-primary-400, #60a5fa);
+	background-color: var(--color-primary-50, #eff6ff);
+}
+
+.radio__input:checked:hover:not(:disabled) + .radio__button {
+	background-color: var(--color-primary-50, #eff6ff);
+}
+
+/* Radio Size Variants */
+.radio--sm .radio__button,
+.radio__button--sm {
+	width: 16px;
+	height: 16px;
+	border-width: 1.5px;
+}
+
+.radio--sm .radio__button::after,
+.radio__button--sm::after {
+	width: 8px;
+	height: 8px;
+}
+
+.radio--sm .radio__label,
+.radio__label--sm {
+	font-size: var(--font-size-sm, 14px);
+}
+
+.radio--lg .radio__button,
+.radio__button--lg {
+	width: 24px;
+	height: 24px;
+}
+
+.radio--lg .radio__button::after,
+.radio__button--lg::after {
+	width: 12px;
+	height: 12px;
+}
+
+.radio--lg .radio__label,
+.radio__label--lg {
+	font-size: var(--font-size-lg, 18px);
+}
+
+/* Radio Disabled State */
+.radio--disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.radio--disabled .radio__button {
+	background-color: var(--color-background-secondary, #f3f4f6);
+	border-color: var(--color-border, #d1d5db);
+	cursor: not-allowed;
+}
+
+.radio--disabled .radio__label {
+	color: var(--color-text-disabled, #9ca3af);
+	cursor: not-allowed;
+}
+
+.radio__input:disabled + .radio__button {
+	background-color: var(--color-background-secondary, #f3f4f6);
+	border-color: var(--color-border, #d1d5db);
+	cursor: not-allowed;
+}
+
+.radio__input:disabled:checked + .radio__button::after {
+	background-color: var(--color-text-disabled, #9ca3af);
+}
+
+/* Radio Error State */
+.radio--error .radio__button {
+	border-color: var(--color-error-500, #ef4444);
+}
+
+.radio--error .radio__input:focus-visible + .radio__button {
+	border-color: var(--color-error-600, #dc2626);
+	box-shadow: 0 0 0 3px var(--color-error-100, #fee2e2);
+}
+
+.radio__error {
+	display: block;
+	margin-top: var(--space-1, 4px);
+	margin-left: var(--space-7, 28px);
+	font-size: var(--font-size-sm, 14px);
+	color: var(--color-error-600, #dc2626);
+}
+
+/* Radio Description (for RadioGroup options) */
+.radio__description {
+	display: block;
+	margin-top: var(--space-1, 4px);
+	font-size: var(--font-size-sm, 14px);
+	color: var(--color-text-secondary, #6b7280);
+	line-height: var(--line-height-normal, 1.5);
+}
+
+/* RadioGroup Styles */
+.radio-group {
+	border: none;
+	padding: 0;
+	margin: 0;
+	min-width: 0;
+}
+
+.radio-group__legend {
+	display: block;
+	margin-bottom: var(--space-3, 12px);
+	font-size: var(--font-size-base, 16px);
+	font-weight: var(--font-weight-medium, 500);
+	color: var(--color-text-primary, #111827);
+	line-height: var(--line-height-normal, 1.5);
+	padding: 0;
+}
+
+.radio-group__required {
+	color: var(--color-error-500, #ef4444);
+	margin-left: var(--space-1, 4px);
+}
+
+.radio-group__options {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3, 12px);
+}
+
+.radio-group--horizontal .radio-group__options {
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--space-4, 16px);
+}
+
+.radio-group__option {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: var(--space-2, 8px);
+	position: relative;
+	cursor: pointer;
+}
+
+.radio-group__option--disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.radio-group--disabled {
+	opacity: 0.6;
+}
+
+.radio-group--error .radio__button {
+	border-color: var(--color-error-500, #ef4444);
+}
+
+.radio-group__error {
+	display: block;
+	margin-top: var(--space-2, 8px);
+	font-size: var(--font-size-sm, 14px);
+	color: var(--color-error-600, #dc2626);
+}
+
+/* High Contrast Mode Adjustments */
+@media (prefers-contrast: high) {
+	.radio__button {
+		border-width: 2px;
+	}
+
+	.radio__input:focus-visible + .radio__button {
+		outline: 2px solid var(--color-text-primary, #111827);
+		outline-offset: 2px;
+	}
+
+	.radio--error .radio__button {
+		border-width: 3px;
+	}
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+	.radio__button,
+	.radio__button::after {
+		transition: none;
+	}
+}
+
+/* Dark Mode Support (if using design tokens) */
+:global(.dark) .radio__button {
+	background-color: var(--color-surface-dark, #1f2937);
+	border-color: var(--color-border-dark, #4b5563);
+}
+
+:global(.dark) .radio__label {
+	color: var(--color-text-primary-dark, #f9fafb);
+}
+
+:global(.dark) .radio__description {
+	color: var(--color-text-secondary-dark, #d1d5db);
+}
+
+:global(.dark) .radio--disabled .radio__button {
+	background-color: var(--color-background-secondary-dark, #374151);
+	border-color: var(--color-border-dark, #4b5563);
+}
+
+:global(.dark) .radio--disabled .radio__label {
+	color: var(--color-text-disabled-dark, #6b7280);
+}
