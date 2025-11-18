@@ -1,6 +1,6 @@
 # TypeScript Guide
 
-Type-safe form development with @goobits/forms.
+Type-safe form development with @goobits/ui.
 
 ---
 
@@ -14,18 +14,18 @@ import type {
 	CategoryConfig,
 	RecaptchaConfig,
 	FileSettings
-} from '@goobits/forms/config';
+} from '@goobits/ui/config';
 
 import type {
 	ContactFormData,
 	FeedbackFormData
-} from '@goobits/forms/validation';
+} from '@goobits/ui/validation';
 
 import type {
 	MenuItem,
 	MenuConfig,
 	TooltipOptions
-} from '@goobits/forms/ui';
+} from '@goobits/ui/ui';
 ```
 
 ---
@@ -98,7 +98,7 @@ interface ContactFormData {
 
 ```typescript
 <script lang="ts">
-	import type { ContactFormData } from '@goobits/forms/validation';
+	import type { ContactFormData } from '@goobits/ui/validation';
 
 	async function handleSubmit(data: ContactFormData) {
 		console.log(data.email); // Type-safe
@@ -192,7 +192,7 @@ interface FeedbackFormProps {
 
 ```typescript
 // src/lib/contact-config.ts
-import type { ContactConfig } from '@goobits/forms/config';
+import type { ContactConfig } from '@goobits/ui/config';
 
 export const contactConfig: ContactConfig = {
 	appName: 'My App',
@@ -216,7 +216,7 @@ export const contactConfig: ContactConfig = {
 ```typescript
 // src/routes/api/contact/+server.ts
 import type { RequestHandler } from './$types';
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL!,
@@ -235,7 +235,7 @@ export const POST: RequestHandler = createContactApiHandler({
 ### Typed Custom Validation
 
 ```typescript
-import type { ContactFormData } from '@goobits/forms/validation';
+import type { ContactFormData } from '@goobits/ui/validation';
 
 function validatePhone(phone: string): boolean {
 	return /^\+?[\d\s()-]{7,}$/.test(phone);
@@ -265,7 +265,7 @@ export const POST = createContactApiHandler({
 ### Menu Items
 
 ```typescript
-import type { MenuItem } from '@goobits/forms/ui/menu';
+import type { MenuItem } from '@goobits/ui/ui/menu';
 
 const menuItems: MenuItem[] = [
 	{
@@ -289,7 +289,7 @@ const menuItems: MenuItem[] = [
 ### Tooltip Options
 
 ```typescript
-import type { TooltipOptions } from '@goobits/forms/ui/tooltip';
+import type { TooltipOptions } from '@goobits/ui/ui/tooltip';
 
 const tooltipConfig: TooltipOptions = {
 	content: 'This is a tooltip',
@@ -308,7 +308,7 @@ Leverage Zod for type-safe validation:
 
 ```typescript
 import { z } from 'zod';
-import { contactSchema } from '@goobits/forms/validation';
+import { contactSchema } from '@goobits/ui/validation';
 
 // Extend existing schema
 const customContactSchema = contactSchema.extend({
@@ -389,7 +389,7 @@ export const POST = createTypedFormHandler(customSchema, async (data) => {
 ```typescript
 // src/routes/contact/+page.server.ts
 import type { PageServerLoad } from './$types';
-import { generateCsrfToken } from '@goobits/forms/security/csrf';
+import { generateCsrfToken } from '@goobits/ui/security/csrf';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	const csrfToken = generateCsrfToken();
@@ -406,7 +406,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 <!-- src/routes/contact/+page.svelte -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { ContactForm } from '@goobits/forms/ui';
+	import { ContactForm } from '@goobits/ui/ui';
 
 	let { data }: { data: PageData } = $props();
 </script>
@@ -421,7 +421,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 Create type guards for runtime type checking:
 
 ```typescript
-import type { ContactFormData } from '@goobits/forms/validation';
+import type { ContactFormData } from '@goobits/ui/validation';
 
 function isContactFormData(data: unknown): data is ContactFormData {
 	return (
@@ -453,10 +453,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
 ```typescript
 // AVOID: Wrong
-import { ContactForm } from '@goobits/forms';
+import { ContactForm } from '@goobits/ui';
 
 // RECOMMENDED: Correct
-import { ContactForm } from '@goobits/forms/ui';
+import { ContactForm } from '@goobits/ui/ui';
 ```
 
 ### Issue: Type 'unknown' error
@@ -493,7 +493,7 @@ Recommended TypeScript configuration:
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
-		"types": ["@sveltejs/kit", "@goobits/forms"]
+		"types": ["@sveltejs/kit", "@goobits/ui"]
 	}
 }
 ```

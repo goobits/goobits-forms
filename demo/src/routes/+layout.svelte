@@ -16,7 +16,7 @@
 
 <div class="app">
 	<header>
-		<h1>@goobits/forms Demo</h1>
+		<h1>@goobits/ui Demo</h1>
 		<nav>
 			<a href="/">Home</a>
 			<a href="/docs">Docs</a>
@@ -29,7 +29,7 @@
 	</main>
 
 	<footer>
-		<p>Built with @goobits/forms and @goobits/docs-engine</p>
+		<p>Built with @goobits/ui and @goobits/docs-engine</p>
 	</footer>
 </div>
 

@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the @goobits/forms documentation demo. This page demonstrates the docs-engine features.
+Welcome to the @goobits/ui documentation demo. This page demonstrates the docs-engine features.
 
 ## TOC
 
@@ -23,8 +23,8 @@ This is a tip callout. Use it for best practices.
 Here's an example with syntax highlighting:
 
 ```typescript
-import { ContactForm } from '@goobits/forms/ui';
-import { createContactApiHandler } from '@goobits/forms/handlers/contactFormHandler';
+import { ContactForm } from '@goobits/ui/ui';
+import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
 	adminEmail: process.env.ADMIN_EMAIL,

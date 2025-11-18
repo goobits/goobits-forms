@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-11-17
+
+### BREAKING CHANGE
+
+- **Package renamed from `@goobits/forms` to `@goobits/ui`**
+  - This package has been renamed to better reflect its expanded scope beyond forms
+  - Now includes forms, modals, menus, tooltips, and other UI components
+  - **Migration required**: See [MIGRATION.md](./MIGRATION.md) for complete upgrade instructions
+  - All exports, component names, and APIs remain exactly the same
+  - Only the package name has changed
+
+### Why This Change?
+
+The package originally focused on form components but has evolved into a comprehensive UI component library:
+- **Form Components** - ContactForm, FeedbackForm, CategoryContactForm, FormField, Input, Textarea, SelectMenu, ToggleSwitch
+- **Modal Components** - Modal, Alert, Confirm, AppleModal
+- **Menu Components** - Menu, ContextMenu, MenuItem, MenuSeparator
+- **Tooltip Components** - tooltip directive, TooltipPortal
+- **Additional Components** - FormErrors, ThankYou, DemoPlayground, UploadImage
+
+The new name `@goobits/ui` better represents this comprehensive UI library.
+
+### Migration Steps
+
+1. Uninstall old package: `npm uninstall @goobits/forms`
+2. Install new package: `npm install @goobits/ui`
+3. Find and replace: `@goobits/forms` → `@goobits/ui` in all files
+4. Verify imports and CSS paths are updated
+5. Clear cache and rebuild: `rm -rf node_modules .svelte-kit && npm install && npm run build`
+
+See [MIGRATION.md](./MIGRATION.md) for detailed instructions and troubleshooting.
+
+### Deprecation Notice
+
+- The `@goobits/forms` package will receive security fixes only until **June 1, 2026**
+- After June 1, 2026, `@goobits/forms` will be deprecated and no longer maintained
+- All new features and updates will be published to `@goobits/ui`
+
+---
+
 ## [1.3.1] - 2025-11-16
 
 ### Changed
@@ -186,7 +226,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2025-10-12
 
-Initial release of @goobits/forms - A comprehensive Svelte 5 forms library.
+Initial release of @goobits/ui - A comprehensive Svelte 5 forms library.
 
 ### Features
 - Configurable form components with validation

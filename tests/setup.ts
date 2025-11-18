@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
+import { vi, expect } from 'vitest';
+import { toHaveNoViolations } from 'jest-axe';
+
+// Extend Vitest matchers with axe-core accessibility matchers
+expect.extend(toHaveNoViolations);
 
 // Mock localStorage API
 const localStorageMock = {
@@ -70,6 +74,21 @@ global.grecaptcha = {
 Object.defineProperty(window, 'grecaptcha', {
 	value: global.grecaptcha,
 	writable: true
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: vi.fn().mockImplementation((query: string) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	})),
 });
 
 // Mock IntersectionObserver

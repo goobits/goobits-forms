@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and solutions for @goobits/forms.
+Common issues and solutions for @goobits/ui.
 
 ## TOC
 
@@ -10,26 +10,26 @@ Common issues and solutions for @goobits/forms.
 
 ## Import Errors
 
-### Error: Cannot find module '@goobits/forms'
+### Error: Cannot find module '@goobits/ui'
 
 **Symptom:**
 ```
-Error: Cannot find module '@goobits/forms'
+Error: Cannot find module '@goobits/ui'
 ```
 
 **Solution:**
 Install the package:
 ```bash
-npm install @goobits/forms
+npm install @goobits/ui
 ```
 
 ---
 
-### Error: Module not found: '@goobits/forms/ui'
+### Error: Module not found: '@goobits/ui/ui'
 
 **Symptom:**
 ```
-Error: Cannot resolve '@goobits/forms/ui'
+Error: Cannot resolve '@goobits/ui/ui'
 ```
 
 **Cause:** Incorrect import path or missing exports configuration.
@@ -39,13 +39,13 @@ Check your import statements match the package exports:
 
 ```javascript
 // RECOMMENDED: Correct
-import { ContactForm } from '@goobits/forms/ui';
-import { Menu } from '@goobits/forms/ui';
-import { tooltip } from '@goobits/forms/ui/tooltip';
-import { Modal } from '@goobits/forms/ui/modals';
+import { ContactForm } from '@goobits/ui/ui';
+import { Menu } from '@goobits/ui/ui';
+import { tooltip } from '@goobits/ui/ui/tooltip';
+import { Modal } from '@goobits/ui/ui/modals';
 
 // AVOID: Wrong
-import { ContactForm } from '@goobits/forms'; // UI components not exported from root
+import { ContactForm } from '@goobits/ui'; // UI components not exported from root
 ```
 
 See [API Reference](./api-reference.md) for correct import paths.
@@ -66,10 +66,10 @@ All UI components use named exports:
 
 ```javascript
 // RECOMMENDED: Correct
-import { ContactForm, FeedbackForm } from '@goobits/forms/ui';
+import { ContactForm, FeedbackForm } from '@goobits/ui/ui';
 
 // AVOID: Wrong
-import ContactForm from '@goobits/forms/ui'; // No default export
+import ContactForm from '@goobits/ui/ui'; // No default export
 ```
 
 ---
@@ -158,7 +158,7 @@ src/routes/api/contact/+server.js
 
 4. **Enable debug logging:**
 ```javascript
-import { configureLogger, LogLevels } from '@goobits/forms';
+import { configureLogger, LogLevels } from '@goobits/ui';
 
 configureLogger({
 	level: LogLevels.DEBUG,
@@ -182,7 +182,7 @@ Error: Failed to fetch CSRF token
 1. **Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { setCsrfCookie } from '@goobits/forms/security/csrf';
+import { setCsrfCookie } from '@goobits/ui/security/csrf';
 
 export async function GET(event) {
 	const token = setCsrfCookie(event);
@@ -344,8 +344,8 @@ export const POST = createContactApiHandler({
 Import CSS files:
 ```javascript
 // In your root layout or page
-import '@goobits/forms/ui/variables.css';
-import '@goobits/forms/ui/ContactForm.css';
+import '@goobits/ui/ui/variables.css';
+import '@goobits/ui/ui/ContactForm.css';
 ```
 
 **Check bundler configuration:**
@@ -496,7 +496,7 @@ Error: Sender email not verified
 
 **Symptom:**
 ```typescript
-Could not find a declaration file for module '@goobits/forms'
+Could not find a declaration file for module '@goobits/ui'
 ```
 
 **Solution:**
@@ -508,7 +508,7 @@ Types are included in the package. Ensure TypeScript resolves them:
 {
 	"compilerOptions": {
 		"moduleResolution": "bundler",
-		"types": ["@goobits/forms"]
+		"types": ["@goobits/ui"]
 	}
 }
 ```
@@ -526,7 +526,7 @@ Property 'email' does not exist on type 'unknown'
 
 Import and use type definitions:
 ```typescript
-import type { ContactFormData } from '@goobits/forms/validation';
+import type { ContactFormData } from '@goobits/ui/validation';
 
 function handleSubmit(data: ContactFormData) {
 	console.log(data.email); // Type-safe
@@ -634,7 +634,7 @@ export default {
 
 1. **Enable debug logging:**
 ```javascript
-import { configureLogger, LogLevels } from '@goobits/forms';
+import { configureLogger, LogLevels } from '@goobits/ui';
 
 configureLogger({
 	level: LogLevels.DEBUG,

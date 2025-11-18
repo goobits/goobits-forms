@@ -1,0 +1,327 @@
+/**
+ * Slider Component Styles
+ * BEM naming convention with design tokens
+ */
+
+/* Slider container */
+.slider {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2, 0.5rem);
+	width: 100%;
+}
+
+/* Label */
+.slider__label {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: var(--font-size-sm, 14px);
+	font-weight: var(--font-weight-medium, 500);
+	color: var(--color-text-primary);
+	margin-bottom: var(--space-1, 0.25rem);
+}
+
+.slider__value-display {
+	font-size: var(--font-size-sm, 14px);
+	color: var(--color-text-secondary);
+	font-weight: var(--font-weight-normal, 400);
+}
+
+/* Slider container */
+.slider__container {
+	position: relative;
+	padding: var(--space-4, 1rem) 0;
+}
+
+/* Track */
+.slider__track {
+	position: relative;
+	width: 100%;
+	height: 6px;
+	background-color: var(--color-border, #e5e7eb);
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.slider__track:hover {
+	background-color: var(--color-border-hover, #d1d5db);
+}
+
+.slider--disabled .slider__track {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+/* Filled range */
+.slider__range {
+	position: absolute;
+	height: 100%;
+	background: linear-gradient(
+		to right,
+		var(--color-primary-500, #3b82f6),
+		var(--color-primary-600, #2563eb)
+	);
+	border-radius: 999px;
+	transition:
+		left 0.1s ease,
+		width 0.1s ease;
+	pointer-events: none;
+}
+
+.slider--error .slider__range {
+	background: linear-gradient(
+		to right,
+		var(--color-error-500, #ef4444),
+		var(--color-error-600, #dc2626)
+	);
+}
+
+.slider--disabled .slider__range {
+	opacity: 0.5;
+}
+
+/* Thumb */
+.slider__thumb {
+	position: absolute;
+	top: 50%;
+	width: 20px;
+	height: 20px;
+	background: white;
+	border: 2px solid var(--color-primary-500, #3b82f6);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	cursor: grab;
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease,
+		border-color 0.15s ease;
+	box-shadow:
+		0 1px 3px rgba(0, 0, 0, 0.12),
+		0 1px 2px rgba(0, 0, 0, 0.08);
+	z-index: 2;
+}
+
+.slider__thumb:hover {
+	transform: translate(-50%, -50%) scale(1.1);
+	box-shadow:
+		0 4px 6px rgba(0, 0, 0, 0.12),
+		0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.slider__thumb:focus-visible {
+	outline: none;
+	box-shadow:
+		0 0 0 3px var(--color-primary-100, #dbeafe),
+		0 4px 6px rgba(0, 0, 0, 0.12);
+}
+
+.slider__thumb--active {
+	cursor: grabbing;
+	transform: translate(-50%, -50%) scale(1.15);
+	box-shadow:
+		0 0 0 3px var(--color-primary-100, #dbeafe),
+		0 4px 6px rgba(0, 0, 0, 0.12);
+}
+
+.slider--error .slider__thumb {
+	border-color: var(--color-error-500, #ef4444);
+}
+
+.slider--error .slider__thumb:focus-visible,
+.slider--error .slider__thumb--active {
+	box-shadow:
+		0 0 0 3px var(--color-error-100, #fee2e2),
+		0 4px 6px rgba(0, 0, 0, 0.12);
+}
+
+.slider--disabled .slider__thumb {
+	cursor: not-allowed;
+	opacity: 0.5;
+	border-color: var(--color-border, #e5e7eb);
+}
+
+.slider--disabled .slider__thumb:hover {
+	transform: translate(-50%, -50%);
+}
+
+/* Range slider specific */
+.slider--range .slider__thumb--start {
+	z-index: 3;
+}
+
+.slider--range .slider__thumb--end {
+	z-index: 3;
+}
+
+/* Tooltip */
+.slider__tooltip {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-8px);
+	padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+	background-color: var(--color-text-primary, #1f2937);
+	color: white;
+	font-size: var(--font-size-xs, 12px);
+	border-radius: var(--radius-sm, 4px);
+	white-space: nowrap;
+	pointer-events: none;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.slider__tooltip::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	border: 4px solid transparent;
+	border-top-color: var(--color-text-primary, #1f2937);
+}
+
+/* Ticks */
+.slider__ticks {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.slider__tick {
+	position: absolute;
+	top: 50%;
+	width: 2px;
+	height: 8px;
+	background-color: var(--color-border, #e5e7eb);
+	transform: translate(-50%, -50%);
+}
+
+/* Custom marks */
+.slider__marks {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	height: 24px;
+	pointer-events: none;
+}
+
+.slider__mark {
+	position: absolute;
+	top: 0;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-1, 0.25rem);
+}
+
+.slider__mark-indicator {
+	width: 2px;
+	height: 12px;
+	background-color: var(--color-text-tertiary, #9ca3af);
+}
+
+.slider__mark-label {
+	font-size: var(--font-size-xs, 12px);
+	color: var(--color-text-tertiary, #9ca3af);
+	white-space: nowrap;
+}
+
+/* Error state */
+.slider__error {
+	font-size: var(--font-size-sm, 14px);
+	color: var(--color-error-600, #dc2626);
+	margin-top: var(--space-1, 0.25rem);
+}
+
+/* Size variants */
+
+/* Small */
+.slider--sm .slider__track {
+	height: 4px;
+}
+
+.slider--sm .slider__thumb {
+	width: 16px;
+	height: 16px;
+}
+
+.slider--sm .slider__tick {
+	height: 6px;
+}
+
+/* Medium (default) */
+.slider--md .slider__track {
+	height: 6px;
+}
+
+.slider--md .slider__thumb {
+	width: 20px;
+	height: 20px;
+}
+
+.slider--md .slider__tick {
+	height: 8px;
+}
+
+/* Large */
+.slider--lg .slider__track {
+	height: 8px;
+}
+
+.slider--lg .slider__thumb {
+	width: 24px;
+	height: 24px;
+}
+
+.slider--lg .slider__tick {
+	height: 10px;
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+	.slider__track {
+		border: 1px solid currentColor;
+	}
+
+	.slider__thumb {
+		border-width: 3px;
+	}
+
+	.slider__thumb:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+	}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.slider__range,
+	.slider__thumb,
+	.slider__track {
+		transition: none;
+	}
+}
+
+/* RTL support */
+[dir='rtl'] .slider__range {
+	right: auto;
+}
+
+[dir='rtl'] .slider__thumb {
+	transform: translate(50%, -50%);
+}
+
+[dir='rtl'] .slider__thumb:hover,
+[dir='rtl'] .slider__thumb--active {
+	transform: translate(50%, -50%) scale(1.1);
+}
+
+[dir='rtl'] .slider__thumb--active {
+	transform: translate(50%, -50%) scale(1.15);
+}

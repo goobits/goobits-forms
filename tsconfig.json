@@ -18,18 +18,13 @@
 		"verbatimModuleSyntax": true,
 		"allowImportingTsExtensions": true,
 		"noEmit": true,
+		"declaration": true,
+		"declarationMap": true,
 		"types": ["node"]
 	},
 	"include": [
-		"config/**/*.ts",
-		"handlers/**/*.ts",
-		"i18n/**/*.ts",
-		"security/**/*.ts",
-		"services/**/*.ts",
-		"ui/**/*.ts",
-		"utils/**/*.ts",
-		"validation/**/*.ts",
-		"index.ts"
+		"src/lib/**/*.ts",
+		"src/lib/**/*.svelte"
 	],
 	"exclude": [
 		"node_modules",

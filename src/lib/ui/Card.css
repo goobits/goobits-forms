@@ -1,0 +1,326 @@
+/**
+ * Card Component Styles
+ *
+ * A versatile container component with multiple variants.
+ * Uses BEM naming convention and design system variables.
+ */
+
+/* ========================================
+ * CARD BASE
+ * ======================================== */
+
+.card {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--color-surface);
+	border-radius: var(--radius-lg);
+	transition: var(--transition-base);
+	overflow: hidden;
+	position: relative;
+}
+
+/* ========================================
+ * CARD VARIANTS
+ * ======================================== */
+
+/* Elevated variant - with shadow */
+.card--elevated {
+	box-shadow: var(--shadow-md);
+	border: 1px solid transparent;
+}
+
+.card--elevated:hover {
+	box-shadow: var(--shadow-lg);
+}
+
+/* Outlined variant - with border */
+.card--outlined {
+	border: 1px solid var(--color-border);
+	box-shadow: none;
+}
+
+.card--outlined:hover {
+	border-color: var(--color-border-strong);
+}
+
+/* Filled variant - with background */
+.card--filled {
+	background-color: var(--color-surface-variant);
+	border: 1px solid var(--color-border-subtle);
+	box-shadow: none;
+}
+
+.card--filled:hover {
+	background-color: var(--color-background-alt);
+}
+
+/* ========================================
+ * CARD PADDING VARIANTS
+ * ======================================== */
+
+.card--padding-sm {
+	padding: var(--space-3);
+}
+
+.card--padding-md {
+	padding: var(--space-4);
+}
+
+.card--padding-lg {
+	padding: var(--space-6);
+}
+
+/* ========================================
+ * CLICKABLE STATE
+ * ======================================== */
+
+.card--clickable {
+	cursor: pointer;
+	user-select: none;
+}
+
+.card--clickable:hover {
+	transform: translateY(-2px);
+}
+
+.card--clickable:active {
+	transform: translateY(0);
+}
+
+/* Focus styles for clickable cards */
+.card--clickable:focus {
+	outline: none;
+	box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.card--clickable:focus-visible {
+	outline: 2px solid var(--color-primary-500);
+	outline-offset: 2px;
+}
+
+/* Link card specific styles */
+a.card {
+	text-decoration: none;
+	color: inherit;
+}
+
+a.card:hover {
+	text-decoration: none;
+}
+
+/* ========================================
+ * CARD HEADER
+ * ======================================== */
+
+.card__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--space-4);
+	padding: var(--space-4);
+	border-bottom: 1px solid var(--color-border);
+}
+
+/* Header content (title + subtitle) */
+.card__header-content {
+	flex: 1;
+	min-width: 0; /* Allow text truncation */
+}
+
+.card__title {
+	margin: 0;
+	font-size: var(--font-size-large);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--line-height-tight);
+	color: var(--color-text-primary);
+}
+
+.card__subtitle {
+	margin: var(--space-1) 0 0;
+	font-size: var(--font-size-small);
+	line-height: var(--line-height-normal);
+	color: var(--color-text-secondary);
+}
+
+/* Header actions area */
+.card__header-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	flex-shrink: 0;
+}
+
+/* ========================================
+ * CARD BODY
+ * ======================================== */
+
+.card__body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Body padding variants */
+.card__body--padding-sm {
+	padding: var(--space-3);
+}
+
+.card__body--padding-md {
+	padding: var(--space-4);
+}
+
+.card__body--padding-lg {
+	padding: var(--space-6);
+}
+
+/* ========================================
+ * CARD FOOTER
+ * ======================================== */
+
+.card__footer {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	border-top: 1px solid var(--color-border);
+	background-color: var(--color-surface);
+	flex-shrink: 0;
+}
+
+/* Footer alignment variants */
+.card__footer--align-left {
+	justify-content: flex-start;
+}
+
+.card__footer--align-center {
+	justify-content: center;
+}
+
+.card__footer--align-right {
+	justify-content: flex-end;
+}
+
+/* ========================================
+ * COMPOSITION ADJUSTMENTS
+ * ======================================== */
+
+/* When card has padding, remove header/footer/body padding to avoid double padding */
+.card--padding-sm > .card__header,
+.card--padding-md > .card__header,
+.card--padding-lg > .card__header {
+	padding: 0 0 var(--space-4) 0;
+}
+
+.card--padding-sm > .card__body,
+.card--padding-md > .card__body,
+.card--padding-lg > .card__body {
+	padding: 0;
+}
+
+.card--padding-sm > .card__footer,
+.card--padding-md > .card__footer,
+.card--padding-lg > .card__footer {
+	padding: var(--space-4) 0 0 0;
+}
+
+/* Remove borders when card has padding */
+.card--padding-sm > .card__header,
+.card--padding-md > .card__header,
+.card--padding-lg > .card__header {
+	border-bottom: none;
+	padding-bottom: var(--space-3);
+}
+
+.card--padding-sm > .card__footer,
+.card--padding-md > .card__footer,
+.card--padding-lg > .card__footer {
+	border-top: none;
+	padding-top: var(--space-3);
+}
+
+/* ========================================
+ * RESPONSIVE ADJUSTMENTS
+ * ======================================== */
+
+@media (max-width: 640px) {
+	.card__header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.card__header-actions {
+		justify-content: flex-end;
+	}
+
+	.card__footer {
+		flex-wrap: wrap;
+	}
+
+	.card--padding-lg {
+		padding: var(--space-4);
+	}
+
+	.card__body--padding-lg {
+		padding: var(--space-4);
+	}
+}
+
+/* ========================================
+ * ACCESSIBILITY
+ * ======================================== */
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+	.card--outlined,
+	.card--filled {
+		border-width: 2px;
+	}
+
+	.card--clickable:focus {
+		outline: 3px solid var(--color-primary-500);
+		outline-offset: 2px;
+	}
+
+	.card__header,
+	.card__footer {
+		border-width: 2px;
+	}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.card {
+		transition: none;
+	}
+
+	.card--clickable:hover {
+		transform: none;
+	}
+
+	.card--clickable:active {
+		transform: none;
+	}
+}
+
+/* Dark theme support */
+:global(.theme-dark) .card,
+:global(.theme-system-dark) .card {
+	background-color: rgba(26, 26, 26, 0.98);
+}
+
+:global(.theme-dark) .card--filled,
+:global(.theme-system-dark) .card--filled {
+	background-color: rgba(40, 40, 40, 0.98);
+}
+
+:global(.theme-dark) .card--outlined,
+:global(.theme-system-dark) .card--outlined {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.theme-dark) .card__header,
+:global(.theme-system-dark) .card__header,
+:global(.theme-dark) .card__footer,
+:global(.theme-system-dark) .card__footer {
+	border-color: rgba(255, 255, 255, 0.1);
+}

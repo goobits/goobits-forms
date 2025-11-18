@@ -138,7 +138,7 @@ A new generic form field wrapper component using Svelte 5 Snippets for flexible 
 #### Usage Example
 ```svelte
 <script>
-  import { Input, FormLabel } from '@goobits/forms/ui';
+  import { Input, FormLabel } from '@goobits/ui/ui';
 
   let email = '';
   let emailError = '';
