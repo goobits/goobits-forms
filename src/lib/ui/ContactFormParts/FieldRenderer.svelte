@@ -69,11 +69,13 @@
 					{:else if fieldConfig.type === 'select'}
 						<div class="contact-form__validation-container">
 							<SelectMenu
+								{...props}
 								bind:value={formData[fieldName]}
 								options={fieldConfig.options.map((option) =>
 									typeof option === 'object' ? option : { value: option, label: option }
 								)}
 								placeholder="Select {fieldConfig.label.replace('(optional)', '')}"
+								required={fieldConfig.required}
 								onchange={() => {
 									onInput(fieldName)
 									onBlur(fieldName)
@@ -92,6 +94,7 @@
 					{:else if fieldConfig.type === 'textarea'}
 						<div class="contact-form__validation-container">
 							<Textarea
+								{...props}
 								bind:value={formData[fieldName]}
 								variant={touched[fieldName] && fieldErrors?.[fieldName]
 									? 'error'
@@ -100,6 +103,7 @@
 										: 'default'}
 								class="contact-form__textarea {getFieldClasses(fieldName)}"
 								placeholder={fieldConfig.placeholder}
+								required={fieldConfig.required}
 								rows={4}
 								autoResize={true}
 							/>
@@ -125,6 +129,7 @@
 					{:else}
 						<div class="contact-form__validation-container">
 							<Input
+								{...props}
 								bind:value={formData[fieldName]}
 								variant={touched[fieldName] && fieldErrors?.[fieldName]
 									? 'error'
@@ -133,6 +138,7 @@
 										: 'default'}
 								class="contact-form__input {getFieldClasses(fieldName)}"
 								placeholder={fieldConfig.placeholder}
+								required={fieldConfig.required}
 								type={fieldConfig.type}
 							/>
 

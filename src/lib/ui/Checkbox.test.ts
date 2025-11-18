@@ -210,22 +210,10 @@ describe('Checkbox Component', () => {
 	});
 
 	describe('Size Variants', () => {
-		test('renders small size', () => {
-			const { container } = render(Checkbox, { props: { label: 'Small', size: 'sm' } });
+		test.each(['sm', 'md', 'lg'] as const)('renders %s size', (size) => {
+			const { container } = render(Checkbox, { props: { label: size, size } });
 			const wrapper = container.querySelector('.checkbox');
-			expect(wrapper).toHaveClass('checkbox--sm');
-		});
-
-		test('renders medium size (default)', () => {
-			const { container } = render(Checkbox, { props: { label: 'Medium', size: 'md' } });
-			const wrapper = container.querySelector('.checkbox');
-			expect(wrapper).toHaveClass('checkbox--md');
-		});
-
-		test('renders large size', () => {
-			const { container } = render(Checkbox, { props: { label: 'Large', size: 'lg' } });
-			const wrapper = container.querySelector('.checkbox');
-			expect(wrapper).toHaveClass('checkbox--lg');
+			expect(wrapper).toHaveClass(`checkbox--${size}`);
 		});
 	});
 

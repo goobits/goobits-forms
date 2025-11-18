@@ -453,19 +453,9 @@ describe('Slider Component', () => {
 	});
 
 	describe('Size Variants', () => {
-		test('renders small size', () => {
-			const { container } = render(Slider, { props: { size: 'sm' } });
-			expect(container.querySelector('.slider')).toHaveClass('slider--sm');
-		});
-
-		test('renders medium size (default)', () => {
-			const { container } = render(Slider, { props: { size: 'md' } });
-			expect(container.querySelector('.slider')).toHaveClass('slider--md');
-		});
-
-		test('renders large size', () => {
-			const { container } = render(Slider, { props: { size: 'lg' } });
-			expect(container.querySelector('.slider')).toHaveClass('slider--lg');
+		test.each(['sm', 'md', 'lg'] as const)('renders %s size', (size) => {
+			const { container } = render(Slider, { props: { size } });
+			expect(container.querySelector('.slider')).toHaveClass(`slider--${size}`);
 		});
 	});
 

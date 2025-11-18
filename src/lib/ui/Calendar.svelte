@@ -15,8 +15,7 @@
 		isSameMonth,
 		isToday,
 		isDateInRange,
-		addMonths,
-		startOfDay
+		addMonths
 	} from '../utils/date-utils';
 
 	/**

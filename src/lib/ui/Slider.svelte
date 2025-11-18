@@ -291,7 +291,7 @@
 			<!-- Tick marks -->
 			{#if showTicks && ticks.length > 0}
 				<div class="slider__ticks">
-					{#each ticks as tick}
+					{#each ticks as tick (tick)}
 						<div
 							class="slider__tick"
 							style:left="{((tick - min) / (max - min)) * 100}%"
@@ -303,7 +303,7 @@
 			<!-- Custom marks -->
 			{#if marks && marks.length > 0}
 				<div class="slider__marks">
-					{#each marks as mark}
+					{#each marks as mark (mark.value)}
 						<div
 							class="slider__mark"
 							style:left="{((mark.value - min) / (max - min)) * 100}%"

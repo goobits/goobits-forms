@@ -79,52 +79,16 @@ describe('Toast Component', () => {
 	});
 
 	describe('Variants', () => {
-		test('renders info variant', () => {
+		test.each(['info', 'success', 'warning', 'error'] as const)('renders %s variant', (variant) => {
 			const { container } = render(Toast, {
 				props: {
-					id: 'info-1',
-					title: 'Information',
-					variant: 'info'
+					id: `${variant}-1`,
+					title: variant,
+					variant
 				}
 			});
 
-			expect(container.querySelector('.toast--info')).toBeInTheDocument();
-		});
-
-		test('renders success variant', () => {
-			const { container } = render(Toast, {
-				props: {
-					id: 'success-1',
-					title: 'Success',
-					variant: 'success'
-				}
-			});
-
-			expect(container.querySelector('.toast--success')).toBeInTheDocument();
-		});
-
-		test('renders warning variant', () => {
-			const { container } = render(Toast, {
-				props: {
-					id: 'warning-1',
-					title: 'Warning',
-					variant: 'warning'
-				}
-			});
-
-			expect(container.querySelector('.toast--warning')).toBeInTheDocument();
-		});
-
-		test('renders error variant', () => {
-			const { container } = render(Toast, {
-				props: {
-					id: 'error-1',
-					title: 'Error',
-					variant: 'error'
-				}
-			});
-
-			expect(container.querySelector('.toast--error')).toBeInTheDocument();
+			expect(container.querySelector(`.toast--${variant}`)).toBeInTheDocument();
 		});
 	});
 

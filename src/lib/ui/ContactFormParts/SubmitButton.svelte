@@ -15,7 +15,7 @@
 </script>
 
 <div class="contact-form__button-container">
-	<button class="contact-form__submit-button" disabled={submitting} aria-busy={submitting}>
+	<button type="submit" class="contact-form__submit-button" disabled={submitting} aria-busy={submitting}>
 		{#if submitting}
 			<Loader2 class="animate-spin" size={18} />
 			<span>{getMessage('sending', 'Sending...')}</span>

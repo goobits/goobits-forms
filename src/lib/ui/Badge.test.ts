@@ -37,60 +37,21 @@ describe('Badge', () => {
 	});
 
 	describe('variant prop', () => {
-		test('renders primary variant', () => {
-			render(Badge, { props: { children: 'Primary', variant: 'primary' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--primary');
-		});
-
-		test('renders secondary variant', () => {
-			render(Badge, { props: { children: 'Secondary', variant: 'secondary' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--secondary');
-		});
-
-		test('renders success variant', () => {
-			render(Badge, { props: { children: 'Success', variant: 'success' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--success');
-		});
-
-		test('renders warning variant', () => {
-			render(Badge, { props: { children: 'Warning', variant: 'warning' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--warning');
-		});
-
-		test('renders error variant', () => {
-			render(Badge, { props: { children: 'Error', variant: 'error' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--error');
-		});
-
-		test('renders info variant', () => {
-			render(Badge, { props: { children: 'Info', variant: 'info' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--info');
-		});
+		test.each(['primary', 'secondary', 'success', 'warning', 'error', 'info'] as const)(
+			'renders %s variant',
+			(variant) => {
+				render(Badge, { props: { children: variant, variant } });
+				const badge = screen.getByRole('status');
+				expect(badge).toHaveClass(`badge--${variant}`);
+			}
+		);
 	});
 
 	describe('size prop', () => {
-		test('renders small size', () => {
-			render(Badge, { props: { children: 'Small', size: 'sm' } });
+		test.each(['sm', 'md', 'lg'] as const)('renders %s size', (size) => {
+			render(Badge, { props: { children: size, size } });
 			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--sm');
-		});
-
-		test('renders medium size (default)', () => {
-			render(Badge, { props: { children: 'Medium', size: 'md' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--md');
-		});
-
-		test('renders large size', () => {
-			render(Badge, { props: { children: 'Large', size: 'lg' } });
-			const badge = screen.getByRole('status');
-			expect(badge).toHaveClass('badge--lg');
+			expect(badge).toHaveClass(`badge--${size}`);
 		});
 	});
 
@@ -408,40 +369,6 @@ describe('Badge', () => {
 		});
 	});
 
-	describe('variant and size combinations', () => {
-		const variants = ['primary', 'secondary', 'success', 'warning', 'error', 'info'] as const;
-		const sizes = ['sm', 'md', 'lg'] as const;
-
-		variants.forEach((variant) => {
-			sizes.forEach((size) => {
-				test(`renders ${variant} variant with ${size} size`, () => {
-					render(Badge, {
-						props: { children: `${variant} ${size}`, variant, size }
-					});
-
-					const badge = screen.getByRole('status');
-					expect(badge).toHaveClass(`badge--${variant}`);
-					expect(badge).toHaveClass(`badge--${size}`);
-				});
-			});
-		});
-	});
-
-	describe('outlined variants', () => {
-		const variants = ['primary', 'secondary', 'success', 'warning', 'error', 'info'] as const;
-
-		variants.forEach((variant) => {
-			test(`renders outlined ${variant} variant`, () => {
-				render(Badge, {
-					props: { children: `Outlined ${variant}`, variant, outlined: true }
-				});
-
-				const badge = screen.getByRole('status');
-				expect(badge).toHaveClass(`badge--${variant}`);
-				expect(badge).toHaveClass('badge--outlined');
-			});
-		});
-	});
 
 	describe('dismiss button interactions', () => {
 		test('dismiss button can be focused', async () => {

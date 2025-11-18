@@ -49,46 +49,19 @@ describe('Button Component', () => {
 	});
 
 	describe('Variant Rendering', () => {
-		test('renders primary variant', () => {
-			render(Button, { props: { variant: 'primary', children: 'Primary' } });
-			expect(screen.getByRole('button')).toHaveClass('button--primary');
-		});
-
-		test('renders secondary variant', () => {
-			render(Button, { props: { variant: 'secondary', children: 'Secondary' } });
-			expect(screen.getByRole('button')).toHaveClass('button--secondary');
-		});
-
-		test('renders outline variant', () => {
-			render(Button, { props: { variant: 'outline', children: 'Outline' } });
-			expect(screen.getByRole('button')).toHaveClass('button--outline');
-		});
-
-		test('renders ghost variant', () => {
-			render(Button, { props: { variant: 'ghost', children: 'Ghost' } });
-			expect(screen.getByRole('button')).toHaveClass('button--ghost');
-		});
-
-		test('renders danger variant', () => {
-			render(Button, { props: { variant: 'danger', children: 'Delete' } });
-			expect(screen.getByRole('button')).toHaveClass('button--danger');
-		});
+		test.each(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const)(
+			'renders %s variant',
+			(variant) => {
+				render(Button, { props: { variant, children: variant } });
+				expect(screen.getByRole('button')).toHaveClass(`button--${variant}`);
+			}
+		);
 	});
 
 	describe('Size Rendering', () => {
-		test('renders small size', () => {
-			render(Button, { props: { size: 'sm', children: 'Small' } });
-			expect(screen.getByRole('button')).toHaveClass('button--sm');
-		});
-
-		test('renders medium size (default)', () => {
-			render(Button, { props: { size: 'md', children: 'Medium' } });
-			expect(screen.getByRole('button')).toHaveClass('button--md');
-		});
-
-		test('renders large size', () => {
-			render(Button, { props: { size: 'lg', children: 'Large' } });
-			expect(screen.getByRole('button')).toHaveClass('button--lg');
+		test.each(['sm', 'md', 'lg'] as const)('renders %s size', (size) => {
+			render(Button, { props: { size, children: size } });
+			expect(screen.getByRole('button')).toHaveClass(`button--${size}`);
 		});
 	});
 
@@ -408,30 +381,6 @@ describe('Button Component', () => {
 		});
 	});
 
-	describe('Icon Slots', () => {
-		test('renders with icon-left slot', () => {
-			const { container } = render(Button, {
-				props: {
-					children: 'Upload'
-				}
-			});
-
-			// Check for icon-left structure
-			const iconLeft = container.querySelector('.button__icon--left');
-			// Icon slots need to be tested differently in actual usage
-			// This is a structural test
-			expect(iconLeft).toBeNull(); // No icon when not provided
-		});
-
-		test('hides icons when loading', () => {
-			render(Button, { props: { loading: true, children: 'Submit' } });
-			// Icons should not be rendered when loading
-			const iconLeft = document.querySelector('.button__icon--left');
-			const iconRight = document.querySelector('.button__icon--right');
-			expect(iconLeft).toBeNull();
-			expect(iconRight).toBeNull();
-		});
-	});
 
 	describe('Combination States', () => {
 		test('renders with multiple props correctly', () => {

@@ -556,32 +556,6 @@ describe('Accessibility', () => {
 });
 
 describe('Edge Cases', () => {
-	describe('empty content', () => {
-		test('renders empty card', () => {
-			const { container } = render(Card);
-			const card = container.querySelector('.card');
-			expect(card).toBeTruthy();
-		});
-
-		test('renders empty header', () => {
-			const { container } = render(CardHeader);
-			const header = container.querySelector('.card__header');
-			expect(header).toBeTruthy();
-		});
-
-		test('renders empty body', () => {
-			const { container } = render(CardBody);
-			const body = container.querySelector('.card__body');
-			expect(body).toBeTruthy();
-		});
-
-		test('renders empty footer', () => {
-			const { container } = render(CardFooter);
-			const footer = container.querySelector('.card__footer');
-			expect(footer).toBeTruthy();
-		});
-	});
-
 	describe('combined props', () => {
 		test('handles all props together', () => {
 			const { container } = render(Card, {

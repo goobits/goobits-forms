@@ -6,7 +6,7 @@
 import { vi } from 'vitest';
 
 // Mock enhance function
-export const enhance = vi.fn((form: HTMLFormElement, submit?: (input: { action: URL; formData: FormData; formElement: HTMLFormElement; controller: AbortController; submitter: HTMLElement | null; cancel: () => void }) => void | Promise<void>) => {
+export const enhance = vi.fn((_form: HTMLFormElement, _submit?: (input: { action: URL; formData: FormData; formElement: HTMLFormElement; controller: AbortController; submitter: HTMLElement | null; cancel: () => void }) => void | Promise<void>) => {
 	return {
 		destroy: () => {}
 	};
