@@ -16,7 +16,6 @@
 		isToday,
 		isDateInRange,
 		addMonths,
-		addYears,
 		startOfDay
 	} from '../utils/date-utils';
 
@@ -245,7 +244,7 @@
 				onchange={(e) => selectMonth(parseInt(e.currentTarget.value, 10))}
 				aria-label="Select month"
 			>
-				{#each monthNames as monthName, index}
+				{#each monthNames as monthName, index (index)}
 					<option value={index}>{monthName}</option>
 				{/each}
 			</select>
@@ -256,7 +255,7 @@
 				onchange={(e) => selectYear(parseInt(e.currentTarget.value, 10))}
 				aria-label="Select year"
 			>
-				{#each yearOptions as year}
+				{#each yearOptions as year (year)}
 					<option value={year}>{year}</option>
 				{/each}
 			</select>
@@ -280,7 +279,7 @@
 					Wk
 				</div>
 			{/if}
-			{#each dayNames as dayName}
+			{#each dayNames as dayName (dayName)}
 				<div class="calendar__weekday" role="columnheader">
 					{dayName}
 				</div>
@@ -288,14 +287,14 @@
 		</div>
 
 		<!-- Date grid (6 weeks × 7 days) -->
-		{#each Array(6) as _, weekIndex}
+		{#each Array(6) as _, weekIndex (weekIndex)}
 			<div class="calendar__week" role="row">
 				{#if showWeekNumbers}
 					<div class="calendar__week-number">
 						{calendarDates[weekIndex * 7]?.getWeek?.() || ''}
 					</div>
 				{/if}
-				{#each Array(7) as _, dayIndex}
+				{#each Array(7) as _, dayIndex (dayIndex)}
 					{@const date = calendarDates[weekIndex * 7 + dayIndex]}
 					{#if date}
 						<button

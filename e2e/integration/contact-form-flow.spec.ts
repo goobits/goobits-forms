@@ -20,7 +20,7 @@ test.describe('Contact Form - Full User Flow', () => {
 		})
 
 		// 1. Verify form is visible
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		await expect(form).toBeVisible()
 
 		// 2. Fill name field
@@ -96,7 +96,7 @@ test.describe('Contact Form - Full User Flow', () => {
 	})
 
 	test('should handle form validation errors correctly', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		const submitButton = form.locator('button[type="submit"]')
 
 		// Submit empty form
@@ -106,8 +106,8 @@ test.describe('Contact Form - Full User Flow', () => {
 		await page.waitForTimeout(500)
 
 		// Should show validation errors
-		const errorMessages = page.locator('.error, [role="alert"], .form-error, [aria-invalid="true"]')
-		const errorCount = await errorMessages.count()
+		const _errorMessages = page.locator('.error, [role="alert"], .form-error, [aria-invalid="true"]')
+		const _errorCount = await errorMessages.count()
 
 		expect(errorCount).toBeGreaterThan(0)
 
@@ -146,7 +146,7 @@ test.describe('Contact Form - Full User Flow', () => {
 			})
 		})
 
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 
 		// Fill form with valid data
 		const nameInput = form.locator('input[name*="name" i], input[placeholder*="name" i]').first()
@@ -168,7 +168,7 @@ test.describe('Contact Form - Full User Flow', () => {
 		const errorIndicators = page.locator(
 			'[role="alert"], .error-message, .alert-error, [data-error="true"]'
 		)
-		const errorCount = await errorIndicators.count()
+		const _errorCount = await errorIndicators.count()
 
 		if (errorCount > 0) {
 			await expect(errorIndicators.first()).toBeVisible()
@@ -186,7 +186,7 @@ test.describe('Contact Form - Full User Flow', () => {
 			await route.abort('failed')
 		})
 
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 
 		// Fill form
 		const nameInput = form.locator('input[name*="name" i], input[placeholder*="name" i]').first()
@@ -208,14 +208,14 @@ test.describe('Contact Form - Full User Flow', () => {
 		const errorIndicators = page.locator(
 			'[role="alert"], .error-message, .alert-error, [data-error="true"]'
 		)
-		const errorCount = await errorIndicators.count()
+		const _errorCount = await errorIndicators.count()
 
 		// Should handle network error gracefully
 		// (Either show error or keep form in usable state)
 	})
 
 	test('should preserve form data on page refresh', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 
 		// Fill some fields
 		const nameInput = form.locator('input[name*="name" i], input[placeholder*="name" i]').first()
@@ -234,17 +234,17 @@ test.describe('Contact Form - Full User Flow', () => {
 		await page.waitForLoadState('networkidle')
 
 		// Check if data is preserved (depends on implementation)
-		const nameInputAfterReload = page
+		const _nameInputAfterReload = page
 			.locator('input[name*="name" i], input[placeholder*="name" i]')
 			.first()
-		const emailInputAfterReload = page.locator('input[type="email"]').first()
+		const _emailInputAfterReload = page.locator('input[type="email"]').first()
 
 		// If form persistence is implemented, values should be restored
 		// This is optional and depends on the implementation
 	})
 
 	test('should handle reCAPTCHA integration', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 
 		// Look for reCAPTCHA elements
 		const recaptcha = page.locator('.g-recaptcha, [data-sitekey], iframe[src*="recaptcha"]')
@@ -259,7 +259,7 @@ test.describe('Contact Form - Full User Flow', () => {
 	})
 
 	test('should handle file size validation', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		const fileInput = form.locator('input[type="file"]')
 		const count = await fileInput.count()
 
@@ -277,13 +277,13 @@ test.describe('Contact Form - Full User Flow', () => {
 			await page.waitForTimeout(500)
 
 			// Should show file size error (if validation is implemented)
-			const errorMessages = page.locator('.error, [role="alert"], .file-error')
+			const _errorMessages = page.locator('.error, [role="alert"], .file-error')
 			// Note: This depends on implementation
 		}
 	})
 
 	test('should handle file type validation', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		const fileInput = form.locator('input[type="file"]')
 		const count = await fileInput.count()
 
@@ -306,7 +306,7 @@ test.describe('Contact Form - Full User Flow', () => {
 	})
 
 	test('should be fully keyboard accessible', async ({ page }) => {
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 
 		// Tab through all form elements
 		await page.keyboard.press('Tab')
@@ -337,7 +337,7 @@ test.describe('Contact Form - Full User Flow', () => {
 		await checkA11y(page)
 
 		// Fill and submit form
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		const submitButton = form.locator('button[type="submit"]')
 
 		// Submit to trigger validation
@@ -353,7 +353,7 @@ test.describe('Contact Form - Full User Flow', () => {
 		await expect(page).toHaveScreenshot('contact-form-initial.png', { fullPage: true })
 
 		// Submit to show errors
-		const form = page.locator('form').first()
+		const _form = page.locator('form').first()
 		const submitButton = form.locator('button[type="submit"]')
 		await submitButton.click()
 		await page.waitForTimeout(500)

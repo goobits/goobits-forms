@@ -194,7 +194,7 @@ test.describe('Toast Component', () => {
 
 			// Toast should have aria-live for screen readers
 			const ariaLive = await toast.getAttribute('aria-live')
-			const ariaAtomic = await toast.getAttribute('aria-atomic')
+			const _ariaAtomic = await toast.getAttribute('aria-atomic')
 
 			// Should have aria-live="polite" or "assertive"
 			expect(ariaLive === 'polite' || ariaLive === 'assertive' || ariaLive === null).toBeTruthy()
@@ -242,7 +242,7 @@ test.describe('Toast Component', () => {
 			await page.waitForTimeout(6000)
 
 			// Error/warning toasts should still be visible
-			const isStillVisible = await toast.isVisible().catch(() => false)
+			const _isStillVisible = await toast.isVisible().catch(() => false)
 
 			// If it's an important toast, it should still be visible
 			// (This depends on implementation)

@@ -15,8 +15,7 @@ import { render, getFocusableElements } from '../test-utils';
 import {
 	testAccessibility,
 	testWCAG_AA,
-	testARIA,
-	assertARIAAttributes
+	testARIA
 } from '../../utils/a11y-test-utils';
 import Modal from './Modal.svelte';
 

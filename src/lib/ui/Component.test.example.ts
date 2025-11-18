@@ -7,9 +7,9 @@
  * Copy this template when creating new component tests.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from './test-utils';
-import userEvent from '@testing-library/user-event';
+import { describe, it, _expect, vi, beforeEach } from 'vitest';
+import { _render, _screen, waitFor } from './test-utils';
+import _userEvent from '@testing-library/user-event';
 // import YourComponent from './YourComponent.svelte';
 
 /**
@@ -48,7 +48,7 @@ describe('BasicComponent', () => {
  */
 describe('InteractiveComponent', () => {
 	it('handles click events', async () => {
-		const handleClick = vi.fn();
+		const _handleClick = vi.fn();
 
 		// render(Button, {
 		// 	props: {

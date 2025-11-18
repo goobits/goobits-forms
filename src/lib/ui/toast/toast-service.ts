@@ -5,7 +5,7 @@
  * Supports multiple variants, auto-dismiss, and queue management.
  */
 
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 /**
  * Toast variant types

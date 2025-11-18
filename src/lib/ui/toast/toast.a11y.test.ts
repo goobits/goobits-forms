@@ -18,7 +18,6 @@ import {
 	testAccessibility,
 	testWCAG_AA,
 	testARIA,
-	assertARIAAttributes,
 	assertFocusable
 } from '../../utils/a11y-test-utils';
 import Toast from './Toast.svelte';

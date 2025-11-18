@@ -5,13 +5,13 @@
  * including variants, props, slots, accessibility, and composition.
  */
 
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, _beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import Card from './Card.svelte';
 import CardHeader from './CardHeader.svelte';
 import CardBody from './CardBody.svelte';
 import CardFooter from './CardFooter.svelte';
-import CardTestWrapper from './CardTestWrapper.svelte';
+import _CardTestWrapper from './CardTestWrapper.svelte';
 
 describe('Card Component', () => {
 	describe('rendering', () => {

@@ -6,7 +6,7 @@
 	 * with visual range highlighting in the calendar.
 	 */
 
-	import { Calendar, X, ArrowRight } from '@lucide/svelte';
+	import { X, ArrowRight } from '@lucide/svelte';
 	import { browser } from '$app/environment';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
@@ -15,7 +15,6 @@
 		formatDate,
 		parseDate,
 		startOfDay,
-		isSameDay,
 		compareDate
 	} from '../utils/date-utils';
 
@@ -278,7 +277,7 @@
 	/**
 	 * Check if a date is in the selected range
 	 */
-	function isDateInRange(date: Date): boolean {
+	function _isDateInRange(date: Date): boolean {
 		if (!startDate || !endDate) return false;
 		const time = date.getTime();
 		return time >= startDate.getTime() && time <= endDate.getTime();
@@ -287,7 +286,7 @@
 	/**
 	 * Check if a date is in the preview range (while hovering)
 	 */
-	function isDateInPreviewRange(date: Date): boolean {
+	function _isDateInPreviewRange(date: Date): boolean {
 		if (!startDate || !hoveredDate || endDate) return false;
 		const dateTime = date.getTime();
 		const startTime = startDate.getTime();

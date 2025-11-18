@@ -69,7 +69,7 @@
 </script>
 
 <Portal enabled={true}>
-	{#each Object.entries(visibleToasts) as [pos, toasts]}
+	{#each Object.entries(visibleToasts) as [pos, toasts] (pos)}
 		{#if toasts.length > 0}
 			<div
 				class={getContainerClass(pos as ToastPosition)}

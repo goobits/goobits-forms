@@ -6,7 +6,7 @@
  */
 
 import { render as testingLibraryRender, type RenderOptions } from '@testing-library/svelte';
-import type { ComponentProps, Component } from 'svelte';
+import type { Component } from 'svelte';
 import { vi } from 'vitest';
 
 /**
@@ -159,9 +159,9 @@ export const mocks = {
 	},
 
 	localStorage: {
-		getItem: vi.fn((key: string) => null),
-		setItem: vi.fn((key: string, value: string) => {}),
-		removeItem: vi.fn((key: string) => {}),
+		getItem: vi.fn((_key: string) => null),
+		setItem: vi.fn((_key: string, _value: string) => {}),
+		removeItem: vi.fn((_key: string) => {}),
 		clear: vi.fn(() => {})
 	},
 

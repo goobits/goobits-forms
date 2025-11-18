@@ -79,7 +79,7 @@ test.describe('Modal Component', () => {
 				await page.keyboard.press('Tab')
 
 				// Focus should still be within the modal
-				const activeElement = page.locator(':focus')
+				const _activeElement = page.locator(':focus')
 				const isInModal = await modal.locator(':focus').count()
 				expect(isInModal).toBeGreaterThan(0)
 			}

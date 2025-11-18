@@ -41,6 +41,13 @@ export default tseslint.config(
 		}
 	},
 	{
-		ignores: [ 'node_modules', '.git', 'dist', 'build', 'dev/.svelte-kit/**', '.svelte-kit/**' ]
+		files: ['**/*.test.ts', '**/*.spec.ts', '**/*.example.ts'],
+		rules: {
+			'@typescript-eslint/no-unused-vars': 'off',
+			'svelte/require-each-key': 'off'
+		}
+	},
+	{
+		ignores: [ 'node_modules', '.git', 'dist', 'build', 'dev/.svelte-kit/**', '.svelte-kit/**', 'coverage/**', 'e2e/**', 'playwright-report/**' ]
 	}
 )

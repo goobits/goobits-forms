@@ -100,7 +100,7 @@
 		<legend class="checkbox-group__label">{label}</legend>
 	{/if}
 	<div class="checkbox-group__options">
-		{#each options as option}
+		{#each options as option (option.value)}
 			<Checkbox
 				checked={isChecked(option.value)}
 				onchange={(checked) => handleCheckboxChange(option.value, checked)}

@@ -46,7 +46,7 @@ test.describe('ContactForm Component', () => {
 			await page.waitForTimeout(500)
 
 			// Should show error for invalid email
-			const emailError = page.locator('.error, [role="alert"]')
+			const _emailError = page.locator('.error, [role="alert"]')
 			// Note: This will depend on implementation
 		}
 	})
@@ -138,7 +138,7 @@ test.describe('ContactForm Component', () => {
 			await page.waitForTimeout(1000)
 
 			// Check if data is in localStorage
-			const localStorageData = await page.evaluate(() => {
+			const _localStorageData = await page.evaluate(() => {
 				return localStorage.getItem('contact-form') || localStorage.getItem('form-data')
 			})
 

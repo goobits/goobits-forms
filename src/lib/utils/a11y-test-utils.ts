@@ -159,7 +159,7 @@ export function testKeyboardNavigation(element: HTMLElement): void {
  * ```
  */
 export function testTabOrder(elements: HTMLElement[]): void {
-	elements.forEach((element, index) => {
+	elements.forEach((element, _index) => {
 		element.focus();
 		expect(document.activeElement).toBe(element);
 

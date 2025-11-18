@@ -268,7 +268,7 @@ export function addMonths(date: Date, months: number): Date {
  * @param years - Number of years to add (can be negative)
  * @returns New date with years added
  */
-export function addYears(date: Date, years: number): Date {
+export function _addYears(date: Date, years: number): Date {
 	const result = new Date(date);
 	result.setFullYear(result.getFullYear() + years);
 	return result;
