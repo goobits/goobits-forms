@@ -39,7 +39,7 @@
 		onclick,
 		children,
 		...restProps
-	}: Props = $props();
+	}: Props & { children?: any } = $props();
 
 	// Combine CSS classes using BEM methodology
 	const buttonClasses = $derived(
@@ -104,15 +104,19 @@
 		onkeydown={handleKeyDown}
 		{...restProps}
 	>
-		{#if children?.['icon-left']}
+		{#if typeof children === 'function' && children?.['icon-left']}
 			<span class="button__icon button__icon--left">
 				{@render children['icon-left']()}
 			</span>
 		{/if}
 		<span class="button__content">
-			{@render children?.()}
+			{#if typeof children === 'function'}
+				{@render children?.()}
+			{:else if children}
+				{children}
+			{/if}
 		</span>
-		{#if children?.['icon-right']}
+		{#if typeof children === 'function' && children?.['icon-right']}
 			<span class="button__icon button__icon--right">
 				{@render children['icon-right']()}
 			</span>
@@ -135,15 +139,19 @@
 		{#if loading}
 			<span class="button__spinner" aria-hidden="true"></span>
 		{/if}
-		{#if children?.['icon-left'] && !loading}
+		{#if typeof children === 'function' && children?.['icon-left'] && !loading}
 			<span class="button__icon button__icon--left">
 				{@render children['icon-left']()}
 			</span>
 		{/if}
 		<span class="button__content" class:button__content--hidden={loading}>
-			{@render children?.()}
+			{#if typeof children === 'function'}
+				{@render children?.()}
+			{:else if children}
+				{children}
+			{/if}
 		</span>
-		{#if children?.['icon-right'] && !loading}
+		{#if typeof children === 'function' && children?.['icon-right'] && !loading}
 			<span class="button__icon button__icon--right">
 				{@render children['icon-right']()}
 			</span>

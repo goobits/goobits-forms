@@ -14,6 +14,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, getFocusableElements } from '../test-utils';
+import { waitFor } from '@testing-library/svelte';
 import {
 	testAccessibility,
 	testWCAG_AA,
@@ -470,28 +471,32 @@ describe('Toast Component - Accessibility', () => {
 			});
 		});
 
-		it('should have aria-live on container', () => {
-			const { container } = render(ToastContainer);
+		it('should have aria-live on container', async () => {
+			render(ToastContainer);
 
 			toastStore.add({
 				title: 'Container Live',
 				variant: 'info'
 			});
 
-			const toastContainer = container.querySelector('.toast-container');
-			expect(toastContainer).toHaveAttribute('aria-live', 'polite');
+			await waitFor(() => {
+				const toastContainer = document.body.querySelector('.toast-container');
+				expect(toastContainer).toHaveAttribute('aria-live', 'polite');
+			});
 		});
 
-		it('should have aria-atomic="false" on container', () => {
-			const { container } = render(ToastContainer);
+		it('should have aria-atomic="false" on container', async () => {
+			render(ToastContainer);
 
 			toastStore.add({
 				title: 'Container Atomic',
 				variant: 'info'
 			});
 
-			const toastContainer = container.querySelector('.toast-container');
-			expect(toastContainer).toHaveAttribute('aria-atomic', 'false');
+			await waitFor(() => {
+				const toastContainer = document.body.querySelector('.toast-container');
+				expect(toastContainer).toHaveAttribute('aria-atomic', 'false');
+			});
 		});
 	});
 
@@ -512,20 +517,22 @@ describe('Toast Component - Accessibility', () => {
 			});
 		});
 
-		it('should have unique IDs for each toast', () => {
-			const { container } = render(ToastContainer);
+		it('should have unique IDs for each toast', async () => {
+			render(ToastContainer);
 
 			const id1 = toastStore.add({ title: 'Toast 1' });
 			const id2 = toastStore.add({ title: 'Toast 2' });
 			const id3 = toastStore.add({ title: 'Toast 3' });
 
-			const toast1 = container.querySelector(`[data-testid="toast-${id1}"]`);
-			const toast2 = container.querySelector(`[data-testid="toast-${id2}"]`);
-			const toast3 = container.querySelector(`[data-testid="toast-${id3}"]`);
+			await waitFor(() => {
+				const toast1 = document.body.querySelector(`[data-testid="toast-${id1}"]`);
+				const toast2 = document.body.querySelector(`[data-testid="toast-${id2}"]`);
+				const toast3 = document.body.querySelector(`[data-testid="toast-${id3}"]`);
 
-			expect(toast1).toBeTruthy();
-			expect(toast2).toBeTruthy();
-			expect(toast3).toBeTruthy();
+				expect(toast1).toBeTruthy();
+				expect(toast2).toBeTruthy();
+				expect(toast3).toBeTruthy();
+			});
 		});
 	});
 

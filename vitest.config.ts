@@ -15,8 +15,8 @@ export default defineConfig({
 			}
 		},
 		setupFiles: ['./tests/setup.ts'],
-		include: ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'],
-		exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*'],
+		include: ['src/**/*.test.ts', 'src/**/*.test.js', 'src/**/*.spec.ts', 'src/**/*.spec.js'],
+		exclude: ['node_modules', 'dist', 'build', '.svelte-kit', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*', 'e2e/**/*', 'playwright-report/**/*', 'coverage/**/*'],
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html', 'json-summary', 'text-summary'],
@@ -91,7 +91,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			$lib: path.resolve(__dirname, './src/lib'),
-			'$app/environment': path.resolve(__dirname, './tests/mocks/app-environment.ts')
+			'$app/environment': path.resolve(__dirname, './tests/mocks/app-environment.ts'),
+			'$app/stores': path.resolve(__dirname, './tests/mocks/app-stores.ts'),
+			'$app/navigation': path.resolve(__dirname, './tests/mocks/app-navigation.ts'),
+			'$app/forms': path.resolve(__dirname, './tests/mocks/app-forms.ts')
 		},
 		conditions: ['browser']
 	}

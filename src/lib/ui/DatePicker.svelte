@@ -10,7 +10,6 @@
 	import { browser } from '$app/environment';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
-	import FormLabel from './FormLabel.svelte';
 	import { formatDate, parseDate, startOfDay } from '../utils/date-utils';
 
 	/**
@@ -88,6 +87,7 @@
 	let calendarPosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
 	let currentMonth = $state(value ? new Date(value) : new Date());
 	let inputValue = $state('');
+	let isProgrammaticFocus = $state(false);
 
 	// Unique ID for accessibility
 	const uniqueId = id || `datepicker-${Math.random().toString(36).substr(2, 9)}`;
@@ -170,7 +170,14 @@
 		inputValue = formatDate(date, format, locale);
 		onchange?.(value);
 		closeCalendar();
+
+		// Set flag before programmatic focus to prevent reopening calendar
+		isProgrammaticFocus = true;
 		inputRef?.focus();
+		// Reset flag after focus event has been processed
+		setTimeout(() => {
+			isProgrammaticFocus = false;
+		}, 0);
 	}
 
 	/**
@@ -200,7 +207,24 @@
 		inputValue = '';
 		onchange?.(undefined);
 		onclear?.();
+
+		// Set flag before programmatic focus to prevent reopening calendar
+		isProgrammaticFocus = true;
 		inputRef?.focus();
+		// Reset flag after focus event has been processed
+		setTimeout(() => {
+			isProgrammaticFocus = false;
+		}, 0);
+	}
+
+	/**
+	 * Handle input focus
+	 */
+	function handleInputFocus(): void {
+		// Don't open calendar if this is a programmatic focus
+		if (!isProgrammaticFocus) {
+			openCalendar();
+		}
 	}
 
 	/**
@@ -283,9 +307,10 @@
 
 <div class="datepicker" bind:this={triggerRef}>
 	{#if label}
-		<FormLabel for={uniqueId} {required}>
+		<label for={uniqueId} class="datepicker__label">
 			{label}
-		</FormLabel>
+			{#if required}<span class="datepicker__label-required" aria-label="required">*</span>{/if}
+		</label>
 	{/if}
 
 	<div class="datepicker__wrapper">
@@ -294,7 +319,7 @@
 			bind:value={inputValue}
 			type="text"
 			class={inputClasses}
-			{id}
+			id={uniqueId}
 			{name}
 			{placeholder}
 			{disabled}
@@ -308,7 +333,7 @@
 			aria-describedby={errorId}
 			data-testid={dataTestId}
 			oninput={handleInputChange}
-			onfocus={openCalendar}
+			onfocus={handleInputFocus}
 			onkeydown={handleInputKeydown}
 		/>
 
@@ -534,5 +559,20 @@
 		.datepicker__calendar {
 			border-width: 2px;
 		}
+	}
+
+	/* Label */
+	.datepicker__label {
+		display: block;
+		font-size: var(--font-size-sm, 14px);
+		font-weight: var(--font-weight-medium, 500);
+		color: var(--color-text-primary, #1f2937);
+		line-height: var(--line-height-tight, 1.25);
+		margin-bottom: var(--space-1, 0.25rem);
+	}
+
+	.datepicker__label-required {
+		color: var(--color-error-500, #ef4444);
+		margin-left: 0.125rem;
 	}
 </style>

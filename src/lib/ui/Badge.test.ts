@@ -221,11 +221,9 @@ describe('Badge', () => {
 			const user = userEvent.setup();
 			const handleDismiss = vi.fn();
 
-			const { component } = render(Badge, {
-				props: { children: 'Dismissible', dismissible: true }
+			render(Badge, {
+				props: { children: 'Dismissible', dismissible: true, ondismiss: handleDismiss }
 			});
-
-			component.$on('dismiss', handleDismiss);
 
 			const dismissButton = screen.getByRole('button', { name: 'Dismiss' });
 			await user.click(dismissButton);
@@ -237,11 +235,9 @@ describe('Badge', () => {
 			const user = userEvent.setup();
 			const handleClick = vi.fn();
 
-			const { component } = render(Badge, {
-				props: { children: 'Clickable' }
+			render(Badge, {
+				props: { children: 'Clickable', onclick: handleClick }
 			});
-
-			component.$on('click', handleClick);
 
 			const badge = screen.getByRole('status');
 			await user.click(badge);
@@ -253,11 +249,9 @@ describe('Badge', () => {
 			const user = userEvent.setup();
 			const handleClick = vi.fn();
 
-			const { component } = render(Badge, {
-				props: { children: 'Dismissible', dismissible: true }
+			render(Badge, {
+				props: { children: 'Dismissible', dismissible: true, onclick: handleClick }
 			});
-
-			component.$on('click', handleClick);
 
 			const badge = screen.getByRole('status');
 			await user.click(badge);
@@ -270,12 +264,14 @@ describe('Badge', () => {
 			const handleDismiss = vi.fn();
 			const handleBadgeClick = vi.fn();
 
-			const { component } = render(Badge, {
-				props: { children: 'Dismissible', dismissible: true }
+			render(Badge, {
+				props: {
+					children: 'Dismissible',
+					dismissible: true,
+					ondismiss: handleDismiss,
+					onclick: handleBadgeClick
+				}
 			});
-
-			component.$on('dismiss', handleDismiss);
-			component.$on('click', handleBadgeClick);
 
 			const dismissButton = screen.getByRole('button', { name: 'Dismiss' });
 			await user.click(dismissButton);
@@ -463,11 +459,9 @@ describe('Badge', () => {
 			const user = userEvent.setup();
 			const handleDismiss = vi.fn();
 
-			const { component } = render(Badge, {
-				props: { children: 'Multiple', dismissible: true }
+			render(Badge, {
+				props: { children: 'Multiple', dismissible: true, ondismiss: handleDismiss }
 			});
-
-			component.$on('dismiss', handleDismiss);
 
 			const dismissButton = screen.getByRole('button', { name: 'Dismiss' });
 			await user.click(dismissButton);

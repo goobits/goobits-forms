@@ -19,9 +19,15 @@
 		class?: string;
 		/** Test ID for automated testing */
 		'data-testid'?: string;
+		/** Children content */
+		children?: any;
+		/** Callback when badge is dismissed */
+		ondismiss?: () => void;
+		/** Callback when badge is clicked */
+		onclick?: (event: MouseEvent) => void;
 	}
 
-	const {
+	let {
 		variant = 'primary',
 		size = 'md',
 		outlined = false,
@@ -30,10 +36,13 @@
 		dot = false,
 		class: className = '',
 		'data-testid': dataTestId,
+		children,
+		ondismiss,
+		onclick,
 		...restProps
 	}: BadgeProps = $props();
 
-	// Use createEventDispatcher for events
+	// Keep event dispatcher for backward compatibility
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher<{
 		dismiss: void;
@@ -59,11 +68,13 @@
 	function handleDismiss(event: MouseEvent): void {
 		event.stopPropagation();
 		dispatch('dismiss');
+		ondismiss?.();
 	}
 
 	function handleClick(event: MouseEvent): void {
 		if (!dismissible) {
 			dispatch('click', event);
+			onclick?.(event);
 		}
 	}
 </script>
@@ -85,7 +96,11 @@
 			</span>
 		{/if}
 		<span class="badge__content">
-			<slot />
+			{#if children}
+				{children}
+			{:else}
+				<slot />
+			{/if}
 		</span>
 		<button
 			type="button"
@@ -135,7 +150,11 @@
 			</span>
 		{/if}
 		<span class="badge__content">
-			<slot />
+			{#if children}
+				{children}
+			{:else}
+				<slot />
+			{/if}
 		</span>
 	</span>
 {/if}

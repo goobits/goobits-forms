@@ -24,7 +24,7 @@
 		/**
 		 * Default slot for body content
 		 */
-		children?: import('svelte').Snippet;
+		children?: any;
 	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
 
 	const {
@@ -42,7 +42,9 @@
 </script>
 
 <div class={bodyClasses} {...restProps}>
-	{#if children}
+	{#if typeof children === 'function'}
 		{@render children()}
+	{:else if children}
+		{children}
 	{/if}
 </div>

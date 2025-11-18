@@ -51,6 +51,9 @@
 		/** Test ID for testing */
 		'data-testid'?: string;
 
+		/** ARIA label for the modal (used when title is not provided) */
+		'aria-label'?: string;
+
 		/** Enable smooth height transitions */
 		smoothTransitions?: boolean;
 
@@ -78,6 +81,7 @@
 		contentClass = '',
 		isClosing = false,
 		'data-testid': dataTestId,
+		'aria-label': ariaLabel,
 		smoothTransitions = true,
 		children,
 		closeButton,
@@ -245,6 +249,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby={title ? 'modal-title' : undefined}
+		aria-label={!title && ariaLabel ? ariaLabel : undefined}
 		data-testid={dataTestId}
 		tabindex="-1"
 	>

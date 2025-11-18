@@ -5,9 +5,9 @@
  * Svelte components with Testing Library.
  */
 
-import { render as testingLibraryRender, type RenderOptions } from '@testing-library/svelte';
+import { render as testingLibraryRender, type RenderOptions, type RenderResult } from '@testing-library/svelte';
 import type { Component } from 'svelte';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 /**
  * Custom render function that wraps Testing Library's render
@@ -26,7 +26,7 @@ import { vi } from 'vitest';
 export function render<T extends Component>(
 	component: T,
 	options?: RenderOptions<T>
-) {
+): RenderResult<T> {
 	// Add any global providers/context here in the future
 	// For example: wrapping with modal provider, theme provider, etc.
 
@@ -45,7 +45,7 @@ export function createSubmitHandler() {
 /**
  * Creates a mock function for event handlers
  */
-export function createEventHandler() {
+export function createEventHandler(): Mock {
 	return vi.fn();
 }
 
@@ -148,7 +148,22 @@ export const testIds = {
 /**
  * Mock implementations for common services
  */
-export const mocks = {
+export const mocks: {
+	fetch: (response?: unknown, status?: number) => Mock;
+	localStorage: {
+		getItem: Mock;
+		setItem: Mock;
+		removeItem: Mock;
+		clear: Mock;
+	};
+	grecaptcha: {
+		ready: Mock;
+		execute: Mock;
+		reset: Mock;
+		getResponse: Mock;
+		render: Mock;
+	};
+} = {
 	fetch: (response?: unknown, status = 200) => {
 		return vi.fn().mockResolvedValue({
 			ok: status >= 200 && status < 300,

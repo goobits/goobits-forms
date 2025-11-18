@@ -24,7 +24,7 @@
 		/**
 		 * Default slot for footer content (typically buttons)
 		 */
-		children?: import('svelte').Snippet;
+		children?: any;
 	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
 
 	const { align = 'left', class: className = '', children, ...restProps }: CardFooterProps = $props();
@@ -35,7 +35,9 @@
 </script>
 
 <div class={footerClasses} {...restProps}>
-	{#if children}
+	{#if typeof children === 'function'}
 		{@render children()}
+	{:else if children}
+		{children}
 	{/if}
 </div>

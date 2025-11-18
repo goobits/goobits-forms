@@ -25,8 +25,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have no accessibility violations when open', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Main menu'
+					isVisible: true,
+					'aria-label': 'Main menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -42,8 +44,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should meet WCAG 2.1 AA standards', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'WCAG test menu'
+					isVisible: true,
+					'aria-label': 'WCAG test menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -60,8 +64,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have proper ARIA attributes', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'ARIA test menu'
+					isVisible: true,
+					'aria-label': 'ARIA test menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -80,24 +86,28 @@ describe('Menu Component - Accessibility', () => {
 		it('should have menu role', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Menu role test'
+					isVisible: true,
+					'aria-label': 'Menu role test',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
-			const menu = container.querySelector('[role="menu"]');
+			const menu = document.body.querySelector('[role="menu"]');
 			expect(menu).toBeTruthy();
 		});
 
 		it('should have aria-label or aria-labelledby', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Labeled menu'
+					isVisible: true,
+					'aria-label': 'Labeled menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
-			const menu = container.querySelector('[role="menu"]');
+			const menu = document.body.querySelector('[role="menu"]');
 
 			const hasLabel =
 				menu?.hasAttribute('aria-label') || menu?.hasAttribute('aria-labelledby');
@@ -108,9 +118,11 @@ describe('Menu Component - Accessibility', () => {
 		it('should have aria-orientation for vertical menus', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
+					isVisible: true,
 					orientation: 'vertical',
-					'aria-label': 'Vertical menu'
+					'aria-label': 'Vertical menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -126,9 +138,11 @@ describe('Menu Component - Accessibility', () => {
 		it('should have aria-orientation for horizontal menus', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
+					isVisible: true,
 					orientation: 'horizontal',
-					'aria-label': 'Horizontal menu'
+					'aria-label': 'Horizontal menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -145,8 +159,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have menuitem role for items', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Menu items test'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Menu items test'
 				}
 			});
 
@@ -164,8 +180,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have keyboard accessible menu items', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Keyboard menu items'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Keyboard menu items'
 				}
 			});
 
@@ -189,8 +207,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should support disabled menu items', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Disabled items menu'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Disabled items menu'
 				}
 			});
 
@@ -220,8 +240,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have separator role for dividers', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Menu with separators'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Menu with separators'
 				}
 			});
 
@@ -238,8 +260,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should not make separators focusable', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Separator focus test'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Separator focus test'
 				}
 			});
 
@@ -258,8 +282,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should be keyboard accessible', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Keyboard navigation test'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Keyboard navigation test'
 				}
 			});
 
@@ -272,8 +298,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should have roving tabindex for menu items', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Roving tabindex test'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Roving tabindex test'
 				}
 			});
 
@@ -295,20 +323,27 @@ describe('Menu Component - Accessibility', () => {
 		it('should manage focus when opening', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Focus management test'
+					isVisible: true,
+					'aria-label': 'Focus management test',
+					items: [
+						{ id: '1', label: 'Item 1', onClick: () => {} },
+						{ id: '2', label: 'Item 2', onClick: () => {} }
+					],
+					onClose: () => {}
 				}
 			});
 
-			const focusableElements = getFocusableElements(container);
+			const focusableElements = getFocusableElements(document.body);
 			expect(focusableElements.length).toBeGreaterThan(0);
 		});
 
 		it('should have focusable trigger button', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: false,
-					'aria-label': 'Trigger button test'
+					isVisible: false,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Trigger button test'
 				}
 			});
 
@@ -326,8 +361,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should be accessible when closed', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: false,
-					'aria-label': 'Closed menu'
+					isVisible: false,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Closed menu'
 				}
 			});
 
@@ -343,8 +380,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should hide menu content when closed', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: false,
-					'aria-label': 'Hidden menu'
+					isVisible: false,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Hidden menu'
 				}
 			});
 
@@ -365,8 +404,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should indicate menu state on trigger with aria-expanded', () => {
 			const { container, rerender } = render(Menu, {
 				props: {
-					open: false,
-					'aria-label': 'Expandable menu'
+					isVisible: false,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Expandable menu'
 				}
 			});
 
@@ -383,9 +424,11 @@ describe('Menu Component - Accessibility', () => {
 		it('should be accessible as context menu', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
+					isVisible: true,
 					type: 'context',
-					'aria-label': 'Context menu'
+					'aria-label': 'Context menu',
+					items: [],
+					onClose: () => {}
 				}
 			});
 
@@ -403,8 +446,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should be accessible with submenus', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Menu with submenu'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Menu with submenu'
 				}
 			});
 
@@ -429,8 +474,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should indicate submenu items with aria-haspopup', () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Submenu indicators'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Submenu indicators'
 				}
 			});
 
@@ -451,9 +498,11 @@ describe('Menu Component - Accessibility', () => {
 			for (const position of positions) {
 				const { container } = render(Menu, {
 					props: {
-						open: true,
+						isVisible: true,
 						position,
-						'aria-label': `${position} positioned menu`
+						'aria-label': `${position} positioned menu`,
+						items: [],
+						onClose: () => {}
 					}
 				});
 
@@ -472,8 +521,10 @@ describe('Menu Component - Accessibility', () => {
 		it('should be accessible with icon-only items', async () => {
 			const { container } = render(Menu, {
 				props: {
-					open: true,
-					'aria-label': 'Icon menu'
+					isVisible: true,
+					items: [],
+					onClose: () => {},
+					'aria-label':'Icon menu'
 				}
 			});
 

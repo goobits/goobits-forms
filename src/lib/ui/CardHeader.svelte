@@ -27,12 +27,12 @@
 		/**
 		 * Actions slot for buttons/icons in the header
 		 */
-		actions?: import('svelte').Snippet;
+		actions?: any;
 
 		/**
 		 * Default slot (overrides title/subtitle if used)
 		 */
-		children?: import('svelte').Snippet;
+		children?: any;
 	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
 
 	const {
@@ -50,7 +50,11 @@
 <div class={headerClasses} {...restProps}>
 	{#if children}
 		<!-- Custom content via default slot -->
-		{@render children()}
+		{#if typeof children === 'function'}
+			{@render children()}
+		{:else}
+			{children}
+		{/if}
 	{:else}
 		<!-- Default title/subtitle layout -->
 		<div class="card__header-content">
@@ -65,7 +69,11 @@
 
 	{#if actions}
 		<div class="card__header-actions">
-			{@render actions()}
+			{#if typeof actions === 'function'}
+				{@render actions()}
+			{:else}
+				{actions}
+			{/if}
 		</div>
 	{/if}
 </div>

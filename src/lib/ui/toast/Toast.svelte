@@ -27,6 +27,8 @@
 		icon?: string;
 		/** Position on screen */
 		position?: ToastPosition;
+		/** Dismiss callback */
+		ondismiss?: (event: CustomEvent<{ id: string }>) => void;
 		/** Test ID */
 		'data-testid'?: string;
 	}
@@ -41,6 +43,7 @@
 		action,
 		icon,
 		position = 'top-right',
+		ondismiss,
 		'data-testid': dataTestId
 	}: ToastProps = $props();
 
@@ -67,9 +70,11 @@
 		if (timeoutId) clearTimeout(timeoutId);
 		if (intervalId) clearInterval(intervalId);
 
-		// Wait for animation then dispatch
+		// Wait for animation then dispatch/call callback
 		setTimeout(() => {
+			const event = new CustomEvent('dismiss', { detail: { id } });
 			dispatch('dismiss', { id });
+			ondismiss?.(event);
 		}, 300); // Match CSS animation duration
 	}
 

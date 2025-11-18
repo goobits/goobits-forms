@@ -44,7 +44,7 @@
 		/**
 		 * Default slot for card content
 		 */
-		children?: import('svelte').Snippet;
+		children?: any;
 	} & (
 		| ({ href?: never } & Omit<svelte.JSX.HTMLDivAttributes, 'class'>)
 		| ({ href: string } & Omit<svelte.JSX.HTMLAnchorAttributes, 'class' | 'href'>)
@@ -77,15 +77,19 @@
 {#if href}
 	<!-- Card as link -->
 	<a {href} class={cardClasses} {...restProps}>
-		{#if children}
+		{#if typeof children === 'function'}
 			{@render children()}
+		{:else if children}
+			{children}
 		{/if}
 	</a>
 {:else}
 	<!-- Card as div -->
 	<div class={cardClasses} {...restProps}>
-		{#if children}
+		{#if typeof children === 'function'}
 			{@render children()}
+		{:else if children}
+			{children}
 		{/if}
 	</div>
 {/if}

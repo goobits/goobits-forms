@@ -24,8 +24,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have no accessibility violations when open', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Test Modal'
+					isVisible: true,
+					onClose: () => {},
+					title:'Test Modal'
 				}
 			});
 
@@ -41,8 +42,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should meet WCAG 2.1 AA standards', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'WCAG Test Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'WCAG Test Modal',
 					description: 'This is a test modal for WCAG compliance'
 				}
 			});
@@ -60,8 +62,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have proper ARIA attributes', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'ARIA Test Modal'
+					isVisible: true,
+					onClose: () => {},
+					title:'ARIA Test Modal'
 				}
 			});
 
@@ -80,8 +83,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have dialog role', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Dialog Role Test'
+					isVisible: true,
+					onClose: () => {},
+					title:'Dialog Role Test'
 				}
 			});
 
@@ -92,8 +96,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have aria-modal attribute', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Modal Test'
+					isVisible: true,
+					onClose: () => {},
+					title:'Modal Test'
 				}
 			});
 
@@ -104,8 +109,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have aria-labelledby pointing to title', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Labeled Modal'
+					isVisible: true,
+					onClose: () => {},
+					title:'Labeled Modal'
 				}
 			});
 
@@ -125,8 +131,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have aria-describedby when description is provided', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Described Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'Described Modal',
 					description: 'This is the modal description'
 				}
 			});
@@ -144,8 +151,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have proper ARIA label when title is hidden', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					'aria-label': 'Hidden Title Modal'
+					isVisible: true,
+					onClose: () => {},
+					'aria-label':'Hidden Title Modal'
 				}
 			});
 
@@ -163,8 +171,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should trap focus within modal when open', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Focus Trap Test'
+					isVisible: true,
+					onClose: () => {},
+					title:'Focus Trap Test'
 				}
 			});
 
@@ -183,8 +192,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have a close button that is keyboard accessible', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Close Button Test',
+					isVisible: true,
+					onClose: () => {},
+					title:'Close Button Test',
 					showCloseButton: true
 				}
 			});
@@ -202,8 +212,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have focusable action buttons', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Action Buttons Test'
+					isVisible: true,
+					onClose: () => {},
+					title:'Action Buttons Test'
 				}
 			});
 
@@ -220,8 +231,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have close button with accessible label', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Close Label Test',
+					isVisible: true,
+					onClose: () => {},
+					title:'Close Label Test',
 					showCloseButton: true
 				}
 			});
@@ -240,8 +252,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible via keyboard', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Keyboard Test'
+					isVisible: true,
+					onClose: () => {},
+					title:'Keyboard Test'
 				}
 			});
 
@@ -267,8 +280,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should have backdrop with proper attributes', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Backdrop Test',
+					isVisible: true,
+					onClose: () => {},
+					title:'Backdrop Test',
 					backdrop: true
 				}
 			});
@@ -281,8 +295,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with backdrop click disabled', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'No Backdrop Close',
+					isVisible: true,
+					onClose: () => {},
+					title:'No Backdrop Close',
 					closeOnBackdropClick: false
 				}
 			});
@@ -301,8 +316,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible when closed', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: false,
-					title: 'Closed Modal'
+					isVisible: false,
+					onClose: () => {},
+					title:'Closed Modal'
 				}
 			});
 
@@ -319,8 +335,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should hide content from screen readers when closed', () => {
 			const { container } = render(Modal, {
 				props: {
-					open: false,
-					title: 'Hidden Modal'
+					isVisible: false,
+					onClose: () => {},
+					title:'Hidden Modal'
 				}
 			});
 
@@ -342,8 +359,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with small size', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Small Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'Small Modal',
 					size: 'sm'
 				}
 			});
@@ -360,8 +378,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with large size', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Large Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'Large Modal',
 					size: 'lg'
 				}
 			});
@@ -378,8 +397,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with full width', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Full Width Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'Full Width Modal',
 					fullWidth: true
 				}
 			});
@@ -398,8 +418,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with form content', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Form Modal'
+					isVisible: true,
+					onClose: () => {},
+					title:'Form Modal'
 				}
 			});
 
@@ -416,8 +437,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should be accessible with scrollable content', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Scrollable Modal',
+					isVisible: true,
+					onClose: () => {},
+					title:'Scrollable Modal',
 					scrollable: true
 				}
 			});
@@ -436,8 +458,9 @@ describe('Modal Component - Accessibility', () => {
 		it('should handle nested interactive elements accessibly', async () => {
 			const { container } = render(Modal, {
 				props: {
-					open: true,
-					title: 'Interactive Modal'
+					isVisible: true,
+					onClose: () => {},
+					title:'Interactive Modal'
 				}
 			});
 
