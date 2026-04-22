@@ -166,7 +166,7 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 		customSuccessHandler = null
 	} = options;
 
-	return async ({ request, getClientAddress }: RequestEvent): Promise<Response> => {
+	return async ({ request, getClientAddress, cookies }: RequestEvent): Promise<Response> => {
 		try {
 			// Get client IP address
 			const clientAddress = getClientAddress ? getClientAddress() : 'unknown';
@@ -193,7 +193,7 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 			}
 
 			// Validate CSRF token
-			if (!validateCsrfToken(request)) {
+			if (!(await validateCsrfToken(request, cookies?.get('csrf_token')))) {
 				logger.error('CSRF validation failed for API request');
 				const errorResponse: ApiErrorResponse = {
 					success: false,
@@ -228,12 +228,18 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 				return json(errorResponse, { status: 400 });
 			}
 
-			// Verify reCAPTCHA if token provided
-			if (
-				sanitizedData.recaptchaToken &&
-				typeof sanitizedData.recaptchaToken === 'string'
-			) {
-				const isValidRecaptcha = await verifyRecaptchaToken(sanitizedData.recaptchaToken, {
+			const hasRecaptchaToken = typeof sanitizedData.recaptchaToken === 'string';
+			const recaptchaEnabled = Boolean(recaptchaSecretKey || hasRecaptchaToken);
+			if (recaptchaSecretKey && !hasRecaptchaToken) {
+				const errorResponse: ApiErrorResponse = {
+					success: false,
+					error: 'reCAPTCHA token is required'
+				};
+				return json(errorResponse, { status: 400 });
+			}
+
+			if (recaptchaEnabled) {
+				const isValidRecaptcha = await verifyRecaptchaToken(String(sanitizedData.recaptchaToken || ''), {
 					secretKey: recaptchaSecretKey,
 					minScore: recaptchaMinScore
 				});
@@ -368,17 +374,21 @@ IP Address: ${clientAddress}</small></p>
 						details: emailResult?.details || {}
 					});
 				}
-			} catch (emailError) {
-				logger.error('Failed to send contact form email:', {
-					error: (emailError as Error).message,
-					stack: (emailError as Error).stack,
-					code: (emailError as any).code,
-					details: (emailError as any).details || {},
-					adminEmail,
-					fromEmail,
-					provider: emailServiceConfig?.provider || 'unknown'
-				});
-				// Don't fail the API response if email fails
+				} catch (emailError) {
+					const typedEmailError =
+						emailError instanceof Error
+							? (emailError as Error & { code?: unknown; details?: unknown })
+							: null;
+					logger.error('Failed to send contact form email:', {
+						error: typedEmailError?.message || String(emailError),
+						stack: typedEmailError?.stack,
+						code: typedEmailError?.code,
+						details: typedEmailError?.details || {},
+						adminEmail,
+						fromEmail,
+						provider: emailServiceConfig?.provider || 'unknown'
+					});
+					// Don't fail the API response if email fails
 			}
 
 			const successResponse: ApiSuccessResponse = {

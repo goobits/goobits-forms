@@ -500,7 +500,7 @@ export function getActiveAnnouncementCount(): number {
 /**
  * Type guard to check if an object is a valid FormErrors object
  *
- * @param {any} obj - Object to check
+ * @param {unknown} obj - Object to check
  * @returns {obj is FormErrors} True if object is valid FormErrors
  *
  * @example
@@ -511,7 +511,7 @@ export function getActiveAnnouncementCount(): number {
  * }
  * ```
  */
-export function isFormErrors(obj: any): obj is FormErrors {
+export function isFormErrors(obj: unknown): obj is FormErrors {
 	return (
 		obj &&
 		typeof obj === 'object' &&

@@ -7,6 +7,14 @@
 import { createLogger } from '../../utils/logger.ts';
 
 const logger = createLogger('RecaptchaService');
+type GrecaptchaClient = {
+	ready(callback: () => void): void;
+	execute(siteKey: string, options: { action: string }): Promise<string>;
+};
+
+type RecaptchaWindow = Window & {
+	grecaptcha?: GrecaptchaClient;
+};
 
 /**
  * reCAPTCHA provider configuration interface
@@ -280,10 +288,11 @@ export class GoogleRecaptchaV3Provider extends RecaptchaProvider {
 
 		this.loading = new Promise((resolve, reject) => {
 			// Check if already loaded globally
-			if (typeof window !== 'undefined' && (window as any).grecaptcha) {
-				this.loaded = true;
-				resolve(true);
-				return;
+				const recaptchaWindow = window as RecaptchaWindow;
+				if (typeof window !== 'undefined' && recaptchaWindow.grecaptcha) {
+					this.loaded = true;
+					resolve(true);
+					return;
 			}
 
 			// Load script
@@ -328,10 +337,15 @@ export class GoogleRecaptchaV3Provider extends RecaptchaProvider {
 
 		// Get new token
 		const token = await new Promise<string>((resolve, reject) => {
-			(window as any).grecaptcha.ready(() => {
-				(window as any).grecaptcha.execute(this.siteKey, { action }).then(resolve).catch(reject);
+				const grecaptcha = (window as RecaptchaWindow).grecaptcha;
+				if (!grecaptcha) {
+					reject(new Error('reCAPTCHA is not available'));
+					return;
+				}
+				grecaptcha.ready(() => {
+					grecaptcha.execute(this.siteKey, { action }).then(resolve).catch(reject);
+				});
 			});
-		});
 
 		// Cache it
 		this.cacheToken(action, token);
@@ -474,7 +488,7 @@ export function createRecaptchaProvider(config: RecaptchaConfig = {}): Recaptcha
 /**
  * Type guard to check if an object is a valid RecaptchaProvider
  *
- * @param {any} obj - Object to check
+ * @param {unknown} obj - Object to check
  * @returns {obj is RecaptchaProvider} True if object is a valid provider
  *
  * @example
@@ -484,7 +498,7 @@ export function createRecaptchaProvider(config: RecaptchaConfig = {}): Recaptcha
  * }
  * ```
  */
-export function isRecaptchaProvider(obj: any): obj is RecaptchaProvider {
+export function isRecaptchaProvider(obj: unknown): obj is RecaptchaProvider {
 	return (
 		obj &&
 		typeof obj.init === 'function' &&

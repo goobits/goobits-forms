@@ -119,7 +119,7 @@ function calculatePosition(
 		}
 
 		return calculateAdvancedPosition({
-			targetElement: null as any,
+			targetElement: _currentState?.targetElement ?? document.body,
 			tooltipElement: _tooltipElement ?? undefined,
 			preferredPosition: options.position,
 			offset: options.offset,

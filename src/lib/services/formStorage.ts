@@ -22,7 +22,7 @@ const logger = createLogger('FormStorage');
  */
 export interface StorableFormData {
 	/** Form field key-value pairs */
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 /**
@@ -339,7 +339,7 @@ export function getSavedCategories(): string[] {
 /**
  * Type guard to check if an object is valid StorableFormData
  *
- * @param {any} obj - Object to check
+ * @param {unknown} obj - Object to check
  * @returns {obj is StorableFormData} True if object is valid form data
  *
  * @example
@@ -351,7 +351,7 @@ export function getSavedCategories(): string[] {
  * }
  * ```
  */
-export function isStorableFormData(obj: any): obj is StorableFormData {
+export function isStorableFormData(obj: unknown): obj is StorableFormData {
 	return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
 }
 
@@ -359,7 +359,7 @@ export function isStorableFormData(obj: any): obj is StorableFormData {
  * Safely convert form data to a storable format
  * Filters out non-serializable values and system fields
  *
- * @param {any} formData - Raw form data that may contain non-serializable values
+ * @param {unknown} formData - Raw form data that may contain non-serializable values
  * @returns {StorableFormData} Clean form data safe for storage
  *
  * @example
@@ -375,7 +375,7 @@ export function isStorableFormData(obj: any): obj is StorableFormData {
  * console.log(storableData); // { name: 'John' }
  * ```
  */
-export function sanitizeForStorage(formData: any): StorableFormData {
+export function sanitizeForStorage(formData: unknown): StorableFormData {
 	const sanitized: StorableFormData = {};
 
 	if (!isStorableFormData(formData)) {

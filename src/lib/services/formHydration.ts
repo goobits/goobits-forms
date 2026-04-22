@@ -9,6 +9,7 @@ import { createLogger } from '../utils/logger.ts';
 import { IS_BROWSER, IS_DEV } from '../utils/constants.ts';
 
 const logger = createLogger('FormHydration');
+type FormHydrationRecord = Record<string, unknown>;
 
 /**
  * Form hydration configuration parameters
@@ -17,7 +18,7 @@ export interface FormHydrationParams {
 	/** The currently selected form category */
 	selectedCategory: string;
 	/** The current form data object */
-	formData: Record<string, any>;
+	formData: FormHydrationRecord;
 	/** Whether to prefer cached data over existing form data */
 	preferCache?: boolean;
 }
@@ -37,23 +38,23 @@ export interface BrowserInfo {
 /**
  * Test data function type
  */
-export type TestDataFunction = (category?: string) => Record<string, any>;
+export type TestDataFunction = (category?: string) => FormHydrationRecord;
 
 /**
  * Default test data function (can be overridden)
  * Returns empty object by default
  *
  * @param {string} [_category] - The form category (unused in default implementation)
- * @returns {Record<string, any>} Empty test data object
+ * @returns {FormHydrationRecord} Empty test data object
  */
-const getTestData: TestDataFunction = (): Record<string, any> => ({});
+const getTestData: TestDataFunction = (): FormHydrationRecord => ({});
 
 /**
  * Updates the form state and URL based on the selected category
  * Handles auto-detection of browser info, test data in development, and cached data restoration
  *
  * @param {FormHydrationParams} params - Configuration object for form hydration
- * @returns {Record<string, any>} Updated form data with all applicable enhancements
+ * @returns {FormHydrationRecord} Updated form data with all applicable enhancements
  *
  * @example
  * ```typescript
@@ -71,7 +72,7 @@ export function hydrateForm({
 	selectedCategory,
 	formData,
 	preferCache = true
-}: FormHydrationParams): Record<string, any> {
+}: FormHydrationParams): FormHydrationRecord {
 	// Get configuration
 	const config = getContactFormConfig();
 	const { fieldConfigs } = config;
@@ -80,7 +81,7 @@ export function hydrateForm({
 	const detectedInfo = detectBrowserInfo();
 
 	// Auto-detectable field values map
-	const autoDetectValues: Record<string, any> = {
+	const autoDetectValues: Record<string, string> = {
 		browser: detectedInfo.browser,
 		browserVersion: detectedInfo.version,
 		operatingSystem: detectedInfo.os
@@ -102,7 +103,7 @@ export function hydrateForm({
 	}
 
 	// Try to load cached form data if available
-	let cachedData: Record<string, any> = {};
+	let cachedData: FormHydrationRecord = {};
 	if (preferCache && IS_BROWSER) {
 		try {
 			const savedData = loadFormData(selectedCategory);
@@ -201,7 +202,7 @@ function detectBrowserInfo(): BrowserInfo {
 /**
  * Type guard to check if a value is a valid test data function
  *
- * @param {any} fn - The value to check
+ * @param {unknown} fn - The value to check
  * @returns {fn is TestDataFunction} True if the value is a valid test data function
  *
  * @example
@@ -213,7 +214,7 @@ function detectBrowserInfo(): BrowserInfo {
  * }
  * ```
  */
-export function isTestDataFunction(fn: any): fn is TestDataFunction {
+export function isTestDataFunction(fn: unknown): fn is TestDataFunction {
 	return typeof fn === 'function';
 }
 
@@ -252,7 +253,7 @@ export function setTestDataFunction(testDataFn: TestDataFunction): void {
  * Only works in development mode
  *
  * @param {string} category - The form category
- * @returns {Record<string, any>} Test data for the category
+ * @returns {FormHydrationRecord} Test data for the category
  *
  * @example
  * ```typescript
@@ -262,7 +263,7 @@ export function setTestDataFunction(testDataFn: TestDataFunction): void {
  * }
  * ```
  */
-export function getTestDataForCategory(category: string): Record<string, any> {
+export function getTestDataForCategory(category: string): FormHydrationRecord {
 	if (!IS_DEV) {
 		return {};
 	}
@@ -275,7 +276,7 @@ export function getTestDataForCategory(category: string): Record<string, any> {
  * Useful for testing or when user wants to start fresh
  *
  * @param {string} selectedCategory - The form category to reset
- * @returns {Record<string, any>} Fresh form data with only auto-detected values
+ * @returns {FormHydrationRecord} Fresh form data with only auto-detected values
  *
  * @example
  * ```typescript
@@ -283,7 +284,7 @@ export function getTestDataForCategory(category: string): Record<string, any> {
  * // Returns form data with only browser info, no cached or test data
  * ```
  */
-export function resetFormHydration(selectedCategory: string): Record<string, any> {
+export function resetFormHydration(selectedCategory: string): FormHydrationRecord {
 	return hydrateForm({
 		selectedCategory,
 		formData: {},

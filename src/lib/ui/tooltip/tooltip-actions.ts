@@ -543,7 +543,7 @@ export function initializeGlobalTooltips(): () => void {
 							!el.hasAttribute('data-tooltip-initialized')
 						) {
 							el.setAttribute('data-tooltip-initialized', 'true');
-							(useTooltip as any)(el);
+								useTooltip(el);
 						}
 					});
 				}
@@ -556,7 +556,7 @@ export function initializeGlobalTooltips(): () => void {
 	existingElements.forEach((el) => {
 		if (!el.hasAttribute('data-tooltip-initialized')) {
 			el.setAttribute('data-tooltip-initialized', 'true');
-			(useTooltip as any)(el);
+				useTooltip(el);
 		}
 	});
 

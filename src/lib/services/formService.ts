@@ -24,23 +24,33 @@ import { handleError } from '../utils/errorHandler.ts';
 // Import screen reader service to avoid circular dependencies
 // import * as screenReaderService from './screenReaderService.ts';
 
+type FormRecord = Record<string, unknown>;
+type ZodSchemaLike = ZodSchema & {
+	_def?: {
+		shape?: Record<string, { _def?: { defaultValue?: unknown; typeName?: string } }>;
+	};
+};
+
 /**
  * Extracts default values from a Zod schema
  * @param schema - The Zod schema to extract defaults from
  * @returns Object with default values for all schema fields
  */
-function getSchemaDefaults(schema: ZodSchema): Record<string, any> {
-	const defaults: Record<string, any> = {};
+function getSchemaDefaults(schema: ZodSchema): FormRecord {
+	const defaults: FormRecord = {};
 
 	try {
-		if (schema && schema._def && 'shape' in schema._def) {
+		const schemaWithShape = schema as ZodSchemaLike;
+		if (schemaWithShape?._def?.shape) {
 			// Handle ZodObject schemas
-			const shape = (schema._def as any).shape;
+			const shape = schemaWithShape._def.shape;
 			Object.keys(shape).forEach((key) => {
 				const field = shape[key];
 				if (field._def) {
 					if (field._def.defaultValue !== undefined) {
-						defaults[key] = field._def.defaultValue();
+						const defaultValue = field._def.defaultValue;
+						defaults[key] =
+							typeof defaultValue === 'function' ? defaultValue() : defaultValue;
 					} else {
 						// Provide sensible defaults based on field type
 						const typeName = field._def.typeName;
@@ -82,13 +92,13 @@ function getSchemaDefaults(schema: ZodSchema): Record<string, any> {
  */
 export interface FormInitializationOptions {
 	/** Initial form data object */
-	initialData: Record<string, any>;
+	initialData: FormRecord;
 	/** Zod schema for form validation */
 	schema: ZodSchema;
 	/** Custom submission handler function */
-	onSubmitHandler?: (formData: any) => Promise<any>;
+	onSubmitHandler?: (formData: FormRecord) => Promise<unknown>;
 	/** Additional superForm options */
-	extraOptions?: Record<string, any>;
+	extraOptions?: Record<string, unknown>;
 }
 
 /**
@@ -102,7 +112,7 @@ export interface FormState {
 	/** Current submission error if any */
 	submissionError: Error | null;
 	/** reCAPTCHA instance */
-	recaptcha: any;
+	recaptcha: RecaptchaInstance | null;
 	/** Object tracking which fields have been touched */
 	touched: Record<string, boolean>;
 	/** Cached category value */
@@ -116,13 +126,13 @@ export interface FormSubmitHandlerOptions {
 	/** Function to validate the entire form */
 	validateForm: () => boolean;
 	/** reCAPTCHA instance for token generation */
-	recaptcha?: any;
+	recaptcha?: RecaptchaInstance | null;
 	/** Function to prepare form data before submission */
-	prepareFormData: (formData: any, recaptchaToken?: string) => Promise<any>;
+	prepareFormData: (formData: FormRecord, recaptchaToken?: string) => Promise<FormRecord>;
 	/** Function to submit the prepared form data */
-	submitForm: (formData: any) => Promise<any>;
+	submitForm: (formData: FormRecord) => Promise<{ success?: boolean; error?: unknown } & FormRecord>;
 	/** Callback function for successful submission */
-	onSuccess: (response: any) => void;
+	onSuccess: (response: { success?: boolean; error?: unknown } & FormRecord) => void;
 	/** Callback function for submission errors */
 	onError: (error: Error) => void;
 }
@@ -134,7 +144,7 @@ export interface FormSubmissionResult {
 	/** Whether the submission was successful */
 	success: boolean;
 	/** Response data on success */
-	data?: any;
+	data?: unknown;
 	/** Error object on failure */
 	error?: Error;
 }
@@ -177,7 +187,7 @@ export function initializeForm({
 	schema,
 	onSubmitHandler,
 	extraOptions = {}
-}: FormInitializationOptions): any {
+}: FormInitializationOptions): ReturnType<typeof superForm> {
 	// Validate schema before passing to zod adapter
 	if (!schema || typeof schema !== 'object' || !schema._def) {
 		const errorMsg = `Invalid schema provided to initializeForm. Schema details: type=${typeof schema}, hasDefProperty=${!!schema?._def}, schema=${JSON.stringify(schema, null, 2)}`;
@@ -197,9 +207,9 @@ export function initializeForm({
 		const schemaDefaults = getSchemaDefaults(schema);
 		const mergedData = { ...schemaDefaults, ...initialData };
 
-		return superForm(mergedData, {
-			dataType: 'json',
-			validators: zod4(schema as any),
+			return superForm(mergedData, {
+				dataType: 'json',
+				validators: zod4(schema as Parameters<typeof zod4>[0]),
 			resetForm: false,
 			taintedMessage: false,
 			multipleSubmits: 'prevent',
@@ -330,7 +340,7 @@ export function handleFieldTouch(
 export function createFormSubmitHandler(options: FormSubmitHandlerOptions) {
 	const { validateForm, recaptcha, prepareFormData, submitForm, onSuccess, onError } = options;
 
-	return async function (formData: any): Promise<FormSubmissionResult> {
+		return async function (formData: FormRecord): Promise<FormSubmissionResult> {
 		// Validate the form first
 		if (!validateForm()) {
 			const error = handleError(
@@ -437,8 +447,8 @@ async function getRecaptchaToken(recaptcha: RecaptchaInstance | null): Promise<s
  * ```
  */
 export function resetForm(
-	setFormData: (data: any) => void,
-	defaultProps: Record<string, any>,
+	setFormData: (data: FormRecord) => void,
+	defaultProps: FormRecord,
 	state: Partial<FormState>
 ): void {
 	// Reset the form data
@@ -468,7 +478,7 @@ export function resetForm(
  * }
  * ```
  */
-export function isRecaptchaInstance(obj: any): obj is RecaptchaInstance {
+export function isRecaptchaInstance(obj: unknown): obj is RecaptchaInstance {
 	return obj && typeof obj.getToken === 'function';
 }
 

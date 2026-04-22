@@ -25,7 +25,7 @@ export interface EmailProviderConfig {
 	/** AWS secret access key */
 	secretAccessKey?: string;
 	/** Additional configuration options */
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 /**
@@ -37,7 +37,7 @@ export interface EmailResult {
 	/** Human-readable message describing the result */
 	message: string;
 	/** Additional details about the result (error object, email data, etc.) */
-	details?: any;
+	details?: unknown;
 }
 
 /**
@@ -54,6 +54,18 @@ export interface MockEmailData {
 	bodyText?: string;
 	/** Timestamp when email was sent */
 	timestamp: Date;
+}
+
+interface MailOptions {
+	from?: string;
+	to: string;
+	subject: string;
+	html?: string;
+	text?: string;
+}
+
+interface MailTransporter {
+	sendMail(options: MailOptions): Promise<unknown>;
 }
 
 /**
@@ -141,7 +153,7 @@ export class AwsSesProvider extends EmailProvider {
 	/** Whether the provider has been initialized */
 	private initialized: boolean = false;
 	/** Nodemailer transporter instance */
-	private transporter: any = null;
+	private transporter: MailTransporter | null = null;
 
 	/**
 	 * Creates a new AWS SES provider instance
@@ -235,16 +247,16 @@ export class AwsSesProvider extends EmailProvider {
 			const trimmedBodyHtml = (bodyHtml || '').trim();
 			const trimmedBodyText = (bodyText || '').trim();
 
-			const mailOptions: any = {
-				from: this.config.fromEmail,
-				to,
-				subject: trimmedSubject
-			};
+				const mailOptions: MailOptions = {
+					from: this.config.fromEmail,
+					to,
+					subject: trimmedSubject
+				};
 
 			if (trimmedBodyHtml) mailOptions.html = trimmedBodyHtml;
 			if (trimmedBodyText) mailOptions.text = trimmedBodyText;
 
-			await this.transporter.sendMail(mailOptions);
+				await this.transporter?.sendMail(mailOptions);
 
 			return {
 				success: true,
@@ -329,11 +341,13 @@ export class MockEmailProvider extends EmailProvider {
 
 		this.sentEmails.push(email);
 
-		logger.info('Mock email sent:', {
-			to,
-			subject,
-			timestamp: email.timestamp
-		});
+		if (process.env.NODE_ENV !== 'test') {
+			logger.info('Mock email sent:', {
+				to,
+				subject,
+				timestamp: email.timestamp
+			});
+		}
 
 		return {
 			success: true,

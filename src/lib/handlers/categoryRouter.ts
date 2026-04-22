@@ -243,6 +243,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 		request,
 		url,
 		params,
+		cookies,
 		locals = {}
 	}: RequestEvent): Promise<SubmissionResult> {
 		try {
@@ -257,7 +258,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 			});
 
 			// CSRF validation - validateCsrfToken expects Request object
-			if (!validateCsrfToken(request)) {
+			if (!(await validateCsrfToken(request, cookies?.get('csrf_token')))) {
 				logger.error('CSRF validation failed');
 				return {
 					form: {
@@ -269,7 +270,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 			}
 
 			// Parse and validate form data
-			let data: Record<string, any> = Object.fromEntries(formData.entries());
+			let data: Record<string, unknown> = Object.fromEntries(formData.entries());
 			let errors: Record<string, string> = {};
 
 			// Use custom form data parser if provided
@@ -291,7 +292,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 			try {
 				// Create a submission handler if provided
 				let submissionHandler:
-					| ((data: Record<string, any>, category: string) => Promise<void>)
+					| ((data: Record<string, unknown>, category: string) => Promise<void>)
 					| undefined;
 				if (typeof createSubmissionHandler === 'function') {
 					submissionHandler = await createSubmissionHandler(locals);

@@ -250,8 +250,8 @@ export function getMenuAriaAttributes(menuId: string, focusedIndex: number) {
  */
 export function createContextMenuState(
 	event: MouseEvent,
-	data?: Record<string, any>
-): { x: number; y: number; target?: HTMLElement; data?: Record<string, any> } {
+	data?: Record<string, unknown>
+): { x: number; y: number; target?: HTMLElement; data?: Record<string, unknown> } {
 	event.preventDefault();
 	event.stopPropagation();
 
@@ -269,16 +269,16 @@ export function createContextMenuState(
 export function contextMenuAction(
 	node: HTMLElement,
 	params: {
-		onContextMenu: (state: {
-			x: number;
-			y: number;
-			target?: HTMLElement;
-			data?: Record<string, any>;
-		}) => void;
-		data?: Record<string, any>;
-		disabled?: boolean;
-	}
-) {
+			onContextMenu: (state: {
+				x: number;
+				y: number;
+				target?: HTMLElement;
+				data?: Record<string, unknown>;
+			}) => void;
+			data?: Record<string, unknown>;
+			disabled?: boolean;
+		}
+	) {
 	function handleContextMenu(event: MouseEvent) {
 		if (params.disabled) return;
 

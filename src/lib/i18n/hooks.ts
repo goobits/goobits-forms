@@ -21,7 +21,7 @@ type I18nHandler = (event: RequestEvent) => Promise<void> | void;
 /**
  * Type definition for SvelteKit load function
  */
-type LoadFunction<T = Record<string, any>> = (event: RequestEvent) => Promise<T> | T;
+type LoadFunction<T = Record<string, unknown>> = (event: RequestEvent) => Promise<T> | T;
 
 /**
  * Type definition for i18n data returned by load functions
@@ -36,7 +36,11 @@ interface I18nLoadData {
  */
 interface LoadResultWithI18n {
 	i18n?: I18nLoadData;
-	[key: string]: any;
+	[key: string]: unknown;
+}
+
+interface FormI18nLocals {
+	lang?: string;
 }
 
 // Get the contact form configuration
@@ -122,7 +126,7 @@ export async function handleFormI18n(event: RequestEvent, handler?: I18nHandler)
  * }
  * ```
  */
-export async function loadWithFormI18n<T extends Record<string, any> = Record<string, any>>(
+export async function loadWithFormI18n<T extends Record<string, unknown> = Record<string, unknown>>(
 	event: RequestEvent,
 	originalLoad?: LoadFunction<T>
 ): Promise<T & LoadResultWithI18n> {
@@ -136,7 +140,7 @@ export async function loadWithFormI18n<T extends Record<string, any> = Record<st
 	}
 
 	// Get the language from locals or use default
-	const lang: string = (event.locals as any)?.lang || formConfig.i18n.defaultLanguage;
+	const lang: string = (event.locals as FormI18nLocals)?.lang || formConfig.i18n.defaultLanguage;
 
 	// Return the data with i18n information
 	return {
@@ -168,7 +172,9 @@ export async function loadWithFormI18n<T extends Record<string, any> = Record<st
  * }
  * ```
  */
-export async function layoutLoadWithFormI18n<T extends Record<string, any> = Record<string, any>>(
+export async function layoutLoadWithFormI18n<
+	T extends Record<string, unknown> = Record<string, unknown>
+>(
 	event: RequestEvent,
 	originalLoad?: LoadFunction<T>
 ): Promise<T & LoadResultWithI18n> {

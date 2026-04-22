@@ -180,6 +180,6 @@ export async function verifyRecaptchaTokenWithDetails(
 /**
  * Type guard to check if an object is a valid RecaptchaApiResponse
  */
-export function isRecaptchaApiResponse(obj: any): obj is RecaptchaApiResponse {
+export function isRecaptchaApiResponse(obj: unknown): obj is RecaptchaApiResponse {
 	return obj && typeof obj === 'object' && typeof obj.success === 'boolean';
 }
