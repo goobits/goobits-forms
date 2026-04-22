@@ -55,7 +55,8 @@
 	let timeoutId: number | null = null;
 	let intervalId: number | null = null;
 	let startTime: number | null = null;
-	let remainingTime = $state(duration);
+	let remainingTimeOverride = $state<number | null>(null);
+	const remainingTime = $derived(remainingTimeOverride ?? duration);
 
 	/**
 	 * Handle dismiss
@@ -104,7 +105,7 @@
 		if (duration === 0) return;
 
 		startTime = Date.now();
-		remainingTime = duration;
+		remainingTimeOverride = duration;
 
 		// Update progress bar
 		intervalId = window.setInterval(() => {
@@ -136,7 +137,7 @@
 		// Calculate remaining time
 		if (startTime) {
 			const elapsed = Date.now() - startTime;
-			remainingTime = Math.max(0, duration - elapsed);
+			remainingTimeOverride = Math.max(0, duration - elapsed);
 		}
 	}
 

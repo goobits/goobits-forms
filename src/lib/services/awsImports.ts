@@ -68,7 +68,8 @@ export async function getAwsDependencies(): Promise<AwsDependencies> {
 	} catch (error) {
 		logger.error('Failed to import AWS dependencies:', error);
 		throw new Error(
-			'Missing AWS dependencies. Please install @aws-sdk/client-ses and nodemailer to use AWS SES email provider.'
+			'Missing AWS dependencies. Please install @aws-sdk/client-ses and nodemailer to use AWS SES email provider.',
+			{ cause: error }
 		);
 	}
 }

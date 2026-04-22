@@ -169,7 +169,7 @@ function createSubmissionHandlerFactory(config: ContactFormConfig) {
 			} catch (error: unknown) {
 				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 				logger.error?.('Form submission failed', { error: errorMessage, category, data });
-				throw new Error('Failed to process form submission');
+				throw new Error('Failed to process form submission', { cause: error });
 			}
 		};
 	};

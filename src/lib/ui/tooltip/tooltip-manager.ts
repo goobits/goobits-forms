@@ -175,16 +175,10 @@ function showTooltipInternal(
 	}
 
 	// Parse arguments
-	let targetElement: HTMLElement | null = null;
-	let tooltipOptions: TooltipOptions = {};
-
-	if (elementOrOptions instanceof HTMLElement) {
-		targetElement = elementOrOptions;
-		tooltipOptions = options || {};
-	} else {
-		tooltipOptions = elementOrOptions;
-		targetElement = _currentState?.targetElement || null;
-	}
+	const [targetElement, tooltipOptions]: [HTMLElement | null, TooltipOptions] =
+		elementOrOptions instanceof HTMLElement
+			? [elementOrOptions, options || {}]
+			: [_currentState?.targetElement || null, elementOrOptions];
 
 	// Process content
 	const content = processContent(tooltipOptions.content || tooltipOptions.text || '', event);
