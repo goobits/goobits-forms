@@ -5,7 +5,7 @@
 	const browser: boolean = typeof window !== 'undefined';
 
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.ts';
+	import { createMessageGetter } from '../utils/messages.js';
 	import { defaultMessages } from '../config/defaultMessages';
 
 	/**

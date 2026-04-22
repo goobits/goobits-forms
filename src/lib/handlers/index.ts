@@ -8,12 +8,12 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { SuperValidated } from 'sveltekit-superforms';
 import type { AnyZodObject } from 'zod';
-import { getContactFormConfig } from '../config/index.ts';
-import { getValidatorForCategory } from '../validation/index.ts';
-import type { Logger } from '../utils/logger.ts';
+import { getContactFormConfig } from '../config/index.js';
+import { getValidatorForCategory } from '../validation/index.js';
+import type { Logger } from '../utils/logger.js';
 
 // Export simplified contact form handler
-export * from './contactFormHandler.ts';
+export * from './contactFormHandler.js';
 
 /**
  * URL category extractor function type

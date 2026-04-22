@@ -11,7 +11,7 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { getContactFormConfig } from '../config/index.ts';
+import { getContactFormConfig } from '../config/index.js';
 
 /**
  * Type definition for i18n handler function

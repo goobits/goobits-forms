@@ -5,15 +5,15 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
-import { createLogger } from '../utils/logger.ts';
-import { sanitizeFormData } from '../utils/sanitizeInput.ts';
+import { createLogger } from '../utils/logger.js';
+import { sanitizeFormData } from '../utils/sanitizeInput.js';
 import {
 	rateLimitFormSubmission,
 	type RateLimitResult
-} from '../services/rateLimiterService.ts';
-import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.ts';
+} from '../services/rateLimiterService.js';
+import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.js';
 import { validateCsrfToken } from '../security/csrf.js';
-import sendEmail from '../services/emailService.ts';
+import sendEmail from '../services/emailService.js';
 
 const logger = createLogger('ContactFormHandler');
 

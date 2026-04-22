@@ -11,8 +11,8 @@
  * @since 1.0.0
  */
 
-import { createMessageGetter, getMergedMessages } from '../utils/messages.ts';
-import { handleFormI18n, loadWithFormI18n, layoutLoadWithFormI18n } from './hooks.ts';
+import { createMessageGetter, getMergedMessages } from '../utils/messages.js';
+import { handleFormI18n, loadWithFormI18n, layoutLoadWithFormI18n } from './hooks.js';
 
 /**
  * Re-exported internationalization utilities and hooks

@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { debounce } from '../utils/debounce.ts';
+import { debounce } from '../utils/debounce.js';
 
 /**
  * Represents a validation configuration object with schemas and field mappings

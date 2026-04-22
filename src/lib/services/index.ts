@@ -4,25 +4,25 @@
  */
 
 // Re-export all form service utilities
-export * from './formService.ts';
+export * from './formService.js';
 
 // Re-export form storage utilities
-export * from './formStorage.ts';
+export * from './formStorage.js';
 
 // Re-export form hydration utilities
-export * from './formHydration.ts';
+export * from './formHydration.js';
 
 // Re-export reCAPTCHA utilities
-export * from './recaptcha/index.ts';
+export * from './recaptcha/index.js';
 
 // Re-export screen reader utilities
-export * from './screenReaderService.ts';
+export * from './screenReaderService.js';
 
 // Re-export email service utilities
-export * from './emailService.ts';
+export * from './emailService.js';
 
 // Re-export rate limiter utilities
-export * from './rateLimiterService.ts';
+export * from './rateLimiterService.js';
 
 // Re-export reCAPTCHA verifier utilities
-export * from './recaptchaVerifierService.ts';
+export * from './recaptchaVerifierService.js';

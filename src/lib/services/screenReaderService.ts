@@ -5,9 +5,9 @@
  * using ARIA live regions and polite/assertive announcements.
  */
 
-import { IS_BROWSER } from '../utils/constants.ts';
-import { createLogger } from '../utils/logger.ts';
-import { createMessageGetter } from '../utils/messages.ts';
+import { IS_BROWSER } from '../utils/constants.js';
+import { createLogger } from '../utils/logger.js';
+import { createMessageGetter } from '../utils/messages.js';
 import { defaultMessages } from '../config/defaultMessages';
 
 const logger = createLogger('ScreenReader');

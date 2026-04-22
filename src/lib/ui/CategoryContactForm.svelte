@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { getValidationClasses } from '../validation/index.ts';
+	import { getValidationClasses } from '../validation/index.js';
 	import FormErrors from './FormErrors.svelte';
 
 	interface Props {

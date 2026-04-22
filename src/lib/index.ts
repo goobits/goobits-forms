@@ -10,19 +10,19 @@
  * @module config
  * @description Configuration utilities and types for form setup and customization.
  */
-export * from './config/index.ts';
+export * from './config/index.js';
 
 /**
  * @module i18n
  * @description Internationalization support for multi-language form interfaces.
  */
-export * from './i18n/index.ts';
+export * from './i18n/index.js';
 
 /**
  * @module validation
  * @description Form validation utilities and schemas for client and server-side validation.
  */
-export * from './validation/index.ts';
+export * from './validation/index.js';
 
 /**
  * @module services

@@ -11,15 +11,15 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import type { ZodSchema } from 'zod';
 
 // Import logger utility
-import { createLogger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('FormService');
 
 // Internal Imports
 // import { createRecaptchaProvider } from './recaptcha/index.ts'
-import { sanitizeFormData } from '../utils/sanitizeInput.ts';
-import { debounce } from '../utils/debounce.ts';
-import { handleError } from '../utils/errorHandler.ts';
+import { sanitizeFormData } from '../utils/sanitizeInput.js';
+import { debounce } from '../utils/debounce.js';
+import { handleError } from '../utils/errorHandler.js';
 
 // Import screen reader service to avoid circular dependencies
 // import * as screenReaderService from './screenReaderService.ts';

@@ -3,10 +3,10 @@
  * Handles form data initialization, auto-detection of browser info, and test data management
  */
 
-import { getContactFormConfig } from '../config/index.ts';
-import { loadFormData } from './formStorage.ts';
-import { createLogger } from '../utils/logger.ts';
-import { IS_BROWSER, IS_DEV } from '../utils/constants.ts';
+import { getContactFormConfig } from '../config/index.js';
+import { loadFormData } from './formStorage.js';
+import { createLogger } from '../utils/logger.js';
+import { IS_BROWSER, IS_DEV } from '../utils/constants.js';
 
 const logger = createLogger('FormHydration');
 type FormHydrationRecord = Record<string, unknown>;

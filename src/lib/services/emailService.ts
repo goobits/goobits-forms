@@ -4,7 +4,7 @@
  */
 
 import type { SESClientConfig } from '@aws-sdk/client-ses';
-import { createLogger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('EmailService');
 

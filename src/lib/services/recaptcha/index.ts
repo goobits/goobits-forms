@@ -4,7 +4,7 @@
  * Supports Google reCAPTCHA v3 and no-op providers
  */
 
-import { createLogger } from '../../utils/logger.ts';
+import { createLogger } from '../../utils/logger.js';
 
 const logger = createLogger('RecaptchaService');
 type GrecaptchaClient = {

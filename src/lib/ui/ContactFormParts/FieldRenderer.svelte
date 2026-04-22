@@ -5,7 +5,7 @@
 	import Textarea from '../Textarea.svelte'
 	import SelectMenu from '../SelectMenu.svelte'
 	import UploadImage from '../UploadImage.svelte'
-	import { getValidationClasses } from '../../validation/index.ts'
+	import { getValidationClasses } from '../../validation/index.js'
 
 	/**
 	 * FieldRenderer - Dynamic field renderer for ContactForm

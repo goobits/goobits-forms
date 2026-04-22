@@ -16,12 +16,12 @@
  */
 
 // Re-export all utility modules for convenient access
-export * from './sanitizeInput.ts';
-export * from './constants.ts';
-export * from './debounce.ts';
-export * from './errorHandler.ts';
-export * from './messages.ts';
-export * from './date-utils.ts';
+export * from './sanitizeInput.js';
+export * from './constants.js';
+export * from './debounce.js';
+export * from './errorHandler.js';
+export * from './messages.js';
+export * from './date-utils.js';
 
 /**
  * Configuration interfaces for type safety

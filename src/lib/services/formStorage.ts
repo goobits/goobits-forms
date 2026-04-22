@@ -6,13 +6,13 @@
  */
 
 // Import logger utility and constants
-import { createLogger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.js';
 import {
 	IS_BROWSER,
 	STORAGE_KEY,
 	STORAGE_EXPIRY_KEY,
 	DEFAULT_EXPIRY_HOURS
-} from '../utils/constants.ts';
+} from '../utils/constants.js';
 // import { handleError } from '../utils/errorHandler.ts'
 
 const logger = createLogger('FormStorage');

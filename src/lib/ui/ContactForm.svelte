@@ -10,11 +10,11 @@
 	import { z } from 'zod'
 	import { AlertCircle } from '@lucide/svelte'
 
-	import { getContactFormConfig } from '../config/index.ts'
-	import { hydrateForm } from '../services/formHydration.ts'
-	import { debounce } from '../utils/debounce.ts'
-	import { saveFormData, clearFormData } from '../services/formStorage.ts'
-	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.ts'
+	import { getContactFormConfig } from '../config/index.js'
+	import { hydrateForm } from '../services/formHydration.js'
+	import { debounce } from '../utils/debounce.js'
+	import { saveFormData, clearFormData } from '../services/formStorage.js'
+	import { IS_BROWSER, SAVE_DEBOUNCE_DELAY } from '../utils/constants.js'
 
 	// Import shared form service functions
 	import {
@@ -23,7 +23,7 @@
 		handleFieldTouch,
 		initializeForm,
 		initializeFormState
-	} from '../services/formService.ts'
+	} from '../services/formService.js'
 
 	// Import enhanced screen reader announcements
 	import {
@@ -32,14 +32,14 @@
 		announceFormErrors,
 		announceFormStatus,
 		cleanupAllAnnouncements
-	} from '../services/screenReaderService.ts'
+	} from '../services/screenReaderService.js'
 
 	// Import reCAPTCHA provider
-	import { createRecaptchaProvider } from '../services/recaptcha/index.ts'
-	import { createLogger } from '../utils/logger.ts'
+	import { createRecaptchaProvider } from '../services/recaptcha/index.js'
+	import { createLogger } from '../utils/logger.js'
 
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.ts'
+	import { createMessageGetter } from '../utils/messages.js'
 	import { defaultMessages } from '../config/defaultMessages'
 
 	const logger = createLogger('ContactForm')

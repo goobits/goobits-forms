@@ -7,7 +7,7 @@
 import type { SES } from '@aws-sdk/client-ses';
 // @ts-expect-error - nodemailer is an optional peer dependency
 import type * as NodemailerType from 'nodemailer';
-import { createLogger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('AwsImports');
 

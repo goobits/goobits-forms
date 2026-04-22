@@ -15,13 +15,13 @@
 		initializeForm,
 		initializeFormState,
 		resetForm as resetFormService
-	} from '../services/formService.ts';
+	} from '../services/formService.js';
 
 	// Import logger utility
-	import { createLogger } from '../utils/logger.ts';
+	import { createLogger } from '../utils/logger.js';
 
 	// Import message helpers
-	import { createMessageGetter } from '../utils/messages.ts';
+	import { createMessageGetter } from '../utils/messages.js';
 	import { defaultMessages } from '../config/defaultMessages';
 
 	const logger = createLogger('FeedbackForm');
