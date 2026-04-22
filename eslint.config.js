@@ -41,8 +41,15 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ['**/*.test.ts', '**/*.spec.ts', '**/*.example.ts'],
+		files: [
+			'**/*.test.ts',
+			'**/*.spec.ts',
+			'**/*.example.ts',
+			'tests/**/*.ts',
+			'**/*.d.ts'
+		],
 		rules: {
+			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-unused-vars': 'off',
 			'svelte/require-each-key': 'off'
 		}

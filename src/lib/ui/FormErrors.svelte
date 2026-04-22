@@ -25,7 +25,7 @@
 		if (browser && errors?._errors?.length && errorContainer) {
 			// Use a slight delay to ensure screen readers announce the alert
 			setTimeout(() => {
-				errorContainer.focus();
+				errorContainer?.focus();
 			}, 100);
 		}
 	});

@@ -132,6 +132,7 @@
 				fadeTimeout = null;
 			}
 		}
+		return undefined;
 	});
 
 	// Focus management - focus the modal when it opens
@@ -150,6 +151,7 @@
 				document.body.style.overflow = originalStyle;
 			};
 		}
+		return undefined;
 	});
 
 	// Smooth height transitions
@@ -180,6 +182,7 @@
 				resizeObserver.disconnect();
 			};
 		}
+		return undefined;
 	});
 
 	// Handle backdrop click with sophisticated mouse down/up detection

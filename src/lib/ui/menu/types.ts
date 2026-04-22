@@ -31,7 +31,7 @@ export interface MenuDimensions {
 export interface MenuItemAction {
 	type: 'action';
 	label: string;
-	icon?: string | any; // Support both string names and component constructors
+	icon?: string | Component<Record<string, unknown>>; // Support both string names and component constructors
 	shortcut?: string;
 	disabled?: boolean;
 	onClick: () => void;
@@ -40,7 +40,7 @@ export interface MenuItemAction {
 export interface MenuItemToggle {
 	type: 'toggle';
 	label: string;
-	icon?: string | any; // Support both string names and component constructors
+	icon?: string | Component<Record<string, unknown>>; // Support both string names and component constructors
 	shortcut?: string;
 	disabled?: boolean;
 	checked: boolean;
@@ -50,7 +50,7 @@ export interface MenuItemToggle {
 export interface MenuItemDestructive {
 	type: 'destructive';
 	label: string;
-	icon?: string | any; // Support both string names and component constructors
+	icon?: string | Component<Record<string, unknown>>; // Support both string names and component constructors
 	shortcut?: string;
 	disabled?: boolean;
 	confirmMessage?: string;
@@ -60,14 +60,14 @@ export interface MenuItemDestructive {
 export interface MenuItemSubmenu {
 	type: 'submenu';
 	label: string;
-	icon?: string | any; // Support both string names and component constructors
+	icon?: string | Component<Record<string, unknown>>; // Support both string names and component constructors
 	disabled?: boolean;
 	items: MenuItem[];
 }
 
 export interface MenuItemCustom {
 	type: 'custom';
-	component: any; // Svelte component - Keep as any for component flexibility
+	component: Component<Record<string, unknown>>;
 	props?: Record<string, unknown>;
 }
 
@@ -145,7 +145,7 @@ export interface ContextMenuState {
 	x: number;
 	y: number;
 	target?: HTMLElement;
-	data?: Record<string, any>; // Generic context data
+	data?: Record<string, unknown>; // Generic context data
 }
 
 export interface ContextMenuConfig extends MenuConfig {
@@ -174,3 +174,4 @@ export interface ContextMenuProps extends ContextMenuConfig {
 	focusPrevious: () => void;
 	executeItem: (index: number) => void;
 } */
+import type { Component } from 'svelte';

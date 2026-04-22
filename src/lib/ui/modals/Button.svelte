@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type svelte from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 	/**
 	 * Modal Button Component
 	 *
@@ -45,7 +45,7 @@
 		 * Button content
 		 */
 		children?: import('svelte').Snippet;
-	} & Omit<svelte.JSX.HTMLButtonAttributes, 'class' | 'onclick'>;
+	} & Omit<HTMLButtonAttributes, 'class' | 'onclick'>;
 
 	const {
 		variant = 'secondary',

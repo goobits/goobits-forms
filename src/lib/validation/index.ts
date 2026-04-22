@@ -18,9 +18,9 @@ export interface ValidationConfig {
 	/** Pre-built validation schemas */
 	schemas?: {
 		/** Complete schema with all fields */
-		complete?: z.AnyZodObject;
+		complete?: z.ZodObject<z.ZodRawShape>;
 		/** Category-specific schemas */
-		categories?: Record<string, z.AnyZodObject>;
+		categories?: Record<string, z.ZodObject<z.ZodRawShape>>;
 	};
 	/** Mapping of categories to their required fields */
 	categoryToFieldMap?: Record<string, string[]>;
@@ -81,7 +81,7 @@ export type DebouncedValidator<T extends (...args: unknown[]) => unknown> = (
 export function createValidationSchemaForCategory(
 	config: ValidationConfig,
 	category: string
-): z.ZodObject<any> {
+): z.ZodObject<z.ZodRawShape> {
 	if (!config.categories[category]) {
 		throw new Error(`Invalid category: ${category}`);
 	}

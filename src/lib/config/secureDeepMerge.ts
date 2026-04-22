@@ -10,7 +10,7 @@ const logger = createLogger('SecureDeepMerge');
 /**
  * Type for any object that can be safely merged
  */
-type MergeableObject = Record<string, any>;
+type MergeableObject = Record<string, unknown>;
 
 /**
  * Checks if a key is safe to use in object merging/access
@@ -72,13 +72,20 @@ export function secureDeepMerge<T extends MergeableObject, U extends MergeableOb
 			}
 
 			const sourceValue = source[key];
+			const resultValue = result[key as keyof (T & U)];
 
 			// If property is an object, recursively merge
 			if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
-				(result as any)[key] = secureDeepMerge((result as any)[key] || {}, sourceValue);
+				const nestedTarget =
+					resultValue != null &&
+					(typeof resultValue === 'object' || typeof resultValue === 'string') &&
+					!Array.isArray(resultValue)
+						? (Object(resultValue) as MergeableObject)
+						: {};
+				result[key as keyof (T & U)] = secureDeepMerge(nestedTarget, sourceValue as MergeableObject) as (T & U)[keyof (T & U)];
 			} else {
 				// For primitive values or arrays, just copy
-				(result as any)[key] = sourceValue;
+				result[key as keyof (T & U)] = sourceValue as (T & U)[keyof (T & U)];
 			}
 		});
 	}

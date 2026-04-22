@@ -6,7 +6,7 @@
  * @returns Debounced function that will only execute after delay has elapsed
  * @throws TypeError If fn is not a function or delay is not a number
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
 	fn: T,
 	delay: number = 300
 ): (...args: Parameters<T>) => void {
