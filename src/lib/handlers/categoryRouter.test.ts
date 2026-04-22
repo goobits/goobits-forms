@@ -411,7 +411,7 @@ describe('createCategoryRouter', () => {
 				// Expect redirect
 			}
 
-			expect(mockValidateCsrfToken).toHaveBeenCalledWith(mockEvent.request);
+			expect(mockValidateCsrfToken).toHaveBeenCalledWith(mockEvent.request, undefined);
 		});
 
 		test('handles CSRF validation failure comprehensively', async () => {

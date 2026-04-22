@@ -11,6 +11,7 @@
 	 */
 
 	import { getMenuItemAriaAttributes } from './utils';
+	import MenuItem from './MenuItem.svelte';
 	// Confirmation import removed - now optional via prop
 	import {
 		Type,
@@ -493,7 +494,7 @@
 			{#if subItem.type === 'separator'}
 				<div class="submenu__separator"></div>
 			{:else}
-				<svelte:self
+				<MenuItem
 					item={subItem}
 					menuId="{menuId}-submenu"
 					index={subIndex}

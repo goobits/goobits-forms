@@ -129,10 +129,35 @@ export function getCsrfToken(event: RequestEvent): string {
 /**
  * Validates a CSRF token from the request
  */
-export function validateCsrfToken(request: Request, cookieToken?: string): boolean {
-	const headerToken = request.headers.get('x-csrf-token');
-	if (!cookieToken || !headerToken) {
+export async function validateCsrfToken(request: Request, cookieToken?: string): Promise<boolean> {
+	if (!cookieToken) {
 		return false;
 	}
-	return cookieToken === headerToken;
+
+	const headerToken = request.headers.get('x-csrf-token');
+	if (headerToken) {
+		return cookieToken === headerToken;
+	}
+
+	const contentType = request.headers.get('content-type') || '';
+
+	if (contentType.includes('application/x-www-form-urlencoded')) {
+		try {
+			const formData = await request.clone().formData();
+			return cookieToken === formData.get('csrf_token')?.toString();
+		} catch {
+			return false;
+		}
+	}
+
+	if (contentType.includes('application/json')) {
+		try {
+			const body = await request.clone().json();
+			return cookieToken === body?.csrf_token;
+		} catch {
+			return false;
+		}
+	}
+
+	return false;
 }

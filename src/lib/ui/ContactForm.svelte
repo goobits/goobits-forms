@@ -6,7 +6,7 @@
 	import FieldRenderer from './ContactFormParts/FieldRenderer.svelte'
 	import SubmitButton from './ContactFormParts/SubmitButton.svelte'
 	import FormFooter from './ContactFormParts/FormFooter.svelte'
-	import { onDestroy, onMount } from 'svelte'
+	import { onDestroy, onMount, untrack } from 'svelte'
 	import { z } from 'zod'
 	import { AlertCircle } from '@lucide/svelte'
 
@@ -117,10 +117,14 @@
 	}
 
 	// Ensure all fields are initialized
-	const initialData = initializeAllFormFields(providedInitialData)
+	const initialData = $derived.by(() => initializeAllFormFields(providedInitialData))
+	const initialFormData = untrack(() => initialData)
+	const initialCategory = untrack(() => initialData.category)
 
 	// Create message getter
-	const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
+	const getMessage = $derived.by(() =>
+		createMessageGetter({ ...defaultMessages, ...messages })
+	);
 
 	// Create fallback schema if none provided
 	function createFallbackSchema() {
@@ -134,7 +138,7 @@
 
 	// Use dynamic schema based on selected category with fallback
 	const contactSchema =
-		schemas.categories?.[initialData.category] ||
+		schemas.categories?.[initialCategory] ||
 		schemas.categories?.['general'] ||
 		schemas.complete ||
 		createFallbackSchema();
@@ -142,7 +146,7 @@
 	// Initialize form state using shared service
 	const formState = initializeFormState({
 		attachments: [],
-		selectedCategory: initialData.category
+		selectedCategory: initialCategory
 	})
 
 	let attachments = $state(formState.attachments)
@@ -259,7 +263,7 @@
 
 	// Initialize form with shared service
 	const form = initializeForm({
-		initialData,
+		initialData: initialFormData,
 		schema: contactSchema,
 		onSubmitHandler: handleSubmit,
 		extraOptions: {

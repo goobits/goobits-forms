@@ -47,6 +47,15 @@
 		const value = formData[name]
 		return getValidationClasses(hasError, isTouched, value)
 	}
+
+	function handleValueInput(name, value) {
+		formData[name] = value
+		onInput(name)
+	}
+
+	function handleValueBlur(name) {
+		onBlur(name)
+	}
 </script>
 
 <Field {form} name={fieldName}>
@@ -70,13 +79,14 @@
 						<div class="contact-form__validation-container">
 							<SelectMenu
 								{...props}
-								bind:value={formData[fieldName]}
+								value={formData[fieldName] ?? ''}
 								options={fieldConfig.options.map((option) =>
 									typeof option === 'object' ? option : { value: option, label: option }
 								)}
 								placeholder="Select {fieldConfig.label.replace('(optional)', '')}"
 								required={fieldConfig.required}
-								onchange={() => {
+								onchange={(value) => {
+									formData[fieldName] = value
 									onInput(fieldName)
 									onBlur(fieldName)
 								}}
@@ -95,7 +105,7 @@
 						<div class="contact-form__validation-container">
 							<Textarea
 								{...props}
-								bind:value={formData[fieldName]}
+								value={formData[fieldName] ?? ''}
 								variant={touched[fieldName] && fieldErrors?.[fieldName]
 									? 'error'
 									: !fieldErrors?.[fieldName] && touched[fieldName] && formData[fieldName]
@@ -106,6 +116,8 @@
 								required={fieldConfig.required}
 								rows={4}
 								autoResize={true}
+								onblur={() => handleValueBlur(fieldName)}
+								oninput={(event) => handleValueInput(fieldName, event.currentTarget.value)}
 							/>
 
 							<span class="contact-form__validation-icon" aria-hidden="true">
@@ -119,18 +131,21 @@
 					{:else if fieldConfig.type === 'checkbox'}
 						<input
 							{...props}
-							bind:checked={formData[fieldName]}
+							checked={!!formData[fieldName]}
 							class:contact-form__field--error={touched[fieldName] && fieldErrors?.[fieldName]}
 							class="contact-form__checkbox"
 							onblur={() => onBlur(fieldName)}
-							oninput={() => onInput(fieldName)}
+							onchange={(event) => {
+								formData[fieldName] = event.currentTarget.checked
+								onInput(fieldName)
+							}}
 							type="checkbox"
 						/>
 					{:else}
 						<div class="contact-form__validation-container">
 							<Input
 								{...props}
-								bind:value={formData[fieldName]}
+								value={formData[fieldName] ?? ''}
 								variant={touched[fieldName] && fieldErrors?.[fieldName]
 									? 'error'
 									: !fieldErrors?.[fieldName] && touched[fieldName] && formData[fieldName]
@@ -140,6 +155,8 @@
 								placeholder={fieldConfig.placeholder}
 								required={fieldConfig.required}
 								type={fieldConfig.type}
+								onblur={() => handleValueBlur(fieldName)}
+								oninput={(event) => handleValueInput(fieldName, event.currentTarget.value)}
 							/>
 
 							<span class="contact-form__validation-icon" aria-hidden="true">

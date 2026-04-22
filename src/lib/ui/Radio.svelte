@@ -37,7 +37,7 @@
 		label,
 		error,
 		size = 'md',
-		id = `radio-${Math.random().toString(36).substring(2, 9)}`,
+		id,
 		class: className = '',
 		'aria-label': ariaLabel,
 		'aria-describedby': ariaDescribedBy,
@@ -49,6 +49,8 @@
 
 	// Input element reference
 	let inputElement: HTMLInputElement | undefined = $state();
+	const fallbackId = `radio-${Math.random().toString(36).substring(2, 9)}`;
+	const resolvedId = $derived(id ?? fallbackId);
 
 	// Combine CSS classes using BEM methodology
 	const radioClasses = $derived(
@@ -71,7 +73,7 @@
 	}
 
 	// Combine aria-describedby with error ID if present
-	const errorId = error ? `${id}-error` : undefined;
+	const errorId = $derived(error ? `${resolvedId}-error` : undefined);
 	const describedBy = $derived(
 		[ariaDescribedBy, errorId].filter(Boolean).join(' ') || undefined
 	);
@@ -86,7 +88,7 @@
 		checked={checked}
 		type="radio"
 		class="radio__input"
-		{id}
+		id={resolvedId}
 		{name}
 		{value}
 		{disabled}
@@ -98,7 +100,7 @@
 	/>
 	<span class="radio__button" aria-hidden="true"></span>
 	{#if label || children?.label}
-		<label for={id} class="radio__label">
+		<label for={resolvedId} class="radio__label">
 			{#if children?.label}
 				{@render children.label()}
 			{:else}

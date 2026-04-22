@@ -15,10 +15,12 @@
 
 	let { value = $bindable(), categories, onChange, getMessage } = $props()
 
-	const options = Object.entries(categories).map(([val, { label }]) => ({
-		value: val,
-		label
-	}))
+	const options = $derived.by(() =>
+		Object.entries(categories).map(([val, { label }]) => ({
+			value: val,
+			label
+		}))
+	)
 </script>
 
 <div class="contact-form__field-group">

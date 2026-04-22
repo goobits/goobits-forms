@@ -261,7 +261,7 @@
 
 <div class={sliderClasses} data-testid={dataTestId} {...restProps}>
 	{#if label}
-		<label class="slider__label">
+		<div class="slider__label">
 			{label}
 			{#if showValue && !isRange}
 				<span class="slider__value-display">{formatValue(endValue)}</span>
@@ -270,7 +270,7 @@
 					>{formatValue(startValue)} - {formatValue(endValue)}</span
 				>
 			{/if}
-		</label>
+		</div>
 	{/if}
 
 	<div class="slider__container">

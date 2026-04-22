@@ -25,7 +25,9 @@
 	} = $props();
 
 	// Create message getter
-	const getMessage = createMessageGetter({ ...defaultMessages, ...messages });
+	const getMessage = $derived.by(() =>
+		createMessageGetter({ ...defaultMessages, ...messages })
+	);
 
 	let thankYouContainer: HTMLElement | undefined = $state();
 

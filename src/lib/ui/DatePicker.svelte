@@ -90,9 +90,10 @@
 	let isProgrammaticFocus = $state(false);
 
 	// Unique ID for accessibility
-	const uniqueId = id || `datepicker-${Math.random().toString(36).substr(2, 9)}`;
-	const calendarId = `${uniqueId}-calendar`;
-	const errorId = error ? `${uniqueId}-error` : undefined;
+	const fallbackId = `datepicker-${Math.random().toString(36).substr(2, 9)}`;
+	const uniqueId = $derived(id ?? fallbackId);
+	const calendarId = $derived(`${uniqueId}-calendar`);
+	const errorId = $derived(error ? `${uniqueId}-error` : undefined);
 
 	// Update input value when value prop changes
 	$effect(() => {
