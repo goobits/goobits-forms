@@ -8,12 +8,8 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		pool: 'vmThreads',
-		poolOptions: {
-			vmThreads: {
-				maxThreads: 2,
-				minThreads: 1
-			}
-		},
+		maxWorkers: 2,
+		minWorkers: 1,
 		setupFiles: ['./tests/setup.ts'],
 		include: ['src/**/*.test.ts', 'src/**/*.test.js', 'src/**/*.spec.ts', 'src/**/*.spec.js'],
 		exclude: ['node_modules', 'dist', 'build', '.svelte-kit', '.idea', '.git', '.cache', 'demo/**/*', 'docs/**/*', 'examples/**/*', 'e2e/**/*', 'playwright-report/**/*', 'coverage/**/*'],

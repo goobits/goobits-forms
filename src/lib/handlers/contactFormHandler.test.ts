@@ -64,14 +64,16 @@ function createMockRequestEvent(options: {
 		clientAddress = '192.168.1.1'
 	} = options;
 
-	// Create a proper Request object
-	const request = new Request('https://example.com/api/contact', {
-		method,
-		headers: {
-			'content-type': 'application/json'
-		},
-		body: JSON.stringify(body)
+	const headers = new Headers({
+		'content-type': 'application/json'
 	});
+	const payload = JSON.stringify(body);
+
+	const request = {
+		method,
+		headers,
+		json: vi.fn(async () => JSON.parse(payload))
+	} as unknown as Request;
 
 	return {
 		request,
@@ -174,7 +176,8 @@ describe('createContactApiHandler', () => {
 				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
 			});
 
-			await handler(event);
+			const response = await handler(event);
+			await response.text();
 
 			expect(mockRateLimitFormSubmission).toHaveBeenCalledWith(
 				'192.168.1.1',
@@ -215,7 +218,8 @@ describe('createContactApiHandler', () => {
 				body: { name: 'John', email: 'john@example.com', message: 'Hello' }
 			});
 
-			await handler(event);
+			const response = await handler(event);
+			await response.text();
 
 			// Verify rate limiter was called with 'contact' form type
 			expect(mockRateLimitFormSubmission).toHaveBeenCalledWith(

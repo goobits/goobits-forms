@@ -8,6 +8,51 @@ import {
 	validateCsrfToken
 } from './csrf';
 
+function createMockRequest(
+	method: string,
+	headersInit: Record<string, string>,
+	body?: string | FormData | object
+): Request {
+	const headers = new Headers(headersInit);
+
+	const clone = () => createMockRequest(method, headersInit, body);
+
+	return {
+		method,
+		headers,
+		clone,
+		formData: vi.fn(async () => {
+			if (body instanceof FormData) {
+				return body;
+			}
+
+			if (typeof body === 'string') {
+				const params = new URLSearchParams(body);
+				const formData = new FormData();
+
+				for (const [key, value] of params.entries()) {
+					formData.append(key, value);
+				}
+
+				return formData;
+			}
+
+			throw new Error('Unsupported form data body');
+		}),
+		json: vi.fn(async () => {
+			if (typeof body === 'string') {
+				return JSON.parse(body);
+			}
+
+			if (body && typeof body === 'object' && !(body instanceof FormData)) {
+				return body;
+			}
+
+			throw new Error('Unsupported JSON body');
+		})
+	} as unknown as Request;
+}
+
 // Helper to create mock RequestEvent
 function createMockEvent(
 	options: {
@@ -26,23 +71,7 @@ function createMockEvent(
 		cookieToken
 	} = options;
 
-	// Create request body
-	let requestBody: BodyInit | null = null;
-	if (body) {
-		if (body instanceof FormData) {
-			requestBody = body;
-		} else if (typeof body === 'object') {
-			requestBody = JSON.stringify(body);
-		} else {
-			requestBody = body;
-		}
-	}
-
-	const request = new Request(`https://example.com${pathname}`, {
-		method,
-		headers: new Headers(headers),
-		body: requestBody
-	});
+	const request = createMockRequest(method, headers, body);
 
 	const cookieStore = new Map<string, string>();
 	if (cookieToken) {
@@ -77,7 +106,7 @@ function createMockEvent(
 // Helper to create mock resolve function
 function createMockResolve() {
 	return vi.fn(async (_event: RequestEvent) => {
-		return new Response('OK', { status: 200 });
+		return new Response(null, { status: 200 });
 	});
 }
 
@@ -97,6 +126,7 @@ describe('createCsrfProtection', () => {
 
 			expect(response.status).toBe(200);
 			expect(resolve).toHaveBeenCalledWith(event);
+			await response.text();
 		});
 
 		test('allows request with token from form data', async () => {
@@ -117,6 +147,7 @@ describe('createCsrfProtection', () => {
 
 			expect(response.status).toBe(200);
 			expect(resolve).toHaveBeenCalledWith(event);
+			await response.text();
 		});
 
 		test('allows request with token from JSON body', async () => {
@@ -134,6 +165,7 @@ describe('createCsrfProtection', () => {
 
 			expect(response.status).toBe(200);
 			expect(resolve).toHaveBeenCalledWith(event);
+			await response.text();
 		});
 
 		test('prefers header token over body token', async () => {
@@ -156,6 +188,7 @@ describe('createCsrfProtection', () => {
 
 			expect(response.status).toBe(200);
 			expect(resolve).toHaveBeenCalledWith(event);
+			await response.text();
 		});
 
 		test('rejects request with missing cookie token', async () => {
@@ -217,6 +250,7 @@ describe('createCsrfProtection', () => {
 
 			expect(response.status).toBe(403);
 			expect(resolve).not.toHaveBeenCalled();
+			await response.text();
 		});
 
 		test('handles malformed form data gracefully', async () => {
@@ -237,6 +271,7 @@ describe('createCsrfProtection', () => {
 			// Should reject since no valid token was extracted from body
 			expect(response.status).toBe(403);
 			expect(resolve).not.toHaveBeenCalled();
+			await response.text();
 		});
 
 		test('handles malformed JSON gracefully', async () => {
@@ -1057,90 +1092,90 @@ describe('getCsrfToken', () => {
 });
 
 describe('validateCsrfToken', () => {
-	test('returns true for matching tokens', () => {
+	test('returns true for matching tokens', async () => {
 		const token = 'matching-token';
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': token }
 		});
 
-		const result = validateCsrfToken(request, token);
+		const result = await validateCsrfToken(request, token);
 
 		expect(result).toBe(true);
 	});
 
-	test('returns false for mismatched tokens', () => {
+	test('returns false for mismatched tokens', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': 'token1' }
 		});
 
-		const result = validateCsrfToken(request, 'token2');
+		const result = await validateCsrfToken(request, 'token2');
 
 		expect(result).toBe(false);
 	});
 
-	test('returns false when cookie token is missing', () => {
+	test('returns false when cookie token is missing', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': 'token' }
 		});
 
-		const result = validateCsrfToken(request, undefined);
+		const result = await validateCsrfToken(request, undefined);
 
 		expect(result).toBe(false);
 	});
 
-	test('returns false when header token is missing', () => {
+	test('returns false when header token is missing', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST'
 		});
 
-		const result = validateCsrfToken(request, 'cookie-token');
+		const result = await validateCsrfToken(request, 'cookie-token');
 
 		expect(result).toBe(false);
 	});
 
-	test('returns false when both tokens are missing', () => {
+	test('returns false when both tokens are missing', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST'
 		});
 
-		const result = validateCsrfToken(request, undefined);
+		const result = await validateCsrfToken(request, undefined);
 
 		expect(result).toBe(false);
 	});
 
-	test('returns false for empty string tokens', () => {
+	test('returns false for empty string tokens', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': '' }
 		});
 
-		const result = validateCsrfToken(request, '');
+		const result = await validateCsrfToken(request, '');
 
 		expect(result).toBe(false);
 	});
 
-	test('performs case-sensitive comparison', () => {
+	test('performs case-sensitive comparison', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': 'Token123' }
 		});
 
-		const result = validateCsrfToken(request, 'token123');
+		const result = await validateCsrfToken(request, 'token123');
 
 		expect(result).toBe(false);
 	});
 
-	test('performs strict equality check', () => {
+	test('performs strict equality check', async () => {
 		const request = new Request('https://example.com', {
 			method: 'POST',
 			headers: { 'x-csrf-token': 'token123' }
 		});
 
 		// Similar but different tokens should not match
-		const result = validateCsrfToken(request, 'token124');
+		const result = await validateCsrfToken(request, 'token124');
 
 		expect(result).toBe(false);
 	});

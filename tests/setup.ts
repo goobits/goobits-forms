@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/svelte';
 import { vi, expect } from 'vitest';
 import { toHaveNoViolations } from 'jest-axe';
 
@@ -91,6 +92,34 @@ Object.defineProperty(window, 'matchMedia', {
 	})),
 });
 
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+	clearRect: vi.fn(),
+	fillRect: vi.fn(),
+	getImageData: vi.fn(),
+	putImageData: vi.fn(),
+	createImageData: vi.fn(),
+	setTransform: vi.fn(),
+	drawImage: vi.fn(),
+	save: vi.fn(),
+	restore: vi.fn(),
+	beginPath: vi.fn(),
+	moveTo: vi.fn(),
+	lineTo: vi.fn(),
+	closePath: vi.fn(),
+	stroke: vi.fn(),
+	fill: vi.fn(),
+	measureText: vi.fn(() => ({ width: 0 })),
+	scale: vi.fn(),
+	rotate: vi.fn(),
+	translate: vi.fn(),
+	transform: vi.fn(),
+	resetTransform: vi.fn()
+})) as typeof HTMLCanvasElement.prototype.getContext;
+
+const originalGetComputedStyle = window.getComputedStyle.bind(window);
+window.getComputedStyle = ((element: Element) =>
+	originalGetComputedStyle(element)) as typeof window.getComputedStyle;
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
 	constructor() {}
@@ -127,6 +156,11 @@ beforeAll(() => {
 
 afterAll(() => {
 	console.error = originalError;
+});
+
+afterEach(async () => {
+	cleanup();
+	await new Promise(resolve => setTimeout(resolve, 0));
 });
 
 // Reset all mocks before each test
