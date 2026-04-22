@@ -28,7 +28,7 @@
 			options?: Array<{ value: string; label: string } | string>;
 		};
 		/** The current value of the field */
-		value: any;
+		value: unknown;
 		/** Object containing field errors */
 		errors: Record<string, string>;
 		/** Object tracking which fields have been touched */
@@ -40,7 +40,7 @@
 		/** Function called when field value changes */
 		handleInput: (fieldName: string) => void;
 		/** Additional props to pass to the field */
-		props: Record<string, any>;
+		props: Record<string, unknown>;
 	} = $props();
 
 	// Reference to the input element
@@ -66,12 +66,12 @@
 		// Handle Enter key on select elements (activate dropdown)
 		if (event.key === 'Enter' && fieldConfig.type === 'select') {
 			event.preventDefault();
-			event.target.click();
+			(event.currentTarget as HTMLElement).click();
 		}
 
 		// Custom handling for Escape key
 		if (event.key === 'Escape') {
-			event.target.blur();
+			(event.currentTarget as HTMLElement).blur();
 		}
 	}
 

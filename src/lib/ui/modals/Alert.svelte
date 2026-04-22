@@ -3,12 +3,18 @@
 	import { AlertTriangle, Info, CheckCircle } from '@lucide/svelte';
 	import Modal from './Modal.svelte';
 
+	type AlertVariantConfig = {
+		icon: typeof Info;
+		iconClass: string;
+		buttonVariant: 'primary' | 'danger' | 'warning';
+	};
+
 	interface Props {
 		isVisible?: boolean;
 		title?: string;
 		message?: string;
 		variant?: 'primary' | 'danger' | 'warning' | 'success';
-		button?: import('svelte').Snippet<[{ handleClose: () => void; config: any }]>;
+		button?: import('svelte').Snippet<[{ handleClose: () => void; config: AlertVariantConfig }]>;
 	}
 
 	const {
@@ -28,7 +34,7 @@
 	}
 
 	// Icon and color based on variant
-	const variantConfig = {
+	const variantConfig: Record<Props['variant'], AlertVariantConfig> = {
 		primary: {
 			icon: Info,
 			iconClass: 'alert-modal__icon--primary',

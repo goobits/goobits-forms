@@ -1,7 +1,14 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	/**
 	 * Props interface for the Button component
 	 */
+	type ButtonChildren = Snippet & {
+		['icon-left']?: Snippet;
+		['icon-right']?: Snippet;
+	};
+
 	interface Props {
 		/** Visual variant of the button */
 		variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -23,6 +30,10 @@
 		'aria-label'?: string;
 		/** Test ID for automated testing */
 		'data-testid'?: string;
+		/** Click handler */
+		onclick?: (event: MouseEvent) => void;
+		/** Children snippet or content */
+		children?: ButtonChildren | string;
 	}
 
 	let {
@@ -39,7 +50,7 @@
 		onclick,
 		children,
 		...restProps
-	}: Props & { children?: any } = $props();
+	}: Props = $props();
 
 	// Combine CSS classes using BEM methodology
 	const buttonClasses = $derived(

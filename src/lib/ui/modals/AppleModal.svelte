@@ -1,16 +1,17 @@
 <script lang="ts">
+	import type { Component, Snippet } from 'svelte';
 	import Modal from './Modal.svelte';
 	import './shared-styles.css';
 
 	interface Props {
 		isVisible?: boolean;
 		title?: string;
-		icon?: any;
+		icon?: Component<Record<string, unknown>> | null;
 		size?: 'sm' | 'md' | 'lg' | 'xl' | 'fullscreen';
 		showHeader?: boolean;
 		onClose?: () => void;
-		footer?: any;
-		children?: any;
+		footer?: Snippet;
+		children?: Snippet;
 	}
 
 	const {

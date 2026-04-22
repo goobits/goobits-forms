@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type svelte from 'svelte';
+	import type { Snippet } from 'svelte';
+	import type { HTMLDivAttributes } from 'svelte/elements';
 
 	/**
 	 * Card Body Component
@@ -24,8 +25,8 @@
 		/**
 		 * Default slot for body content
 		 */
-		children?: any;
-	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
+		children?: Snippet;
+	} & Omit<HTMLDivAttributes, 'class'>;
 
 	const {
 		padding = 'md',

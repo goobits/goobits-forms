@@ -3,6 +3,28 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { createLogger } from '../utils/logger.ts';
 
+	type ContactFormPageConfig = {
+		categories?: Record<string, unknown>;
+	};
+
+	type ContactFormPageProps = {
+		initialData?: { category?: string } & Record<string, unknown>;
+		config?: ContactFormPageConfig;
+		categoryParam?: string;
+		thankYouValue?: string;
+		defaultCategory?: string;
+		category?: string | null;
+		bookingParam?: string;
+		bookingCategory?: string;
+		pageTitle?: string;
+		bookingPageTitle?: string;
+		introText?: string;
+		bookingIntroText?: string;
+		contactFormProps?: Record<string, unknown>;
+		onCategoryChange?: ((category: string) => void) | null;
+		onUrlUpdate?: ((url: URL) => void) | null;
+	};
+
 	const logger = createLogger('ContactFormPage');
 
 	// Props
@@ -67,23 +89,7 @@
 		 * Callback when URL updates
 		 */
 		onUrlUpdate = null
-	}: {
-		initialData?: Record<string, any>;
-		config?: { categories?: Record<string, any> };
-		categoryParam?: string;
-		thankYouValue?: string;
-		defaultCategory?: string;
-		category?: string | null;
-		bookingParam?: string;
-		bookingCategory?: string;
-		pageTitle?: string;
-		bookingPageTitle?: string;
-		introText?: string;
-		bookingIntroText?: string;
-		contactFormProps?: Record<string, any>;
-		onCategoryChange?: ((category: string) => void) | null;
-		onUrlUpdate?: ((url: URL) => void) | null;
-	} = $props();
+	}: ContactFormPageProps = $props();
 
 	// State
 	let selectedCategory: string = $state(category || initialData.category || defaultCategory);
@@ -113,7 +119,7 @@
 	});
 
 	// Handle category change event from ContactForm
-	function handleCategoryChange(event: CustomEvent): void {
+	function handleCategoryChange(event: CustomEvent<{ category?: string }>): void {
 		if (event.detail && event.detail.category) {
 			selectedCategory = event.detail.category;
 			updateUrl();

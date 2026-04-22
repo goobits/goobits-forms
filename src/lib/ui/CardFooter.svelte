@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type svelte from 'svelte';
+	import type { Snippet } from 'svelte';
+	import type { HTMLDivAttributes } from 'svelte/elements';
 
 	/**
 	 * Card Footer Component
@@ -24,8 +25,8 @@
 		/**
 		 * Default slot for footer content (typically buttons)
 		 */
-		children?: any;
-	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
+		children?: Snippet;
+	} & Omit<HTMLDivAttributes, 'class'>;
 
 	const { align = 'left', class: className = '', children, ...restProps }: CardFooterProps = $props();
 

@@ -1,4 +1,12 @@
 <script lang="ts">
+	type DemoConfig = Record<string, unknown>;
+	type ExternalComponentMap = Record<string, unknown>;
+	type SubmissionRecord = {
+		type: string;
+		data: unknown;
+		timestamp: string;
+	};
+
 	// Import forms components
 	import ContactForm from './ContactForm.svelte';
 	import FeedbackForm from './FeedbackForm.svelte';
@@ -10,7 +18,7 @@
 		/**
 		 * Configuration object for forms
 		 */
-		config?: Record<string, any>;
+		config?: DemoConfig;
 		/**
 		 * API endpoints for form submissions
 		 */
@@ -21,7 +29,7 @@
 		/**
 		 * External components from the main app (like ToggleSwitch, SelectMenu)
 		 */
-		externalComponents?: Record<string, any> | null;
+		externalComponents?: ExternalComponentMap | null;
 	}
 
 	let {
@@ -39,11 +47,7 @@
 	let showFeedbackForm: boolean = false;
 	let showStandaloneField: boolean = false;
 	let showNewComponents: boolean = false;
-	let lastSubmission: {
-		type: string;
-		data: any;
-		timestamp: string;
-	} | null = null;
+	let lastSubmission: SubmissionRecord | null = null;
 
 	// Field state for standalone demo
 	let standaloneValue: string = '';
@@ -74,7 +78,7 @@
 	}
 
 	function handleFieldInput(event: Event): void {
-		standaloneValue = event.target.value;
+		standaloneValue = (event.currentTarget as HTMLInputElement).value;
 		standaloneErrors = [];
 		if (!standaloneValue) {
 			standaloneErrors = ['This field is required'];

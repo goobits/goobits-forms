@@ -5,6 +5,8 @@
 	import { onMount } from 'svelte';
 	import { z } from 'zod';
 
+	type ContactSubmission = Record<string, unknown>;
+
 	// Import shared form service functions
 	import {
 		createFormSubmitHandler,
@@ -33,7 +35,7 @@
 		messages = {},
 		isFormVisible: initialFormVisible = false,
 		isThankYouVisible: initialThankYouVisible = false,
-		submitContactForm = async (data: any) => {
+		submitContactForm = async (data: ContactSubmission) => {
 			// Fetch CSRF token from the server
 			const csrfResponse = await fetch('/api/csrf', {
 				method: 'GET',
@@ -65,7 +67,7 @@
 		messages?: Record<string, string>;
 		isFormVisible?: boolean;
 		isThankYouVisible?: boolean;
-		submitContactForm?: (data: any) => Promise<any>;
+		submitContactForm?: (data: ContactSubmission) => Promise<unknown>;
 	} = $props();
 
 	const defaultProps: {
@@ -105,7 +107,7 @@
 	let currentPagePath: string = $state(formState.currentPagePath);
 	let isFormVisible: boolean = $state(formState.isFormVisible);
 	let isThankYouVisible: boolean = $state(formState.isThankYouVisible);
-	let recaptcha: any = $state(formState.recaptcha);
+	let recaptcha: unknown = $state(formState.recaptcha);
 	let submissionError: string | null = $state(formState.submissionError);
 	let submitting: boolean = $state(false);
 	let touched: Record<string, boolean> = $state(formState.touched);

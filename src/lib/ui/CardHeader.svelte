@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type svelte from 'svelte';
+	import type { Snippet } from 'svelte';
+	import type { HTMLDivAttributes } from 'svelte/elements';
 
 	/**
 	 * Card Header Component
@@ -27,13 +28,13 @@
 		/**
 		 * Actions slot for buttons/icons in the header
 		 */
-		actions?: any;
+		actions?: Snippet;
 
 		/**
 		 * Default slot (overrides title/subtitle if used)
 		 */
-		children?: any;
-	} & Omit<svelte.JSX.HTMLDivAttributes, 'class'>;
+		children?: Snippet;
+	} & Omit<HTMLDivAttributes, 'class'>;
 
 	const {
 		title,

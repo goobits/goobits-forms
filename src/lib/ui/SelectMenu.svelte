@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ChevronDown } from '@lucide/svelte';
+	import type { Component } from 'svelte';
 	import Menu from './menu/Menu.svelte';
 
 	/**
@@ -11,7 +12,7 @@
 		/** The option label */
 		label: string;
 		/** Support icon components */
-		icon?: any;
+		icon?: Component<{ size?: string | number }>;
 	}
 
 	/**
@@ -29,7 +30,7 @@
 		/** Additional CSS class names */
 		class?: string;
 		/** Icon for the trigger button */
-		icon?: any;
+		icon?: Component<{ size?: string | number }>;
 		/** Callback when value changes */
 		onchange?: (value: string) => void;
 	}
@@ -115,8 +116,9 @@
 		aria-label={placeholder}
 	>
 		{#if displayIcon}
+			{@const DisplayIcon = displayIcon}
 			<span class="select-menu__trigger-icon">
-				<svelte:component this={displayIcon} size="16" />
+				<DisplayIcon size="16" />
 			</span>
 		{/if}
 

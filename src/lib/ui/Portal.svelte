@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import type { Snippet } from 'svelte';
 
 	/**
 	 * Portal Component
@@ -16,7 +17,7 @@
 		/** Whether the portal is enabled */
 		enabled?: boolean;
 		/** Children to render in the portal */
-		children?: any;
+		children?: Snippet;
 	}
 
 	const { enabled = true, children }: Props = $props();

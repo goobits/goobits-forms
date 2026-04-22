@@ -43,7 +43,7 @@
 		 * Form state object containing data, errors, and submission status
 		 */
 		form?: {
-			data: Record<string, any>;
+			data: Record<string, unknown>;
 			errors: Record<string, string>;
 			isSubmitted: boolean;
 		};

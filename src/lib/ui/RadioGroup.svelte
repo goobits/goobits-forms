@@ -41,6 +41,8 @@
 		id?: string;
 		/** Test ID for automated testing */
 		'data-testid'?: string;
+		/** Change handler */
+		onchange?: (event: CustomEvent<string | number>) => void;
 	}
 
 	let {
@@ -54,7 +56,7 @@
 		required = false,
 		size = 'md',
 		class: className = '',
-		id = `radio-group-${Math.random().toString(36).substring(2, 9)}`,
+		id,
 		'data-testid': dataTestId,
 		onchange,
 		...restProps
@@ -62,6 +64,8 @@
 
 	// Fieldset element reference
 	let fieldsetElement: HTMLFieldSetElement | undefined = $state();
+	const fallbackId = `radio-group-${Math.random().toString(36).substring(2, 9)}`;
+	const resolvedId = $derived(id ?? fallbackId);
 
 	// Track radio elements for keyboard navigation
 	let radioElements = $state<Record<number, HTMLInputElement>>({});
@@ -84,7 +88,7 @@
 		value = newValue;
 		if (onchange) {
 			const event = new CustomEvent('change', { detail: newValue });
-			onchange(event as any);
+			onchange(event);
 		}
 	}
 
@@ -124,7 +128,7 @@
 	}
 
 	// Error ID for ARIA
-	const errorId = error ? `${id}-error` : undefined;
+	const errorId = $derived(error ? `${resolvedId}-error` : undefined);
 
 	// Expose the fieldset element for binding
 	export { fieldsetElement as element };
@@ -152,7 +156,7 @@
 
 	<div class="radio-group__options">
 		{#each options as option, index (option.value)}
-			{@const radioId = `${id}-${option.value}`}
+			{@const radioId = `${resolvedId}-${option.value}`}
 			{@const isChecked = value === option.value}
 			{@const isDisabled = disabled || option.disabled}
 

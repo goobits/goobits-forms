@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type svelte from 'svelte';
+	import type { Snippet } from 'svelte';
+	import type { HTMLAnchorAttributes, HTMLDivAttributes } from 'svelte/elements';
 	import './Card.css';
 
 	/**
@@ -44,10 +45,10 @@
 		/**
 		 * Default slot for card content
 		 */
-		children?: any;
+		children?: Snippet;
 	} & (
-		| ({ href?: never } & Omit<svelte.JSX.HTMLDivAttributes, 'class'>)
-		| ({ href: string } & Omit<svelte.JSX.HTMLAnchorAttributes, 'class' | 'href'>)
+		| ({ href?: never } & Omit<HTMLDivAttributes, 'class'>)
+		| ({ href: string } & Omit<HTMLAnchorAttributes, 'class' | 'href'>)
 	);
 
 	const {

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	/**
 	 * Props interface for the Badge component
 	 */
@@ -20,7 +22,11 @@
 		/** Test ID for automated testing */
 		'data-testid'?: string;
 		/** Children content */
-		children?: any;
+		children?: Snippet | string | number;
+		/** Optional icon snippet */
+		icon?: Snippet;
+		/** Optional dot snippet */
+		dotContent?: Snippet;
 		/** Callback when badge is dismissed */
 		ondismiss?: () => void;
 		/** Callback when badge is clicked */
@@ -37,6 +43,8 @@
 		class: className = '',
 		'data-testid': dataTestId,
 		children,
+		icon,
+		dotContent,
 		ondismiss,
 		onclick,
 		...restProps
@@ -77,29 +85,36 @@
 			onclick?.(event);
 		}
 	}
+
+	const hasContent = $derived(children !== undefined && children !== null);
+	const hasIcon = $derived(typeof icon === 'function');
+	const hasDotContent = $derived(typeof dotContent === 'function');
+	const contentIsSnippet = $derived(typeof children === 'function');
 </script>
 
 {#if dismissible}
 	<span class={badgeClasses} data-testid={dataTestId} role="status" {...restProps}>
 		{#if dot}
-			{#if $$slots.dot}
+			{#if hasDotContent}
 				<span class="badge__dot">
-					<slot name="dot" />
+					{@render dotContent?.()}
 				</span>
 			{:else}
 				<span class="badge__dot" aria-hidden="true"></span>
 			{/if}
 		{/if}
-		{#if $$slots.icon}
+		{#if hasIcon}
 			<span class="badge__icon">
-				<slot name="icon" />
+				{@render icon?.()}
 			</span>
 		{/if}
 		<span class="badge__content">
-			{#if children}
-				{children}
-			{:else}
-				<slot />
+			{#if hasContent}
+				{#if contentIsSnippet}
+					{@render children?.()}
+				{:else}
+					{children}
+				{/if}
 			{/if}
 		</span>
 		<button
@@ -136,24 +151,26 @@
 		{...restProps}
 	>
 		{#if dot}
-			{#if $$slots.dot}
+			{#if hasDotContent}
 				<span class="badge__dot">
-					<slot name="dot" />
+					{@render dotContent?.()}
 				</span>
 			{:else}
 				<span class="badge__dot" aria-hidden="true"></span>
 			{/if}
 		{/if}
-		{#if $$slots.icon}
+		{#if hasIcon}
 			<span class="badge__icon">
-				<slot name="icon" />
+				{@render icon?.()}
 			</span>
 		{/if}
 		<span class="badge__content">
-			{#if children}
-				{children}
-			{:else}
-				<slot />
+			{#if hasContent}
+				{#if contentIsSnippet}
+					{@render children?.()}
+				{:else}
+					{children}
+				{/if}
 			{/if}
 		</span>
 	</span>
