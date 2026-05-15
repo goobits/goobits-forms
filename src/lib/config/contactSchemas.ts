@@ -554,7 +554,10 @@ export function initContactFormConfig(
 	userConfig: Partial<ContactSchema>
 ): EnhancedContactFormConfig {
 	// Merge with defaults
-	const config = secureDeepMerge(defaultContactSchema, userConfig);
+	const config = secureDeepMerge(
+		defaultContactSchema as unknown as Record<string, unknown>,
+		userConfig as Record<string, unknown>
+	) as unknown as ContactSchema;
 
 	// Validate the configuration
 	const validation = validateContactConfig(config);
