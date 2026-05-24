@@ -1,16 +1,15 @@
 /**
  * CSRF Protection for SvelteKit
  *
- * Public API preserved for external consumers. Constant-time validation is
- * delegated to `@goobits/security/csrf`; token generation stays on `nanoid`
- * so the existing sync signatures + 32-char URL-safe token shape are preserved.
+ * Public API preserved for external consumers. Token generation stays on
+ * `nanoid` so the existing sync signatures + 32-char URL-safe token shape are
+ * preserved.
  *
  * Note: Better Auth handles CSRF for its own endpoints internally.
  */
 
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
-import { createCsrf } from '@goobits/security/csrf';
 
 interface CsrfProtectionOptions {
 	excludePaths?: string[];
@@ -24,34 +23,32 @@ interface CsrfProtectionOptions {
 const CSRF_COOKIE_NAME = 'csrf_token';
 const DEFAULT_HEADER_NAME = 'x-csrf-token';
 
-// Shared instance for the common case (default header). Custom header names
-// fall through to per-call `createCsrf()` so the package's `validate()` reads
-// from the right header.
-const defaultCsrf = createCsrf({
-	cookieName: CSRF_COOKIE_NAME,
-	headerName: DEFAULT_HEADER_NAME
-});
-
 /**
- * Constant-time compare of cookie token vs request token. Routes through the
- * package's `validate()` by building a synthetic Request so we don't reach for
- * the package's `_internal` timing-safe primitive directly.
+ * Constant-time compare of cookie token vs request token.
  */
 async function constantTimeMatch(
 	cookieToken: string,
-	requestToken: string,
-	headerName: string
+	requestToken: string
 ): Promise<boolean> {
-	const req = new Request('https://localhost/', {
-		headers: {
-			cookie: `${CSRF_COOKIE_NAME}=${cookieToken}`,
-			[headerName]: requestToken
-		}
-	});
-	const csrf = headerName === DEFAULT_HEADER_NAME
-		? defaultCsrf
-		: createCsrf({ cookieName: CSRF_COOKIE_NAME, headerName });
-	return csrf.validate(req);
+	const encoder = new TextEncoder();
+	const cookieBytes = encoder.encode(cookieToken);
+	const requestBytes = encoder.encode(requestToken);
+	const length = Math.max(cookieBytes.length, requestBytes.length);
+	const left = new Uint8Array(length);
+	const right = new Uint8Array(length);
+	left.set(cookieBytes);
+	right.set(requestBytes);
+
+	if (typeof process !== 'undefined' && process.versions?.node) {
+		const { timingSafeEqual } = await import('node:crypto');
+		return timingSafeEqual(left, right) && cookieBytes.length === requestBytes.length;
+	}
+
+	let mismatch = cookieBytes.length ^ requestBytes.length;
+	for (let index = 0; index < length; index += 1) {
+		mismatch |= left[index] ^ right[index];
+	}
+	return mismatch === 0;
 }
 
 /**
@@ -114,11 +111,11 @@ export function createCsrfProtection(options: CsrfProtectionOptions = {}): Handl
 
 		const requestToken = headerToken || bodyToken;
 
-		// Validate CSRF token — constant-time compare via @goobits/security
+		// Validate CSRF token with constant-time comparison.
 		if (
 			!cookieToken ||
 			!requestToken ||
-			!(await constantTimeMatch(cookieToken, requestToken, headerName))
+			!(await constantTimeMatch(cookieToken, requestToken))
 		) {
 			return new Response(errorMessage, {
 				status: errorStatus,
@@ -175,7 +172,7 @@ export async function validateCsrfToken(request: Request, cookieToken?: string):
 
 	const headerToken = request.headers.get(DEFAULT_HEADER_NAME);
 	if (headerToken) {
-		return constantTimeMatch(cookieToken, headerToken, DEFAULT_HEADER_NAME);
+		return constantTimeMatch(cookieToken, headerToken);
 	}
 
 	const contentType = request.headers.get('content-type') || '';
@@ -185,7 +182,7 @@ export async function validateCsrfToken(request: Request, cookieToken?: string):
 			const formData = await request.clone().formData();
 			const token = formData.get('csrf_token')?.toString();
 			if (!token) return false;
-			return constantTimeMatch(cookieToken, token, DEFAULT_HEADER_NAME);
+			return constantTimeMatch(cookieToken, token);
 		} catch {
 			return false;
 		}
@@ -196,7 +193,7 @@ export async function validateCsrfToken(request: Request, cookieToken?: string):
 			const body = await request.clone().json();
 			const token = body?.csrf_token;
 			if (!token) return false;
-			return constantTimeMatch(cookieToken, String(token), DEFAULT_HEADER_NAME);
+			return constantTimeMatch(cookieToken, String(token));
 		} catch {
 			return false;
 		}

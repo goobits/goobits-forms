@@ -120,7 +120,6 @@
 		"CHANGELOG.md"
 	],
 	"dependencies": {
-		"@goobits/security": "workspace:^",
 		"@sveltejs/kit": "^2.57.1",
 		"formsnap": "^2.0.1",
 		"nanoid": "^5.1.9",
