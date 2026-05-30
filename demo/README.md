@@ -8,7 +8,7 @@ This demo application showcases `@goobits/ui` with `@goobits/docs-engine` integr
 - **Enhanced Documentation**: Markdown docs with syntax highlighting, callouts, diagrams, and more
 - **Interactive Examples**: See the forms in action
 
-## Running the Demo
+## Usage
 
 From the root of the repository:
 
@@ -49,7 +49,7 @@ pnpm preview
 - **Math Rendering**: LaTeX equations with KaTeX
 - **Table of Contents**: Auto-generated from headings
 
-## Project Structure
+## Structure
 
 ```
 demo/

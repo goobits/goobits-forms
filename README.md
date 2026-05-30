@@ -9,12 +9,19 @@ Production-ready UI components for SvelteKit. Secure. Accessible. Done.
 
 > **Important:** This package was previously named `@goobits/forms`. Starting with v2.0.0, it has been renamed to `@goobits/ui` to reflect its expanded scope beyond forms to include modals, menus, tooltips, and other UI components. See [MIGRATION.md](./MIGRATION.md) for upgrade instructions.
 
+## TL;DR
+
+- Install with `npm install @goobits/ui` and call `initContactFormConfig` in `src/hooks.server.js`.
+- Create a POST handler with `createContactApiHandler` at your API route.
+- Drop `<ContactForm apiEndpoint="/api/contact" />` into your page.
+- All security (CSRF, rate limiting, reCAPTCHA) is handled in the API handler, not the client.
+
 ---
 
 ## Choose Your Path
 
-**🚀 [Quick Start](#quick-start)** - Ship a contact form in 5 minutes
-**📚 [Documentation](#documentation)** - Complete guides and API reference
+**[Quick Start](#usage)** - Ship a contact form in 5 minutes
+**[Documentation](#documentation)** - Complete guides and API reference
 
 ---
 
@@ -29,7 +36,7 @@ Production-ready UI components for SvelteKit. Secure. Accessible. Done.
 
 ---
 
-## Quick Start
+## Usage
 
 ### Install
 
@@ -84,7 +91,7 @@ export const POST = createContactApiHandler({
 
 ---
 
-## 🔒 Security
+## Security
 
 Build secure forms by validating data server-side. This package provides client-side checks for better UX, but security happens in your API handlers.
 

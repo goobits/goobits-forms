@@ -160,7 +160,7 @@ afterAll(() => {
 
 afterEach(async () => {
 	cleanup();
-	await new Promise(resolve => setTimeout(resolve, 0));
+	await Promise.resolve();
 });
 
 // Reset all mocks before each test

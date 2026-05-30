@@ -13,7 +13,7 @@
 		"build": "svelte-package && pnpm run build:clean",
 		"build:clean": "find dist -type f -name '*.test.*' -delete",
 		"prepublishOnly": "pnpm run build && pnpm run lint && pnpm run test:run",
-		"test": "vitest",
+		"test": "vitest run",
 		"test:run": "vitest run",
 		"test:leaks": "vitest run --detectAsyncLeaks --maxWorkers=1 --silent=passed-only src/lib/ui/ContactForm.a11y.test.ts src/lib/ui/DatePicker.a11y.test.ts src/lib/ui/Slider.a11y.test.ts",
 		"test:heap": "vitest run --logHeapUsage --maxWorkers=1 --reporter=verbose src/lib/security/csrf.test.ts src/lib/handlers/contactFormHandler.test.ts src/lib/ui/ContactForm.a11y.test.ts",
