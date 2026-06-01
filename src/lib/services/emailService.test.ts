@@ -68,9 +68,13 @@ describe('EmailProvider Base Class', () => {
 
 	test('sendEmail throws error when not implemented', async () => {
 		const provider = new EmailProvider();
-		await expect(
-			provider.sendEmail('test@example.com', 'Test Subject', '<p>Test Body</p>')
-		).rejects.toThrow('EmailProvider.sendEmail() must be implemented');
+		try {
+			await provider.sendEmail('test@example.com', 'Test Subject', '<p>Test Body</p>');
+			throw new Error('Expected EmailProvider.sendEmail() to throw');
+		} catch (error) {
+			expect(error).toBeInstanceOf(Error);
+			expect((error as Error).message).toBe('EmailProvider.sendEmail() must be implemented');
+		}
 	});
 });
 
