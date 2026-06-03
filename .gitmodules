@@ -1,3 +1,4 @@
 [submodule "packages/@goobits/security"]
 	path = packages/@goobits/security
 	url = git@github.com:goobits/security.git
+	branch = release/v8.0.0
