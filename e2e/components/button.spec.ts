@@ -1,5 +1,9 @@
 import { test, expect, checkA11y } from '../fixtures/test-helpers'
 
+function validationFeedback(page) {
+	return page.locator('.error, [role="alert"], .form-error, [aria-invalid="true"]')
+}
+
 test.describe('Button Component', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/')
@@ -19,8 +23,7 @@ test.describe('Button Component', () => {
 		// Click should trigger validation errors (since form is empty)
 		await submitButton.click()
 
-		// Wait a bit for any form validation to trigger
-		await page.waitForTimeout(500)
+		await expect.poll(() => validationFeedback(page).count()).toBeGreaterThan(0)
 	})
 
 	test('should support keyboard navigation with Enter', async ({ page }) => {
@@ -32,8 +35,7 @@ test.describe('Button Component', () => {
 		// Press Enter
 		await submitButton.press('Enter')
 
-		// Wait for any form interaction
-		await page.waitForTimeout(500)
+		await expect.poll(() => validationFeedback(page).count()).toBeGreaterThan(0)
 	})
 
 	test('should support keyboard navigation with Space', async ({ page }) => {
@@ -45,8 +47,7 @@ test.describe('Button Component', () => {
 		// Press Space
 		await submitButton.press(' ')
 
-		// Wait for any form interaction
-		await page.waitForTimeout(500)
+		await expect.poll(() => validationFeedback(page).count()).toBeGreaterThan(0)
 	})
 
 	test('should show disabled state when disabled', async ({ page }) => {

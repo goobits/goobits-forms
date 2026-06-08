@@ -1,5 +1,15 @@
 import { test, expect, checkA11y } from '../fixtures/test-helpers'
 
+function formFeedback(page) {
+	return page.locator(
+		'[role="status"], [role="alert"], .success-message, .alert-success, .error-message, .alert-error, [data-success="true"], [data-error="true"], .error, .form-error, [aria-invalid="true"]'
+	)
+}
+
+async function waitForOptionalFormFeedback(page) {
+	await formFeedback(page).first().waitFor({ state: 'visible', timeout: 1000 }).catch(() => undefined)
+}
+
 test.describe('ContactForm Component', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/')
@@ -18,11 +28,9 @@ test.describe('ContactForm Component', () => {
 		// Submit empty form
 		await submitButton.click()
 
-		// Wait for validation errors to appear
-		await page.waitForTimeout(500)
-
 		// Check for error messages (common patterns)
 		const errorMessages = page.locator('.error, [role="alert"], .form-error, [aria-invalid="true"]')
+		await expect.poll(() => errorMessages.count()).toBeGreaterThan(0)
 		const errorCount = await errorMessages.count()
 
 		// Should show at least one validation error
@@ -42,11 +50,8 @@ test.describe('ContactForm Component', () => {
 			// Trigger validation (submit or blur)
 			await emailInput.blur()
 
-			// Wait for validation
-			await page.waitForTimeout(500)
-
 			// Should show error for invalid email
-			const _emailError = page.locator('.error, [role="alert"]')
+			page.locator('.error, [role="alert"]')
 			// Note: This will depend on implementation
 		}
 	})
@@ -134,11 +139,8 @@ test.describe('ContactForm Component', () => {
 		if (await nameInput.isVisible()) {
 			await nameInput.fill('Test User')
 
-			// Wait a bit for localStorage to be updated
-			await page.waitForTimeout(1000)
-
 			// Check if data is in localStorage
-			const _localStorageData = await page.evaluate(() => {
+			await page.evaluate(() => {
 				return localStorage.getItem('contact-form') || localStorage.getItem('form-data')
 			})
 
@@ -150,10 +152,14 @@ test.describe('ContactForm Component', () => {
 	test('should show loading state during submission', async ({ page }) => {
 		const form = page.locator('form').first()
 		const submitButton = form.locator('button[type="submit"]')
+		let releaseResponse: (() => void) | undefined
+		const responseGate = new Promise<void>(resolve => {
+			releaseResponse = resolve
+		})
 
 		// Mock the API endpoint to delay response
 		await page.route('**/api/contact', async (route) => {
-			await new Promise((resolve) => setTimeout(resolve, 2000))
+			await responseGate
 			await route.fulfill({
 				status: 200,
 				contentType: 'application/json',
@@ -174,13 +180,12 @@ test.describe('ContactForm Component', () => {
 		await submitButton.click()
 
 		// Check for loading state
-		await page.waitForTimeout(500)
-
-		// Button should show loading state (disabled or aria-busy)
-		const isDisabled = await submitButton.isDisabled()
-		const ariaBusy = await submitButton.getAttribute('aria-busy')
-
-		expect(isDisabled || ariaBusy === 'true').toBeTruthy()
+		await expect.poll(async() => {
+			const isDisabled = await submitButton.isDisabled()
+			const ariaBusy = await submitButton.getAttribute('aria-busy')
+			return isDisabled || ariaBusy === 'true'
+		}).toBeTruthy()
+		releaseResponse?.()
 	})
 
 	test('should show success message after submission', async ({ page }) => {
@@ -209,7 +214,7 @@ test.describe('ContactForm Component', () => {
 		await submitButton.click()
 
 		// Wait for success message
-		await page.waitForTimeout(2000)
+		await waitForOptionalFormFeedback(page)
 
 		// Look for success indicators
 		const successMessage = page.locator(
@@ -248,7 +253,7 @@ test.describe('ContactForm Component', () => {
 		await submitButton.click()
 
 		// Wait for error message
-		await page.waitForTimeout(2000)
+		await waitForOptionalFormFeedback(page)
 
 		// Look for error indicators
 		const errorMessage = page.locator(

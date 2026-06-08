@@ -25,7 +25,7 @@ test.describe('Toast Component', () => {
 
 		if (initialCount > 0) {
 			// Wait for auto-dismiss (typically 3-5 seconds)
-			await page.waitForTimeout(6000)
+			await page.waitForTimeout(6000) // test-shape: timing-probe - auto-dismiss duration is the behavior under test.
 
 			// Count should decrease
 			const finalCount = await toasts.count()
@@ -47,11 +47,9 @@ test.describe('Toast Component', () => {
 			if (closeButtonCount > 0) {
 				// Click close button
 				await closeButton.click()
-				await page.waitForTimeout(500)
 
 				// Toast should be hidden or removed
-				const isVisible = await toast.isVisible().catch(() => false)
-				expect(isVisible).toBeFalsy()
+				await expect(toast).toBeHidden()
 			}
 		}
 	})
@@ -239,7 +237,7 @@ test.describe('Toast Component', () => {
 			const toast = toasts.first()
 
 			// Wait longer than auto-dismiss time
-			await page.waitForTimeout(6000)
+			await page.waitForTimeout(6000) // test-shape: timing-probe - persistent toast duration is the behavior under test.
 
 			// Error/warning toasts should still be visible
 			const _isStillVisible = await toast.isVisible().catch(() => false)

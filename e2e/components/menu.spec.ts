@@ -1,5 +1,18 @@
 import { test, expect, checkA11y } from '../fixtures/test-helpers'
 
+async function openFirstMenu(page) {
+	const menuTriggers = page.locator('button[aria-haspopup="true"]')
+	const count = await menuTriggers.count()
+	if (count === 0) return null
+
+	const trigger = menuTriggers.first()
+	await trigger.click()
+
+	const menu = page.locator('[role="menu"]')
+	await expect(menu.first()).toBeVisible()
+	return { menu, trigger }
+}
+
 test.describe('Menu Component', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/')
@@ -17,18 +30,8 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should open menu on click', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Click to open menu
-			await trigger.click()
-
-			// Wait for menu to appear
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Look for menu items
 			const menuItems = page.locator('[role="menu"], [role="menuitem"]')
 			const menuItemCount = await menuItems.count()
@@ -40,38 +43,20 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should close menu on escape key', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Press Escape
 			await page.keyboard.press('Escape')
-			await page.waitForTimeout(500)
 
 			// Menu should be closed
 			const menuItems = page.locator('[role="menu"]:visible')
-			const visibleCount = await menuItems.count()
-			expect(visibleCount).toBe(0)
+			await expect(menuItems).toHaveCount(0)
 		}
 	})
 
 	test('should support keyboard navigation with arrow keys', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Look for menu items
 			const menuItems = page.locator('[role="menuitem"]')
 			const menuItemCount = await menuItems.count()
@@ -79,7 +64,6 @@ test.describe('Menu Component', () => {
 			if (menuItemCount > 1) {
 				// Press ArrowDown to navigate
 				await page.keyboard.press('ArrowDown')
-				await page.waitForTimeout(200)
 
 				// Check that focus moved
 				const focusedItem = page.locator('[role="menuitem"]:focus')
@@ -93,38 +77,20 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should close menu when clicking outside', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Click outside the menu (on the body)
 			await page.click('body', { position: { x: 5, y: 5 } })
-			await page.waitForTimeout(500)
 
 			// Menu should be closed
 			const visibleMenus = page.locator('[role="menu"]:visible')
-			const visibleCount = await visibleMenus.count()
-			expect(visibleCount).toBe(0)
+			await expect(visibleMenus).toHaveCount(0)
 		}
 	})
 
 	test('should execute menu item action on click', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Get menu items
 			const menuItems = page.locator('[role="menuitem"]')
 			const menuItemCount = await menuItems.count()
@@ -134,27 +100,17 @@ test.describe('Menu Component', () => {
 
 				// Click menu item
 				await firstMenuItem.click()
-				await page.waitForTimeout(500)
 
 				// Menu should close after clicking item
 				const visibleMenus = page.locator('[role="menu"]:visible')
-				const visibleCount = await visibleMenus.count()
-				expect(visibleCount).toBe(0)
+				await expect(visibleMenus).toHaveCount(0)
 			}
 		}
 	})
 
 	test('should support menu separators', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Look for separators
 			const separators = page.locator('[role="separator"], .menu-separator')
 			const separatorCount = await separators.count()
@@ -166,16 +122,8 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should support disabled menu items', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Look for disabled items
 			const disabledItems = page.locator('[role="menuitem"][aria-disabled="true"]')
 			const disabledCount = await disabledItems.count()
@@ -185,7 +133,6 @@ test.describe('Menu Component', () => {
 
 				// Disabled item should not be clickable
 				await disabledItem.click({ force: true })
-				await page.waitForTimeout(500)
 
 				// Should not trigger any action
 				await expect(disabledItem).toHaveAttribute('aria-disabled', 'true')
@@ -203,7 +150,6 @@ test.describe('Menu Component', () => {
 
 			// Right click to open context menu
 			await element.click({ button: 'right' })
-			await page.waitForTimeout(500)
 
 			// Look for context menu
 			const contextMenu = page.locator('[role="menu"]')
@@ -216,16 +162,8 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should pass accessibility checks', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Check accessibility
 			await checkA11y(page, '[role="menu"]')
 		}
@@ -242,8 +180,7 @@ test.describe('Menu Component', () => {
 			await expect(trigger).toHaveAttribute('aria-haspopup', 'true')
 
 			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
+			await openFirstMenu(page)
 
 			// Menu should have role="menu"
 			const menu = page.locator('[role="menu"]')
@@ -256,16 +193,8 @@ test.describe('Menu Component', () => {
 	})
 
 	test('should take screenshot for visual regression', async ({ page }) => {
-		const menuTriggers = page.locator('button[aria-haspopup="true"]')
-		const count = await menuTriggers.count()
-
-		if (count > 0) {
-			const trigger = menuTriggers.first()
-
-			// Open menu
-			await trigger.click()
-			await page.waitForTimeout(500)
-
+		const opened = await openFirstMenu(page)
+		if (opened) {
 			// Take screenshot of the menu
 			const menu = page.locator('[role="menu"]')
 			const menuCount = await menu.count()

@@ -31,8 +31,7 @@ test.describe('Modal Component', () => {
 			// Press Escape
 			await page.keyboard.press('Escape')
 
-			// Wait a bit for closing animation
-			await page.waitForTimeout(500)
+			await modal.waitFor({ state: 'hidden', timeout: 1000 }).catch(() => undefined)
 		}
 	})
 
@@ -51,8 +50,7 @@ test.describe('Modal Component', () => {
 				// Click on the backdrop (not the modal content)
 				await backdrop.click({ position: { x: 5, y: 5 } })
 
-				// Wait for any closing animation
-				await page.waitForTimeout(500)
+				await modal.waitFor({ state: 'hidden', timeout: 1000 }).catch(() => undefined)
 			}
 		}
 	})
