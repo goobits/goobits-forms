@@ -11,7 +11,7 @@ import Card from './Card.svelte';
 import CardHeader from './CardHeader.svelte';
 import CardBody from './CardBody.svelte';
 import CardFooter from './CardFooter.svelte';
-import _CardTestWrapper from './CardTestWrapper.svelte';
+import CardTestWrapper from './CardTestWrapper.svelte';
 
 describe('Card Component', () => {
 	describe('rendering', () => {
@@ -428,31 +428,10 @@ describe('CardFooter Component', () => {
 
 describe('Card Composition', () => {
 	describe('complete card structure', () => {
-		// Skip: This test uses DOM element creation which is not compatible with Svelte 5 snippet system.
-		// Real usage would compose CardHeader, CardBody, and CardFooter components as actual Svelte components,
-		// not via DOM manipulation.
-		test.skip('renders card with header, body, and footer', async () => {
-			const { container } = render(Card, {
+		test('renders card with header, body, and footer', () => {
+			const { container } = render(CardTestWrapper, {
 				props: {
-					children: () => {
-						const header = document.createElement('div');
-						header.className = 'card__header';
-						header.textContent = 'Header';
-
-						const body = document.createElement('div');
-						body.className = 'card__body';
-						body.textContent = 'Body';
-
-						const footer = document.createElement('div');
-						footer.className = 'card__footer';
-						footer.textContent = 'Footer';
-
-						const fragment = document.createDocumentFragment();
-						fragment.appendChild(header);
-						fragment.appendChild(body);
-						fragment.appendChild(footer);
-						return fragment;
-					}
+					testType: 'card-with-structure'
 				}
 			});
 
