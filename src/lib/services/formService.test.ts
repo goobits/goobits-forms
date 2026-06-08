@@ -455,7 +455,7 @@ describe('handleFieldInput', () => {
 		mockDebounce.mockImplementation((fn: (...args: any[]) => any, delay: number) => {
 			return () => {
 				clearTimeout(timeoutId);
-				timeoutId = setTimeout(fn, delay);
+				timeoutId = setTimeout(fn, delay); // test-shape: timing-probe - documented test timing behavior.
 			};
 		});
 

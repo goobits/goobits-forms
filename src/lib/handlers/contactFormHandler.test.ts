@@ -729,7 +729,7 @@ describe('createContactApiHandler', () => {
 
 		test('handles async custom validation', async () => {
 			const customValidation = vi.fn().mockImplementation(async (data) => {
-				await new Promise((resolve) => setTimeout(resolve, 10));
+				await new Promise((resolve) => setTimeout(resolve, 10)); // test-shape: timing-probe - documented test timing behavior.
 				return data.email.includes('invalid') ? { email: 'Invalid email' } : null;
 			});
 

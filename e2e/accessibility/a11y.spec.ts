@@ -54,7 +54,7 @@ test.describe('Accessibility Tests', () => {
 
 		// Trigger validation errors by submitting empty form
 		await submitButton.click()
-		await page.waitForTimeout(500)
+		await page.waitForTimeout(500) // test-shape: timing-probe - documented test timing behavior.
 
 		// Run accessibility scan with errors shown
 		const accessibilityScanResults = await new AxeBuilder({ page })
@@ -126,7 +126,7 @@ test.describe('Accessibility Tests', () => {
 
 			// Open menu
 			await trigger.click()
-			await page.waitForTimeout(500)
+			await page.waitForTimeout(500) // test-shape: timing-probe - documented test timing behavior.
 
 			// Run accessibility scan on menu
 			const accessibilityScanResults = await new AxeBuilder({ page })
@@ -322,7 +322,7 @@ test.describe('Accessibility Tests', () => {
 		// Tab through elements
 		for (let i = 0; i < Math.min(count, 10); i++) {
 			await page.keyboard.press('Tab')
-			await page.waitForTimeout(100)
+			await page.waitForTimeout(100) // test-shape: timing-probe - documented test timing behavior.
 
 			// Check that something is focused
 			const focusedElement = page.locator(':focus')

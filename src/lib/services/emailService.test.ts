@@ -864,7 +864,7 @@ describe('MockEmailProvider Verification Helpers', () => {
 		const mockProvider = new MockEmailProvider();
 
 		await mockProvider.sendEmail('test1@example.com', 'Subject 1', '<p>Body 1</p>');
-		await new Promise(resolve => setTimeout(resolve, 10));
+		await new Promise(resolve => setTimeout(resolve, 10)); // test-shape: timing-probe - documented test timing behavior.
 		await mockProvider.sendEmail('test2@example.com', 'Subject 2', '<p>Body 2</p>');
 
 		const emails = mockProvider.getSentEmails();

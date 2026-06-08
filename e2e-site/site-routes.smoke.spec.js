@@ -47,7 +47,7 @@ async function assertHealthyNavigation(page, route) {
 	expect(response, `No response for ${route}`).not.toBeNull()
 	expect(response.ok(), `Main document failed for ${route} with status ${response.status()}`).toBeTruthy()
 
-	await page.waitForTimeout(250)
+	await page.waitForTimeout(250) // test-shape: timing-probe - documented test timing behavior.
 	await page.waitForLoadState('load')
 	await page.waitForLoadState('networkidle', { timeout: 2_000 }).catch(() => { })
 
