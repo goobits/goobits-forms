@@ -55,6 +55,17 @@ export default tseslint.config(
 		}
 	},
 	{
-		ignores: [ 'node_modules', '.git', 'dist', 'build', 'dev/.svelte-kit/**', '.svelte-kit/**', 'coverage/**', 'e2e/**', 'playwright-report/**' ]
+		ignores: [
+			'**/node_modules/**',
+			'.git/**',
+			'**/dist/**',
+			'**/build/**',
+			'**/.svelte-kit/**',
+			'**/coverage/**',
+			'**/playwright-report/**',
+			'**/test-results/**',
+			'e2e/**',
+			'packages/**'
+		]
 	}
 )
