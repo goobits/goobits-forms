@@ -146,13 +146,13 @@ function optimizeTransitionState(newState: Partial<TooltipState>): void {
 function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 	// Clear any pending hide timeout (debouncing)
 	if (hideTimeout) {
-		clearTimeout(hideTimeout);
+		window.clearTimeout(hideTimeout);
 		hideTimeout = undefined;
 	}
 
 	// Clear any pending transition timeout
 	if (transitionTimeout) {
-		clearTimeout(transitionTimeout);
+		window.clearTimeout(transitionTimeout);
 		transitionTimeout = undefined;
 	}
 
@@ -197,7 +197,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 			globalTooltipCallbacks.forEach((callback) => callback());
 
 			// Fade out, then reposition and fade in
-			setTimeout(() => {
+			window.setTimeout(() => {
 				globalTooltipState = {
 					visible: true,
 					transitioning: true,
@@ -220,7 +220,7 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 				globalTooltipCallbacks.forEach((callback) => callback());
 
 				// Complete fade in
-				setTimeout(() => {
+				window.setTimeout(() => {
 					if (globalTooltipState.visible) {
 						globalTooltipState.transitioning = false;
 						globalTooltipCallbacks.forEach((callback) => callback());
@@ -274,11 +274,11 @@ function showTooltip(element: HTMLElement, options: TooltipOptions): void {
 function hideTooltipImmediate(): void {
 	// Clear any pending timeouts
 	if (hideTimeout) {
-		clearTimeout(hideTimeout);
+		window.clearTimeout(hideTimeout);
 		hideTimeout = undefined;
 	}
 	if (transitionTimeout) {
-		clearTimeout(transitionTimeout);
+		window.clearTimeout(transitionTimeout);
 		transitionTimeout = undefined;
 	}
 
@@ -312,7 +312,7 @@ function hideTooltipImmediate(): void {
 function hideTooltip(): void {
 	// Clear any existing hide timeout
 	if (hideTimeout) {
-		clearTimeout(hideTimeout);
+		window.clearTimeout(hideTimeout);
 	}
 
 	// Set debounced hide timeout with enhanced transition logic
@@ -447,7 +447,7 @@ export function useTooltip(
 	function handleMouseEnter() {
 		// Clear any pending show timeout
 		if (showTimeout) {
-			clearTimeout(showTimeout);
+			window.clearTimeout(showTimeout);
 		}
 
 		showTimeout = window.setTimeout(() => {
@@ -462,7 +462,7 @@ export function useTooltip(
 	function handleMouseLeave() {
 		// Clear any pending show timeout
 		if (showTimeout) {
-			clearTimeout(showTimeout);
+			window.clearTimeout(showTimeout);
 			showTimeout = undefined;
 		}
 
@@ -470,7 +470,7 @@ export function useTooltip(
 		// and no new element will show a tooltip soon
 		if (globalTooltipState.targetElement === node) {
 			// Add a small delay to allow for seamless transitions between tooltips
-			setTimeout(() => {
+			window.setTimeout(() => {
 				// Check again if this element is still the active target after delay
 				if (globalTooltipState.targetElement === node) {
 					hideTooltip();
@@ -499,7 +499,7 @@ export function useTooltip(
 		},
 		destroy() {
 			if (showTimeout) {
-				clearTimeout(showTimeout);
+				window.clearTimeout(showTimeout);
 				showTimeout = undefined;
 			}
 
@@ -539,11 +539,12 @@ export function initializeGlobalTooltips(): () => void {
 
 					elements.forEach((el) => {
 						if (
+							el instanceof HTMLElement &&
 							!el.classList.contains('no-tooltip') &&
 							!el.hasAttribute('data-tooltip-initialized')
 						) {
 							el.setAttribute('data-tooltip-initialized', 'true');
-								useTooltip(el);
+							useTooltip(el);
 						}
 					});
 				}
@@ -554,9 +555,9 @@ export function initializeGlobalTooltips(): () => void {
 	// Initialize existing elements
 	const existingElements = document.querySelectorAll('[aria-label]:not(.no-tooltip)');
 	existingElements.forEach((el) => {
-		if (!el.hasAttribute('data-tooltip-initialized')) {
+		if (el instanceof HTMLElement && !el.hasAttribute('data-tooltip-initialized')) {
 			el.setAttribute('data-tooltip-initialized', 'true');
-				useTooltip(el);
+			useTooltip(el);
 		}
 	});
 

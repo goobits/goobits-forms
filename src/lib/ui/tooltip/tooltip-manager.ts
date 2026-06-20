@@ -165,12 +165,12 @@ function showTooltipInternal(
 
 	// Clear timers
 	if (_hideTimer) {
-		clearTimeout(_hideTimer);
+		window.clearTimeout(_hideTimer);
 		_hideTimer = undefined;
 	}
 
 	if (_autoHideTimer) {
-		clearTimeout(_autoHideTimer);
+		window.clearTimeout(_autoHideTimer);
 		_autoHideTimer = undefined;
 	}
 
@@ -228,7 +228,7 @@ function showTooltipInternal(
 
 	// Handle auto-hide
 	if (tooltipOptions.autoHideAfter && tooltipOptions.autoHideAfter > 0) {
-		_autoHideTimer = setTimeout(() => {
+		_autoHideTimer = window.setTimeout(() => {
 			hideTooltipInternal();
 		}, tooltipOptions.autoHideAfter);
 	}
@@ -258,7 +258,7 @@ function hideTooltipInternal(callback?: () => void): void {
 	notifyStateChange();
 
 	// After transition completes
-	_transitionTimer = setTimeout(() => {
+	_transitionTimer = window.setTimeout(() => {
 		if (_currentState) {
 			_currentState.transitioning = false;
 			_currentState.visible = false;
@@ -284,13 +284,13 @@ export const TooltipManager: TooltipManagerType = {
 	show(elementOrOptions: HTMLElement | TooltipOptions, options?: TooltipOptions): void {
 		// Clear show timer if exists
 		if (_showTimer) {
-			clearTimeout(_showTimer);
+			window.clearTimeout(_showTimer);
 		}
 
 		const delay = options?.showDelay ?? (elementOrOptions instanceof HTMLElement ? SHOW_DELAY : 0);
 
 		if (delay > 0) {
-			_showTimer = setTimeout(() => {
+			_showTimer = window.setTimeout(() => {
 				showTooltipInternal(elementOrOptions, options);
 			}, delay);
 		} else {
@@ -301,7 +301,7 @@ export const TooltipManager: TooltipManagerType = {
 	hide(callback?: () => void): void {
 		// Clear show timer if exists
 		if (_showTimer) {
-			clearTimeout(_showTimer);
+			window.clearTimeout(_showTimer);
 			_showTimer = undefined;
 		}
 
@@ -313,7 +313,7 @@ export const TooltipManager: TooltipManagerType = {
 			return;
 		}
 
-		_hideTimer = setTimeout(() => {
+		_hideTimer = window.setTimeout(() => {
 			_hideTimer = undefined;
 			hideTooltipInternal(callback);
 		}, HIDE_DELAY);
@@ -345,10 +345,10 @@ export const TooltipManager: TooltipManagerType = {
 
 	destroy(): void {
 		// Clear all timers
-		if (_showTimer) clearTimeout(_showTimer);
-		if (_hideTimer) clearTimeout(_hideTimer);
-		if (_autoHideTimer) clearTimeout(_autoHideTimer);
-		if (_transitionTimer) clearTimeout(_transitionTimer);
+		if (_showTimer) window.clearTimeout(_showTimer);
+		if (_hideTimer) window.clearTimeout(_hideTimer);
+		if (_autoHideTimer) window.clearTimeout(_autoHideTimer);
+		if (_transitionTimer) window.clearTimeout(_transitionTimer);
 
 		// Clear event listeners
 		_attachedEvents.forEach((detach) => detach());
@@ -447,7 +447,7 @@ export function tooltip(
 				};
 
 				// Add listener after a delay to prevent immediate closing
-				setTimeout(() => {
+				window.setTimeout(() => {
 					document.addEventListener('click', documentClick, true);
 				}, 0);
 			}
