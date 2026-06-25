@@ -59,7 +59,7 @@ pnpm test:e2e:report
 
 ```bash
 # Run a specific test file
-pnpm playwright test e2e/components/button.spec.ts
+pnpm playwright test e2e/integration/contact-form-flow.spec.ts
 
 # Run tests matching a pattern
 pnpm playwright test --grep "accessibility"
@@ -91,7 +91,6 @@ Tests are organized in the `/e2e` directory:
 ```
 e2e/
 ├── fixtures/          # Test helpers and utilities
-├── components/        # Component-specific tests
 ├── accessibility/     # Accessibility tests
 └── integration/       # Integration and flow tests
 ```
@@ -157,14 +156,10 @@ test('should handle API responses', async ({ page }) => {
 
 ### Component Tests
 
-Component tests focus on individual UI components:
-
-- **Button tests** - Click, keyboard navigation, states
-- **Modal tests** - Open/close, focus trap, backdrop
-- **Form tests** - Validation, submission, error handling
-- **Menu tests** - Navigation, keyboard interaction
-- **Tooltip tests** - Show/hide, positioning
-- **Toast tests** - Notifications, auto-dismiss
+Component contracts belong in `src/lib/ui/**/*.test.ts` and
+`src/lib/ui/**/*.a11y.test.ts`, where each test mounts the production component
+directly. E2E tests stay focused on complete browser flows with deterministic
+setup.
 
 ### Integration Tests
 
@@ -292,7 +287,7 @@ This enables:
 pnpm test:e2e:debug
 
 # Debug a specific test
-pnpm playwright test --debug e2e/components/button.spec.ts
+pnpm playwright test --debug e2e/integration/contact-form-flow.spec.ts
 ```
 
 ### Headed Mode
