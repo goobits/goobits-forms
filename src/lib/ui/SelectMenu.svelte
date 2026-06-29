@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ChevronDown } from '@lucide/svelte';
 	import type { Component } from 'svelte';
-	import { containKeyboardEvent, handleKeyboardActivationKey } from './_keyboard';
+	import { containKeyboardEvent, handleKeyboardActivationKey } from '@goobits/keyboard/dom';
 	import Menu from './menu/Menu.svelte';
 
 	/**

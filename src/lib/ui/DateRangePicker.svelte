@@ -11,7 +11,7 @@
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
 	import FormLabel from './FormLabel.svelte';
-	import { containKeyboardEvent } from './_keyboard';
+	import { containKeyboardEvent } from '@goobits/keyboard/dom';
 	import {
 		formatDate,
 		parseDate,

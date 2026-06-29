@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { containKeyboardEvent } from './_keyboard';
+	import { containKeyboardEvent } from '@goobits/keyboard/dom';
 
 	/**
 	 * Slider/Range Component for @goobits/ui

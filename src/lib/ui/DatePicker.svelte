@@ -10,7 +10,7 @@
 	import { browser } from '$app/environment';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
-	import { containKeyboardEvent } from './_keyboard';
+	import { containKeyboardEvent } from '@goobits/keyboard/dom';
 	import { formatDate, parseDate, startOfDay } from '../utils/date-utils';
 
 	/**

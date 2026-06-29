@@ -5,7 +5,7 @@
  * Reuses existing utilities and extends them for menu-specific needs.
  */
 
-import { containKeyboardEvent } from '../_keyboard';
+import { containKeyboardEvent } from '@goobits/keyboard/dom';
 import type { MenuPosition, MenuDimensions, MenuPlacement, MenuItem } from './types';
 
 /**

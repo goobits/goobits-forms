@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import { handleKeyboardEscapeKey } from '../_keyboard';
+	import { handleKeyboardEscapeKey } from '@goobits/keyboard/dom';
 	import type { ToastVariant, ToastAction, ToastPosition } from './toast-service';
 
 	/**

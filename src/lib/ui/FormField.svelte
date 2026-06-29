@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckCircle, AlertCircle } from '@lucide/svelte';
-	import { containKeyboardEvent } from './_keyboard';
+	import { containKeyboardEvent } from '@goobits/keyboard/dom';
 
 	/**
 	 * Props for the FormField component

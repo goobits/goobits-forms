@@ -12,7 +12,7 @@
 
 	import { getMenuItemAriaAttributes } from './utils';
 	import MenuItem from './MenuItem.svelte';
-	import { handleKeyboardActivationKey } from '../_keyboard';
+	import { handleKeyboardActivationKey } from '@goobits/keyboard/dom';
 	// Confirmation import removed - now optional via prop
 	import {
 		Type,

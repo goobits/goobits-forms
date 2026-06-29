@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { containKeyboardEvent } from '../_keyboard';
+	import { containKeyboardEvent } from '@goobits/keyboard/dom';
 
 	/**
 	 * Size variants for the modal
