@@ -12,6 +12,7 @@
 
 	import { getMenuItemAriaAttributes } from './utils';
 	import MenuItem from './MenuItem.svelte';
+	import { handleKeyboardActivationKey } from '../_keyboard';
 	// Confirmation import removed - now optional via prop
 	import {
 		Type,
@@ -212,10 +213,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleClick();
-		}
+		handleKeyboardActivationKey(event, () => handleClick());
 	}
 
 	// Map icon names to icon components

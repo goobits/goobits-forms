@@ -11,6 +11,7 @@
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
 	import FormLabel from './FormLabel.svelte';
+	import { containKeyboardEvent } from './_keyboard';
 	import {
 		formatDate,
 		parseDate,
@@ -259,15 +260,15 @@
 	 */
 	function handleInputKeydown(event: KeyboardEvent, input: 'start' | 'end'): void {
 		if (event.key === 'Escape' && isOpen) {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			closeCalendar();
 		} else if (event.key === 'Enter') {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			if (!isOpen) {
 				openCalendar(input);
 			}
 		} else if (event.key === 'ArrowDown' && !isOpen) {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			openCalendar(input);
 		} else if (event.key === 'Tab' && input === 'start') {
 			closeCalendar();
@@ -333,6 +334,7 @@
 		if (isOpen && browser) {
 			const handleEscape = (event: KeyboardEvent) => {
 				if (event.key === 'Escape') {
+					containKeyboardEvent(event);
 					closeCalendar();
 					if (activeInput === 'start') {
 						startInputRef?.focus();

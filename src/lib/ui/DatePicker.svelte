@@ -10,6 +10,7 @@
 	import { browser } from '$app/environment';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
+	import { containKeyboardEvent } from './_keyboard';
 	import { formatDate, parseDate, startOfDay } from '../utils/date-utils';
 
 	/**
@@ -233,15 +234,15 @@
 	 */
 	function handleInputKeydown(event: KeyboardEvent): void {
 		if (event.key === 'Escape' && isOpen) {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			closeCalendar();
 		} else if (event.key === 'Enter') {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			if (!isOpen) {
 				openCalendar();
 			}
 		} else if (event.key === 'ArrowDown' && !isOpen) {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			openCalendar();
 		}
 	}
@@ -282,6 +283,7 @@
 		if (isOpen && browser) {
 			const handleEscape = (event: KeyboardEvent) => {
 				if (event.key === 'Escape') {
+					containKeyboardEvent(event);
 					closeCalendar();
 					inputRef?.focus();
 				}

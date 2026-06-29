@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CheckCircle, AlertCircle } from '@lucide/svelte';
+	import { containKeyboardEvent } from './_keyboard';
 
 	/**
 	 * Props for the FormField component
@@ -65,12 +66,13 @@
 	function handleKeyDown(event: KeyboardEvent): void {
 		// Handle Enter key on select elements (activate dropdown)
 		if (event.key === 'Enter' && fieldConfig.type === 'select') {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			(event.currentTarget as HTMLElement).click();
 		}
 
 		// Custom handling for Escape key
 		if (event.key === 'Escape') {
+			containKeyboardEvent(event, { preventDefault: false });
 			(event.currentTarget as HTMLElement).blur();
 		}
 	}

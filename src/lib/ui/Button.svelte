@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { containKeyboardEvent, handleKeyboardActivationKey } from './_keyboard';
 
 	/**
 	 * Props interface for the Button component
@@ -84,22 +85,20 @@
 	// Handle keyboard events (Enter and Space)
 	function handleKeyDown(event: KeyboardEvent) {
 		if (isDisabled) {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			return;
 		}
 		// For buttons, Enter and Space should trigger the click
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			if (onclick) {
-				// Create a synthetic mouse event
-				const syntheticEvent = new MouseEvent('click', {
-					bubbles: true,
-					cancelable: true,
-					view: window
-				});
-				onclick(syntheticEvent);
-			}
-		}
+		handleKeyboardActivationKey(event, () => {
+			if (!onclick) return;
+			// Create a synthetic mouse event
+			const syntheticEvent = new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+				view: window
+			});
+			onclick(syntheticEvent);
+		});
 	}
 </script>
 

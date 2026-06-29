@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { handleKeyboardEscapeKey } from '../_keyboard';
 	import type { ToastVariant, ToastAction, ToastPosition } from './toast-service';
 
 	/**
@@ -93,8 +94,8 @@
 	 * Handle escape key
 	 */
 	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && dismissible) {
-			handleDismiss();
+		if (dismissible) {
+			handleKeyboardEscapeKey(event, handleDismiss);
 		}
 	}
 

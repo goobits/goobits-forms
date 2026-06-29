@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { containKeyboardEvent } from './_keyboard';
+
 	/**
 	 * Slider/Range Component for @goobits/ui
 	 *
@@ -202,22 +204,23 @@
 			case 'ArrowRight':
 			case 'ArrowUp':
 				delta = step;
-				event.preventDefault();
+				containKeyboardEvent(event);
 				break;
 			case 'ArrowLeft':
 			case 'ArrowDown':
 				delta = -step;
-				event.preventDefault();
+				containKeyboardEvent(event);
 				break;
 			case 'PageUp':
 				delta = step * 10;
-				event.preventDefault();
+				containKeyboardEvent(event);
 				break;
 			case 'PageDown':
 				delta = -step * 10;
-				event.preventDefault();
+				containKeyboardEvent(event);
 				break;
 			case 'Home':
+				containKeyboardEvent(event);
 				if (isRange && thumb === 'start') {
 					value = [min, (value as [number, number])[1]];
 				} else if (isRange && thumb === 'end') {
@@ -225,9 +228,9 @@
 				} else {
 					value = min;
 				}
-				event.preventDefault();
 				return;
 			case 'End':
+				containKeyboardEvent(event);
 				if (isRange && thumb === 'start') {
 					value = [max, (value as [number, number])[1]];
 				} else if (isRange && thumb === 'end') {
@@ -235,7 +238,6 @@
 				} else {
 					value = max;
 				}
-				event.preventDefault();
 				return;
 		}
 

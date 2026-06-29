@@ -5,6 +5,7 @@
  * Reuses existing utilities and extends them for menu-specific needs.
  */
 
+import { containKeyboardEvent } from '../_keyboard';
 import type { MenuPosition, MenuDimensions, MenuPlacement, MenuItem } from './types';
 
 /**
@@ -173,40 +174,40 @@ export function createKeyboardNavigation(
 		handleKeydown(event: KeyboardEvent) {
 			switch (event.key) {
 				case 'ArrowDown':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					this.focusNext();
 					break;
 
 				case 'ArrowUp':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					this.focusPrevious();
 					break;
 
 				case 'Home':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					this.focusFirst();
 					break;
 
 				case 'End':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					this.focusLast();
 					break;
 
 				case 'Enter':
 				case ' ':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					this.executeCurrentItem();
 					break;
 
 				case 'Escape':
-					event.preventDefault();
+					containKeyboardEvent(event);
 					onClose();
 					break;
 
 				case 'ArrowRight':
 					// Handle submenu opening if applicable
 					if (focusedIndex >= 0 && items[focusedIndex]?.type === 'submenu') {
-						event.preventDefault();
+						containKeyboardEvent(event);
 						isSubmenuOpen = true;
 					}
 					break;
@@ -214,10 +215,11 @@ export function createKeyboardNavigation(
 				case 'ArrowLeft':
 					// Handle submenu closing
 					if (isSubmenuOpen) {
-						event.preventDefault();
+						containKeyboardEvent(event);
 						isSubmenuOpen = false;
 					} else {
 						// Close main menu if no submenu is open
+						containKeyboardEvent(event);
 						onClose();
 					}
 					break;

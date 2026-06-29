@@ -7,6 +7,7 @@
 	 */
 
 	import { ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import { containKeyboardEvent } from './_keyboard';
 	import {
 		getMonthCalendarDates,
 		getDayNames,
@@ -174,42 +175,42 @@
 
 		switch (event.key) {
 			case 'ArrowLeft':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				newIndex = Math.max(0, dateIndex - 1);
 				break;
 			case 'ArrowRight':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				newIndex = Math.min(calendarDates.length - 1, dateIndex + 1);
 				break;
 			case 'ArrowUp':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				newIndex = Math.max(0, dateIndex - 7);
 				break;
 			case 'ArrowDown':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				newIndex = Math.min(calendarDates.length - 1, dateIndex + 7);
 				break;
 			case 'Home':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				// Go to first day of week
 				newIndex = Math.floor(dateIndex / 7) * 7;
 				break;
 			case 'End':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				// Go to last day of week
 				newIndex = Math.min(calendarDates.length - 1, Math.floor(dateIndex / 7) * 7 + 6);
 				break;
 			case 'PageUp':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				previousMonth();
 				return;
 			case 'PageDown':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				nextMonth();
 				return;
 			case 'Enter':
 			case ' ':
-				event.preventDefault();
+				containKeyboardEvent(event);
 				handleDateClick(date);
 				return;
 		}

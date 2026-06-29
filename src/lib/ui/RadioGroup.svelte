@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { containKeyboardEvent } from './_keyboard';
+
 	/**
 	 * Radio option interface
 	 */
@@ -106,12 +108,12 @@
 		let nextIndex: number | undefined;
 
 		if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			// Move to next radio, wrapping to first if at end
 			const nextEnabledIndex = (currentEnabledIndex + 1) % enabledRadios.length;
 			nextIndex = enabledRadios[nextEnabledIndex].index;
 		} else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-			event.preventDefault();
+			containKeyboardEvent(event);
 			// Move to previous radio, wrapping to last if at beginning
 			const prevEnabledIndex =
 				currentEnabledIndex === 0 ? enabledRadios.length - 1 : currentEnabledIndex - 1;

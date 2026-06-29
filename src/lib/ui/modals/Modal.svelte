@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { containKeyboardEvent } from '../_keyboard';
 
 	/**
 	 * Size variants for the modal
@@ -115,6 +116,7 @@
 	// Handle escape key
 	function handleEscapeKey(event: KeyboardEvent) {
 		if (event.key === 'Escape' && closeOnEscape && isVisible) {
+			containKeyboardEvent(event);
 			handleClose();
 		}
 	}
@@ -206,6 +208,11 @@
 		e.stopPropagation();
 	}
 
+	function handleContentKeydown(event: KeyboardEvent) {
+		handleEscapeKey(event);
+		event.stopPropagation();
+	}
+
 	const modalClasses = $derived(
 		[
 			'modal-dialog',
@@ -261,7 +268,7 @@
 			bind:this={modalRef}
 			class={contentClasses}
 			onclick={handleContentClick}
-			onkeydown={(e) => e.stopPropagation()}
+			onkeydown={handleContentKeydown}
 			role="document"
 		>
 			<div bind:this={contentRef} class="modal-dialog__inner">

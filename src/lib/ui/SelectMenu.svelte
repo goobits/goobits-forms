@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ChevronDown } from '@lucide/svelte';
 	import type { Component } from 'svelte';
+	import { containKeyboardEvent, handleKeyboardActivationKey } from './_keyboard';
 	import Menu from './menu/Menu.svelte';
 
 	/**
@@ -91,10 +92,10 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleToggle();
-		} else if (event.key === 'Escape' && isOpen) {
+		if (handleKeyboardActivationKey(event, handleToggle)) return;
+
+		if (event.key === 'Escape' && isOpen) {
+			containKeyboardEvent(event);
 			isOpen = false;
 		}
 	}
