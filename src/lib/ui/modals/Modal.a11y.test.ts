@@ -189,6 +189,58 @@ describe('Modal Component - Accessibility', () => {
 			});
 		});
 
+		it('should wrap Tab focus at the modal boundaries', () => {
+			const { container } = render(Modal, {
+				props: {
+					isVisible: true,
+					onClose: () => {},
+					title:'Focus Wrap Test'
+				}
+			});
+
+			const closeButton = container.querySelector<HTMLElement>('[aria-label="Close modal"]');
+			expect(closeButton).toBeTruthy();
+			closeButton!.focus();
+
+			const tabEvent = dispatchKey(closeButton!, 'Tab');
+			expect(tabEvent.defaultPrevented).toBe(true);
+			expect(document.activeElement).toBe(closeButton);
+
+			const shiftTabEvent = dispatchKey(closeButton!, 'Tab', { shiftKey: true });
+			expect(shiftTabEvent.defaultPrevented).toBe(true);
+			expect(document.activeElement).toBe(closeButton);
+		});
+
+		it('should restore focus to the opener when closed', async () => {
+			const opener = document.createElement('button');
+			opener.type = 'button';
+			opener.textContent = 'Open modal';
+			document.body.append(opener);
+			opener.focus();
+
+			const { container, rerender } = render(Modal, {
+				props: {
+					isVisible: true,
+					onClose: () => {},
+					title:'Restore Focus Test'
+				}
+			});
+
+			await waitForEffects();
+			const closeButton = container.querySelector<HTMLElement>('[aria-label="Close modal"]');
+			expect(document.activeElement).toBe(closeButton);
+
+			await rerender({
+				isVisible: false,
+				onClose: () => {},
+				title:'Restore Focus Test'
+			});
+			await waitForEffects();
+
+			expect(document.activeElement).toBe(opener);
+			opener.remove();
+		});
+
 		it('should have a close button that is keyboard accessible', () => {
 			const { container } = render(Modal, {
 				props: {
@@ -474,3 +526,22 @@ describe('Modal Component - Accessibility', () => {
 		});
 	});
 });
+
+function dispatchKey(
+	element: HTMLElement,
+	key: string,
+	options: { shiftKey?: boolean } = {}
+): KeyboardEvent {
+	const event = new KeyboardEvent('keydown', {
+		bubbles: true,
+		cancelable: true,
+		key,
+		...options
+	});
+	element.dispatchEvent(event);
+	return event;
+}
+
+function waitForEffects(): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, 0));
+}

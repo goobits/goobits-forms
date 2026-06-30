@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { containKeyboardEvent } from '@goobits/keyboard/dom';
+	import { getFocusTrapItems, handleFocusTrapKeyboardEvent } from '@goobits/keyboard/focus';
 
 	/**
 	 * Size variants for the modal
@@ -90,12 +91,14 @@
 	}: ModalProps = $props();
 
 	let mouseDownTarget: EventTarget | null = null;
-	let modalRef = $state<HTMLDivElement | null>(null);
+	let dialogRef = $state<HTMLDivElement | null>(null);
 	let contentRef = $state<HTMLDivElement | null>(null);
 	let isTransitioning = $state(false);
 	let contentHeight = $state<number | null>(null);
 	let internalIsClosing = $state(false);
 	let fadeTimeout = $state<number | null>(null);
+	let previousActiveElement: HTMLElement | null = null;
+	let hasCapturedFocus = false;
 
 	// Handle modal close with fade-out animation
 	function handleClose() {
@@ -114,11 +117,23 @@
 	}
 
 	// Handle escape key
-	function handleEscapeKey(event: KeyboardEvent) {
+	function handleEscapeKey(event: KeyboardEvent): boolean {
 		if (event.key === 'Escape' && closeOnEscape && isVisible) {
 			containKeyboardEvent(event);
 			handleClose();
+			return true;
 		}
+		return false;
+	}
+
+	function handleTabKey(event: KeyboardEvent): boolean {
+		if (event.key !== 'Tab' || !isVisible) return false;
+		return handleFocusTrapKeyboardEvent(event, { root: dialogRef });
+	}
+
+	function handleDialogKeydown(event: KeyboardEvent): void {
+		if (handleEscapeKey(event)) return;
+		handleTabKey(event);
 	}
 
 	// Set up escape key listener
@@ -137,11 +152,24 @@
 		return undefined;
 	});
 
-	// Focus management - focus the modal when it opens
+	// Focus management - focus the first control when it opens, then restore focus on close.
 	$effect(() => {
-		if (isVisible && modalRef) {
-			modalRef.focus();
+		if (!isVisible) {
+			hasCapturedFocus = false;
+			if (previousActiveElement?.isConnected) {
+				previousActiveElement.focus({ preventScroll: true });
+			}
+			previousActiveElement = null;
+			return;
 		}
+
+		if (!dialogRef || hasCapturedFocus) return;
+		hasCapturedFocus = true;
+		previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		void tick().then(() => {
+			if (!isVisible || !dialogRef) return;
+			(getFocusTrapItems(dialogRef)[0] ?? dialogRef).focus({ preventScroll: true });
+		});
 	});
 
 	// Prevent body scroll when modal is open
@@ -209,7 +237,8 @@
 	}
 
 	function handleContentKeydown(event: KeyboardEvent) {
-		handleEscapeKey(event);
+		if (handleEscapeKey(event)) return;
+		handleTabKey(event);
 		event.stopPropagation();
 	}
 
@@ -252,10 +281,11 @@
 <!-- Keep in DOM during fade-out animation -->
 {#if isVisible || internalIsClosing}
 	<div
+		bind:this={dialogRef}
 		class={modalClasses}
 		onmousedown={handleBackdropMouseDown}
 		onmouseup={handleBackdropMouseUp}
-		onkeydown={handleEscapeKey}
+		onkeydown={handleDialogKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby={title ? 'modal-title' : undefined}
@@ -265,7 +295,6 @@
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
-			bind:this={modalRef}
 			class={contentClasses}
 			onclick={handleContentClick}
 			onkeydown={handleContentKeydown}
