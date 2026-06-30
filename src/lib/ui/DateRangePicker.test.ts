@@ -33,4 +33,15 @@ describe('DateRangePicker keyboard navigation', () => {
 		expect(focusableDates).toHaveLength(1);
 		expect(focusableDates[0]).toHaveAttribute('data-calendar-focus', 'true');
 	});
+
+	test('range calendar exposes a named grid without application mode', async () => {
+		render(DateRangePicker, { props: { id: 'range-test' } });
+		const input = screen.getByPlaceholderText('Start date');
+
+		await userEvent.click(input);
+		await waitFor(() => {
+			expect(screen.queryByRole('application')).not.toBeInTheDocument();
+			expect(screen.getByRole('grid', { name: /calendar dates/i })).toBeInTheDocument();
+		});
+	});
 });

@@ -608,6 +608,51 @@ describe('DatePicker Component', () => {
 				expect(dialog).toHaveAttribute('aria-label', 'Choose date');
 			});
 		});
+
+		test('calendar exposes a named grid without application mode', async () => {
+			render(DatePicker, { props: { id: 'test' } });
+			const input = screen.getByRole('combobox');
+
+			await userEvent.click(input);
+
+			await waitFor(() => {
+				expect(screen.queryByRole('application')).not.toBeInTheDocument();
+				expect(screen.getByRole('grid', { name: /calendar dates/i })).toBeInTheDocument();
+			});
+		});
+
+		test('selected and current dates expose grid state', async () => {
+			render(DatePicker, {
+				props: {
+					id: 'test',
+					value: new Date(2024, 0, 15)
+				}
+			});
+			const input = screen.getByRole('combobox');
+
+			await userEvent.click(input);
+
+			await waitFor(() => {
+				const selectedDate = screen.getByRole('gridcell', { name: 'January 15, 2024' });
+				expect(selectedDate).toHaveAttribute('aria-selected', 'true');
+			});
+		});
+
+		test('today is exposed with aria-current', async () => {
+			render(DatePicker, { props: { id: 'test' } });
+			const input = screen.getByRole('combobox');
+			const todayLabel = new Date().toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+
+			await userEvent.click(input);
+
+			await waitFor(() => {
+				expect(screen.getByRole('gridcell', { name: todayLabel })).toHaveAttribute('aria-current', 'date');
+			});
+		});
 	});
 
 	describe('Min/Max Date Constraints', () => {

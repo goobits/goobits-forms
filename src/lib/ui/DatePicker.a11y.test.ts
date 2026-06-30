@@ -11,6 +11,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { screen, waitFor } from '@testing-library/svelte';
 import { render, getFocusableElements } from './test-utils';
 import {
 	testAccessibility,
@@ -175,6 +177,23 @@ describe('DatePicker Component - Accessibility', () => {
 			expect(input).toHaveAttribute('aria-controls');
 			const controlsId = input?.getAttribute('aria-controls');
 			expect(controlsId).toContain('calendar');
+		});
+
+		it('should expose calendar dates as a named grid without application mode', async () => {
+			render(DatePicker, {
+				props: {
+					id: 'calendar-grid-datepicker',
+					label: 'Date'
+				}
+			});
+			const input = screen.getByRole('combobox');
+
+			await userEvent.click(input);
+
+			await waitFor(() => {
+				expect(screen.queryByRole('application')).not.toBeInTheDocument();
+				expect(screen.getByRole('grid', { name: /calendar dates/i })).toBeInTheDocument();
+			});
 		});
 
 		it('should handle error state with ARIA', async () => {

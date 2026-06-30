@@ -73,6 +73,9 @@
 	// Current year and month
 	const currentYear = $derived(currentMonth.getFullYear());
 	const currentMonthIndex = $derived(currentMonth.getMonth());
+	const currentMonthLabel = $derived(
+		currentMonth.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
+	);
 	const focusDate = $derived.by(() => {
 		const selected = selectedDate
 			? calendarDates.find((date) => isSameDay(date, selectedDate) && !isDateDisabled(date))
@@ -243,7 +246,7 @@
 	}
 </script>
 
-<div class="calendar" {id} role="application" aria-label="Calendar">
+<div class="calendar" {id}>
 	<div class="calendar__header">
 		<button
 			type="button"
@@ -288,7 +291,7 @@
 		</button>
 	</div>
 
-	<div class="calendar__grid" role="grid">
+	<div class="calendar__grid" role="grid" aria-label="{currentMonthLabel} calendar dates">
 		<!-- Day names header -->
 		<div class="calendar__weekdays" role="row">
 			{#if showWeekNumbers}
@@ -327,7 +330,9 @@
 								month: 'long',
 								day: 'numeric'
 							})}
-							aria-selected={selectedDate && isSameDay(date, selectedDate)}
+							aria-current={highlightToday && isToday(date) ? 'date' : undefined}
+							aria-disabled={isDateDisabled(date) ? 'true' : undefined}
+							aria-selected={selectedDate ? isSameDay(date, selectedDate) : false}
 							role="gridcell"
 							tabindex={isFocusableDate(date) ? 0 : -1}
 						>
