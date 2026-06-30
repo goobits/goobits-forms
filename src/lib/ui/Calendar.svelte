@@ -73,6 +73,19 @@
 	// Current year and month
 	const currentYear = $derived(currentMonth.getFullYear());
 	const currentMonthIndex = $derived(currentMonth.getMonth());
+	const focusDate = $derived.by(() => {
+		const selected = selectedDate
+			? calendarDates.find((date) => isSameDay(date, selectedDate) && !isDateDisabled(date))
+			: undefined;
+		if (selected) return selected;
+
+		const today = new Date();
+		const todayDate = calendarDates.find((date) => isSameDay(date, today) && !isDateDisabled(date));
+		if (todayDate) return todayDate;
+
+		return calendarDates.find((date) => isSameMonth(date, currentMonth) && !isDateDisabled(date))
+			?? calendarDates.find((date) => !isDateDisabled(date));
+	});
 
 	// Generate year options (current year ± 100 years)
 	const yearOptions = $derived(
@@ -137,6 +150,10 @@
 	 */
 	function isDateDisabled(date: Date): boolean {
 		return !isDateInRange(date, min, max);
+	}
+
+	function isFocusableDate(date: Date): boolean {
+		return !!focusDate && isSameDay(date, focusDate);
 	}
 
 	/**
@@ -301,6 +318,7 @@
 							type="button"
 							class={getDateClasses(date)}
 							data-date={date.getTime()}
+							data-calendar-focus={isFocusableDate(date) ? 'true' : undefined}
 							onclick={() => handleDateClick(date)}
 							onkeydown={(e) => handleKeydown(e, date)}
 							disabled={isDateDisabled(date)}
@@ -311,7 +329,7 @@
 							})}
 							aria-selected={selectedDate && isSameDay(date, selectedDate)}
 							role="gridcell"
-							tabindex={selectedDate && isSameDay(date, selectedDate) ? 0 : -1}
+							tabindex={isFocusableDate(date) ? 0 : -1}
 						>
 							{date.getDate()}
 						</button>

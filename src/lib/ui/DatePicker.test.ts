@@ -508,6 +508,35 @@ describe('DatePicker Component', () => {
 			});
 		});
 
+		test('empty calendar exposes one focusable date cell', async () => {
+			render(DatePicker, { props: { id: 'test' } });
+			const input = screen.getByRole('combobox');
+
+			await userEvent.click(input);
+			await waitFor(() => {
+				expect(screen.getByRole('dialog')).toBeInTheDocument();
+			});
+
+			const focusableDates = screen
+				.getAllByRole('gridcell')
+				.filter((element) => element.getAttribute('tabindex') === '0');
+
+			expect(focusableDates).toHaveLength(1);
+			expect(focusableDates[0]).toHaveAttribute('data-calendar-focus', 'true');
+		});
+
+		test('ArrowDown moves focus into the empty calendar grid', async () => {
+			render(DatePicker, { props: { id: 'test' } });
+			const input = screen.getByRole('combobox');
+
+			input.focus();
+			await userEvent.keyboard('{ArrowDown}');
+
+			await waitFor(() => {
+				expect(document.activeElement).toHaveAttribute('data-calendar-focus', 'true');
+			});
+		});
+
 		test('focuses input after selecting date', async () => {
 			render(DatePicker, { props: { id: 'test' } });
 			const input = screen.getByRole('combobox');

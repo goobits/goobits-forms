@@ -8,6 +8,7 @@
 
 	import { Calendar, X } from '@lucide/svelte';
 	import { browser } from '$app/environment';
+	import { tick } from 'svelte';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
 	import { containKeyboardEvent } from '@goobits/keyboard/dom';
@@ -140,10 +141,14 @@
 	/**
 	 * Open the calendar
 	 */
-	function openCalendar(): void {
+	async function openCalendar({ focusCalendar = false }: { focusCalendar?: boolean } = {}): Promise<void> {
 		if (disabled) return;
 		updateCalendarPosition();
 		isOpen = true;
+		if (focusCalendar) {
+			await tick();
+			focusCalendarDate();
+		}
 	}
 
 	/**
@@ -160,8 +165,14 @@
 		if (isOpen) {
 			closeCalendar();
 		} else {
-			openCalendar();
+			void openCalendar();
 		}
+	}
+
+	function focusCalendarDate(): void {
+		const calendar = document.getElementById(calendarId);
+		const focusDate = calendar?.querySelector<HTMLElement>('[data-calendar-focus="true"]');
+		focusDate?.focus({ preventScroll: true });
 	}
 
 	/**
@@ -225,7 +236,7 @@
 	function handleInputFocus(): void {
 		// Don't open calendar if this is a programmatic focus
 		if (!isProgrammaticFocus) {
-			openCalendar();
+			void openCalendar();
 		}
 	}
 
@@ -239,11 +250,17 @@
 		} else if (event.key === 'Enter') {
 			containKeyboardEvent(event);
 			if (!isOpen) {
-				openCalendar();
+				void openCalendar({ focusCalendar: true });
+			} else {
+				focusCalendarDate();
 			}
-		} else if (event.key === 'ArrowDown' && !isOpen) {
+		} else if (event.key === 'ArrowDown') {
 			containKeyboardEvent(event);
-			openCalendar();
+			if (!isOpen) {
+				void openCalendar({ focusCalendar: true });
+			} else {
+				focusCalendarDate();
+			}
 		}
 	}
 

@@ -8,6 +8,7 @@
 
 	import { X, ArrowRight } from '@lucide/svelte';
 	import { browser } from '$app/environment';
+	import { tick } from 'svelte';
 	import CalendarComponent from './Calendar.svelte';
 	import Portal from './Portal.svelte';
 	import FormLabel from './FormLabel.svelte';
@@ -159,11 +160,18 @@
 	/**
 	 * Open the calendar
 	 */
-	function openCalendar(input: 'start' | 'end'): void {
+	async function openCalendar(
+		input: 'start' | 'end',
+		{ focusCalendar = false }: { focusCalendar?: boolean } = {}
+	): Promise<void> {
 		if (disabled) return;
 		activeInput = input;
 		updateCalendarPosition();
 		isOpen = true;
+		if (focusCalendar) {
+			await tick();
+			focusCalendarDate();
+		}
 	}
 
 	/**
@@ -172,6 +180,12 @@
 	function closeCalendar(): void {
 		isOpen = false;
 		hoveredDate = undefined;
+	}
+
+	function focusCalendarDate(): void {
+		const calendar = document.getElementById(calendarId);
+		const focusDate = calendar?.querySelector<HTMLElement>('[data-calendar-focus="true"]');
+		focusDate?.focus({ preventScroll: true });
 	}
 
 	/**
@@ -265,11 +279,17 @@
 		} else if (event.key === 'Enter') {
 			containKeyboardEvent(event);
 			if (!isOpen) {
-				openCalendar(input);
+				void openCalendar(input, { focusCalendar: true });
+			} else {
+				focusCalendarDate();
 			}
-		} else if (event.key === 'ArrowDown' && !isOpen) {
+		} else if (event.key === 'ArrowDown') {
 			containKeyboardEvent(event);
-			openCalendar(input);
+			if (!isOpen) {
+				void openCalendar(input, { focusCalendar: true });
+			} else {
+				focusCalendarDate();
+			}
 		} else if (event.key === 'Tab' && input === 'start') {
 			closeCalendar();
 		}
@@ -394,7 +414,7 @@
 				aria-describedby={errorId}
 				data-testid={dataTestId ? `${dataTestId}-start` : undefined}
 				oninput={(e) => handleInputChange(e, 'start')}
-				onfocus={() => openCalendar('start')}
+				onfocus={() => void openCalendar('start')}
 				onkeydown={(e) => handleInputKeydown(e, 'start')}
 			/>
 		</div>
@@ -423,7 +443,7 @@
 				aria-describedby={errorId}
 				data-testid={dataTestId ? `${dataTestId}-end` : undefined}
 				oninput={(e) => handleInputChange(e, 'end')}
-				onfocus={() => openCalendar('end')}
+				onfocus={() => void openCalendar('end')}
 				onkeydown={(e) => handleInputKeydown(e, 'end')}
 			/>
 		</div>
