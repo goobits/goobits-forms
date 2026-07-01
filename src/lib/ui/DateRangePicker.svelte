@@ -107,9 +107,10 @@
 	let hoveredDate: Date | undefined = $state();
 
 	// Unique IDs for accessibility
-	const uniqueId = id || `daterangepicker-${Math.random().toString(36).substr(2, 9)}`;
-	const calendarId = `${uniqueId}-calendar`;
-	const errorId = error ? `${uniqueId}-error` : undefined;
+	const fallbackId = `daterangepicker-${Math.random().toString(36).substr(2, 9)}`;
+	const uniqueId = $derived(id ?? fallbackId);
+	const calendarId = $derived(`${uniqueId}-calendar`);
+	const errorId = $derived(error ? `${uniqueId}-error` : undefined);
 
 	// Update input values when date props change
 	$effect(() => {
