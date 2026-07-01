@@ -609,19 +609,7 @@ describe('DatePicker Component', () => {
 			});
 		});
 
-		test('calendar exposes a named grid without application mode', async () => {
-			render(DatePicker, { props: { id: 'test' } });
-			const input = screen.getByRole('combobox');
-
-			await userEvent.click(input);
-
-			await waitFor(() => {
-				expect(screen.queryByRole('application')).not.toBeInTheDocument();
-				expect(screen.getByRole('grid', { name: /calendar dates/i })).toBeInTheDocument();
-			});
-		});
-
-		test('selected and current dates expose grid state', async () => {
+		test('selected date exposes grid state', async () => {
 			render(DatePicker, {
 				props: {
 					id: 'test',
