@@ -614,12 +614,12 @@
 		border-radius: var(--radius-md);
 		transition: all var(--duration-200) var(--ease-in-out);
 		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-	}
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 44px;
+			height: 44px;
+		}
 
 	.modal-dialog__close-button:hover {
 		background: var(--color-background-tertiary);
@@ -636,12 +636,12 @@
 		border-radius: var(--radius-md);
 		transition: all var(--duration-200) var(--ease-in-out);
 		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-	}
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 44px;
+			height: 44px;
+		}
 
 	.close-button svg {
 		width: 20px;

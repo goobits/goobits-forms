@@ -11,6 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
 import { render, getFocusableElements } from '../test-utils';
 import {
 	testAccessibility,
@@ -259,6 +260,17 @@ describe('Modal Component - Accessibility', () => {
 				closeButton.focus();
 				expect(document.activeElement).toBe(closeButton);
 			}
+		});
+
+		it('should provide a mobile-sized close button target', () => {
+			const source = readFileSync(resolveSourcePath([
+				'src/lib/ui/modals/Modal.svelte',
+				'apps/sketchpad-com/packages/forms/src/lib/ui/modals/Modal.svelte'
+			]), 'utf8');
+			const closeRules = source.match(/\.modal-dialog__close-button\s*\{[^}]+\}/)?.[0] ?? '';
+
+			expect(closeRules).toContain('width: 44px');
+			expect(closeRules).toContain('height: 44px');
 		});
 
 		it('should have focusable action buttons', () => {
@@ -544,4 +556,12 @@ function dispatchKey(
 
 function waitForEffects(): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function resolveSourcePath(paths: string[]): string {
+	const foundPath = paths.find(path => existsSync(path));
+	if (!foundPath) {
+		throw new Error(`Unable to find source path from: ${paths.join(', ')}`);
+	}
+	return foundPath;
 }
