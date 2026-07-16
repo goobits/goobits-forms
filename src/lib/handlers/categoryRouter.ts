@@ -6,11 +6,16 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 import { createLogger } from '../utils/logger.js';
-import { validateCsrfToken } from '../security/csrf.js';
 
 const logger = createLogger('CategoryRouter');
+const formCsrf = createSvelteKitCsrf({
+	cookieName: 'csrf_token',
+	headerName: 'X-CSRF-Token',
+	tokenFieldName: 'csrf_token'
+});
 
 /**
  * Category configuration interface
@@ -170,7 +175,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 	 * export const load = router.load;
 	 * ```
 	 */
-	async function load({ params, url, error, redirect }: RequestEvent): Promise<LoadResult> {
+	async function load({ params, url }: RequestEvent): Promise<LoadResult> {
 		const slug = params.slug as string;
 		const lang = (params.lang as string) || 'en';
 
@@ -239,15 +244,9 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 	 * };
 	 * ```
 	 */
-	async function handleSubmission({
-		request,
-		url,
-		params,
-		cookies,
-		locals = {}
-	}: RequestEvent): Promise<SubmissionResult> {
+	async function handleSubmission(event: RequestEvent): Promise<SubmissionResult> {
+		const { request, url, params, locals = {} } = event;
 		try {
-			const formData = await request.formData();
 			const slug = params.slug as string;
 			const lang = (params.lang as string) || 'en';
 
@@ -257,8 +256,8 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 				origin: url.origin
 			});
 
-			// CSRF validation - validateCsrfToken expects Request object
-			if (!(await validateCsrfToken(request, cookies?.get('csrf_token')))) {
+			if (!(await formCsrf.validate(event))) {
+				const formData = await request.formData();
 				logger.error('CSRF validation failed');
 				return {
 					form: {
@@ -268,6 +267,7 @@ export function createCategoryRouter(config: CategoryRouterConfig) {
 					}
 				};
 			}
+			const formData = await request.formData();
 
 			// Parse and validate form data
 			let data: Record<string, unknown> = Object.fromEntries(formData.entries());

@@ -51,6 +51,10 @@ async function assertHealthyNavigation(page, route) {
 	await page.waitForLoadState('load')
 	await page.waitForLoadState('networkidle', { timeout: 2_000 }).catch(() => { })
 
+	expect(
+		await page.locator('enhanced\\:img').count(),
+		`Uncompiled enhanced:img elements on ${route}`
+	).toBe(0)
 	expect(issues.consoleErrors, `Console errors on ${route}`).toEqual([])
 	expect(issues.pageErrors, `Uncaught page errors on ${route}`).toEqual([])
 	expect(issues.failedRequests, `Failed requests on ${route}`).toEqual([])

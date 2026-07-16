@@ -639,25 +639,17 @@ interface FileSettings {
 
 ### CSRF Protection
 
-**Import:**
+CSRF is owned by `@goobits/security`. Configure it once in the application so
+token generation and validation share the same wire contract.
+
 ```javascript
-import {
-	generateCsrfToken,
-	validateCsrfToken,
-	createCsrfProtection
-} from '@goobits/ui/security/csrf';
-```
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-**Usage:**
-```javascript
-// Generate token
-const token = generateCsrfToken();
-
-// Validate token
-const isValid = validateCsrfToken(token, storedToken);
-
-// SvelteKit middleware
-export const handle = createCsrfProtection();
+export const contactCsrf = createSvelteKitCsrf({
+	cookieName: 'csrf_token',
+	headerName: 'X-CSRF-Token',
+	tokenFieldName: 'csrf_token'
+});
 ```
 
 ---
@@ -834,25 +826,25 @@ await emailService.sendEmail({
 
 ### Rate Limiter
 
-IP and email-based rate limiting.
+Application-owned rate limiting uses the canonical security package. The
+`createContactApiHandler` factory already creates a bounded limiter from its
+`rateLimitMaxRequests` and `rateLimitWindowMs` options.
 
 **Import:**
 ```javascript
-import { rateLimitFormSubmission, resetIpRateLimit } from '@goobits/ui/services';
+import { createRateLimiter } from '@goobits/security/rate-limit';
 ```
 
 **Usage:**
 ```javascript
-// Check rate limit
-const result = await rateLimitFormSubmission({
-	ipAddress: request.headers.get('x-forwarded-for'),
-	email: 'user@example.com',
-	maxRequests: 3,
-	windowMs: 60000
+const limiter = createRateLimiter({
+	keyPrefix: 'contact',
+	windows: [{ name: 'contact', maxEvents: 3, windowMs: 60000 }]
 });
+const result = await limiter.check(event.getClientAddress());
 
 if (!result.allowed) {
-	return { error: 'Rate limit exceeded', retryAfter: result.retryAfter };
+	return { error: 'Rate limit exceeded', retryAfter: result.retryAfterSec };
 }
 ```
 

@@ -19,10 +19,8 @@ export default defineConfig({
 			reportsDirectory: './coverage',
 			include: [
 				// Security-critical code (high priority for testing)
-				'src/lib/security/csrf.ts',
 				'src/lib/config/secureDeepMerge.ts',
 				'src/lib/utils/sanitizeInput.ts',
-				'src/lib/services/rateLimiterService.ts',
 				// UI components and utilities
 				'src/lib/ui/**/*.{ts,svelte}',
 				'src/lib/validation/**/*.ts',
@@ -52,12 +50,6 @@ export default defineConfig({
 			// Per-file thresholds for security-critical code
 			thresholds: {
 				// Security-critical files (high thresholds)
-				'src/lib/security/csrf.ts': {
-					lines: 95,
-					functions: 85,
-					branches: 95,
-					statements: 95
-				},
 				'src/lib/config/secureDeepMerge.ts': {
 					lines: 100,
 					functions: 100,
@@ -67,12 +59,6 @@ export default defineConfig({
 				'src/lib/utils/sanitizeInput.ts': {
 					lines: 85,
 					functions: 100,
-					branches: 85,
-					statements: 85
-				},
-				'src/lib/services/rateLimiterService.ts': {
-					lines: 85,
-					functions: 85,
 					branches: 85,
 					statements: 85
 				},

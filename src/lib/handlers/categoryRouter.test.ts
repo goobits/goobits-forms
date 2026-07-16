@@ -23,15 +23,15 @@ const mockLogger = vi.hoisted(() => ({
 	debug: vi.fn()
 }));
 
-const mockValidateCsrfToken = vi.hoisted(() => vi.fn());
+const mockValidateCsrf = vi.hoisted(() => vi.fn());
 
 // Mock external dependencies
 vi.mock('../utils/logger.ts', () => ({
 	createLogger: () => mockLogger
 }));
 
-vi.mock('../security/csrf.js', () => ({
-	validateCsrfToken: mockValidateCsrfToken
+vi.mock('@goobits/security/csrf/sveltekit', () => ({
+	createSvelteKitCsrf: () => ({ validate: mockValidateCsrf })
 }));
 
 // Import after mocks are set up
@@ -153,7 +153,7 @@ function createMockRequestEvent(options: {
 describe('createCategoryRouter', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockValidateCsrfToken.mockReturnValue(true);
+		mockValidateCsrf.mockReturnValue(true);
 	});
 
 	describe('Router Creation and Configuration', () => {
@@ -212,7 +212,7 @@ describe('createCategoryRouter', () => {
 				expect.fail('Should have thrown 404');
 			} catch (e: any) {
 				expect(e.status).toBe(404);
-				expect(e.message).toContain('Category not found: invalid');
+				expect(e.body?.message ?? e.message).toContain('Category not found: invalid');
 			}
 		});
 
@@ -392,9 +392,9 @@ describe('createCategoryRouter', () => {
 	});
 
 	describe('handleSubmission() - CSRF Validation', () => {
-		test('validates CSRF token using validateCsrfToken', async () => {
+		test('validates the request through the canonical CSRF guard', async () => {
 			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(true);
+			mockValidateCsrf.mockReturnValue(true);
 
 			const mockEvent = createMockRequestEvent({
 				slug: 'general',
@@ -411,12 +411,12 @@ describe('createCategoryRouter', () => {
 				// Expect redirect
 			}
 
-			expect(mockValidateCsrfToken).toHaveBeenCalledWith(mockEvent.request, undefined);
+			expect(mockValidateCsrf).toHaveBeenCalledWith(mockEvent);
 		});
 
 		test('handles CSRF validation failure comprehensively', async () => {
 			const router = createCategoryRouter({ categories: testCategories });
-			mockValidateCsrfToken.mockReturnValue(false);
+			mockValidateCsrf.mockReturnValue(false);
 
 			const mockEvent = createMockRequestEvent({
 				slug: 'general',
@@ -1228,7 +1228,7 @@ describe('createCategoryRouter', () => {
 		});
 
 		test('preserves form data through error recovery', async () => {
-			mockValidateCsrfToken.mockReturnValue(false);
+			mockValidateCsrf.mockReturnValue(false);
 
 			const router = createCategoryRouter({ categories: testCategories });
 

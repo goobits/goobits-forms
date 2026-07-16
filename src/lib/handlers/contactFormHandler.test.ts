@@ -10,10 +10,13 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 
 // Mock dependencies using vi.hoisted() to ensure they're available before imports
-const mockRateLimitFormSubmission = vi.hoisted(() => vi.fn());
-const mockValidateCsrfToken = vi.hoisted(() => vi.fn());
+const mockRateLimit = vi.hoisted(() => {
+	const check = vi.fn();
+	return { check, create: vi.fn(() => ({ check })) };
+});
+const mockValidateCsrf = vi.hoisted(() => vi.fn());
 const mockSanitizeFormData = vi.hoisted(() => vi.fn());
-const mockVerifyRecaptchaToken = vi.hoisted(() => vi.fn());
+const mockVerifyRecaptcha = vi.hoisted(() => vi.fn());
 const mockSendEmail = vi.hoisted(() => vi.fn());
 const mockLogger = vi.hoisted(() => ({
 	info: vi.fn(),
@@ -23,20 +26,20 @@ const mockLogger = vi.hoisted(() => ({
 }));
 
 // Mock all external dependencies
-vi.mock('../services/rateLimiterService.ts', () => ({
-	rateLimitFormSubmission: mockRateLimitFormSubmission
+vi.mock('@goobits/security/rate-limit', () => ({
+	createRateLimiter: mockRateLimit.create
 }));
 
-vi.mock('../security/csrf.js', () => ({
-	validateCsrfToken: mockValidateCsrfToken
+vi.mock('@goobits/security/csrf/sveltekit', () => ({
+	createSvelteKitCsrf: () => ({ validate: mockValidateCsrf })
 }));
 
 vi.mock('../utils/sanitizeInput.ts', () => ({
 	sanitizeFormData: mockSanitizeFormData
 }));
 
-vi.mock('../services/recaptchaVerifierService.ts', () => ({
-	verifyRecaptchaToken: mockVerifyRecaptchaToken
+vi.mock('@goobits/security/recaptcha', () => ({
+	verifyRecaptcha: mockVerifyRecaptcha
 }));
 
 vi.mock('../services/emailService.ts', () => ({
@@ -102,16 +105,16 @@ describe('createContactApiHandler', () => {
 		vi.clearAllMocks();
 
 		// Set default mock implementations
-		mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-		mockValidateCsrfToken.mockReturnValue(true);
+		mockRateLimit.check.mockResolvedValue({ allowed: true });
+		mockValidateCsrf.mockReturnValue(true);
 		mockSanitizeFormData.mockImplementation((data) => data);
-		mockVerifyRecaptchaToken.mockResolvedValue(true);
+		mockVerifyRecaptcha.mockResolvedValue({ success: true });
 		mockSendEmail.mockResolvedValue({ success: true });
 	});
 
 	describe('Rate Limiting Tests', () => {
 		test('allows requests under rate limit', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
+			mockRateLimit.check.mockResolvedValue({ allowed: true });
 
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
@@ -129,9 +132,9 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('blocks requests over rate limit', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({
+			mockRateLimit.check.mockResolvedValue({
 				allowed: false,
-				retryAfter: 60
+				retryAfterSec: 60
 			});
 
 			const handler = createContactApiHandler();
@@ -148,9 +151,9 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('returns 429 with retryAfter on rate limit exceeded', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({
+			mockRateLimit.check.mockResolvedValue({
 				allowed: false,
-				retryAfter: 120
+				retryAfterSec: 120
 			});
 
 			const handler = createContactApiHandler();
@@ -179,23 +182,17 @@ describe('createContactApiHandler', () => {
 			const response = await handler(event);
 			await response.text();
 
-			expect(mockRateLimitFormSubmission).toHaveBeenCalledWith(
-				'192.168.1.1',
-				null,
-				'contact',
-				{
-					maxRequests: 10,
-					windowMs: 60000,
-					message: 'Custom rate limit message'
-				}
-			);
+			expect(mockRateLimit.create).toHaveBeenCalledWith({
+				keyPrefix: 'goobits-ui:contact',
+				windows: [{ maxEvents: 10, name: 'contact', windowMs: 60000 }]
+			});
 		});
 
 		test('uses custom rate limit message in error response', async () => {
 			const customMessage = 'Please slow down!';
-			mockRateLimitFormSubmission.mockResolvedValue({
+			mockRateLimit.check.mockResolvedValue({
 				allowed: false,
-				retryAfter: 30
+				retryAfterSec: 30
 			});
 
 			const handler = createContactApiHandler({
@@ -221,13 +218,7 @@ describe('createContactApiHandler', () => {
 			const response = await handler(event);
 			await response.text();
 
-			// Verify rate limiter was called with 'contact' form type
-			expect(mockRateLimitFormSubmission).toHaveBeenCalledWith(
-				expect.any(String),
-				null,
-				'contact',
-				expect.any(Object)
-			);
+			expect(mockRateLimit.check).toHaveBeenCalledWith(expect.any(String));
 		});
 
 		test('passes client IP address to rate limiter', async () => {
@@ -240,13 +231,13 @@ describe('createContactApiHandler', () => {
 			await handler(event);
 
 			// Verify first argument (client IP) is correct
-			expect(mockRateLimitFormSubmission.mock.calls[0][0]).toBe('10.0.0.5');
+			expect(mockRateLimit.check.mock.calls[0][0]).toBe('10.0.0.5');
 		});
 	});
 
 	describe('CSRF Validation Tests', () => {
 		test('rejects requests with invalid CSRF token', async () => {
-			mockValidateCsrfToken.mockReturnValue(false);
+			mockValidateCsrf.mockReturnValue(false);
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -262,7 +253,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('returns 403 on CSRF failure', async () => {
-			mockValidateCsrfToken.mockReturnValue(false);
+			mockValidateCsrf.mockReturnValue(false);
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -275,7 +266,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('allows requests with valid CSRF token', async () => {
-			mockValidateCsrfToken.mockReturnValue(true);
+			mockValidateCsrf.mockReturnValue(true);
 
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com'
@@ -291,7 +282,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('logs CSRF validation failure', async () => {
-			mockValidateCsrfToken.mockReturnValue(false);
+			mockValidateCsrf.mockReturnValue(false);
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -480,11 +471,11 @@ describe('createContactApiHandler', () => {
 
 			await handler(event);
 
-			expect(mockVerifyRecaptchaToken).not.toHaveBeenCalled();
+			expect(mockVerifyRecaptcha).not.toHaveBeenCalled();
 		});
 
 		test('verifies valid reCAPTCHA token', async () => {
-			mockVerifyRecaptchaToken.mockResolvedValue(true);
+			mockVerifyRecaptcha.mockResolvedValue({ success: true });
 
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com',
@@ -504,14 +495,14 @@ describe('createContactApiHandler', () => {
 			const response = await handler(event);
 
 			expect(response.status).toBe(200);
-			expect(mockVerifyRecaptchaToken).toHaveBeenCalledWith('valid-token', {
+			expect(mockVerifyRecaptcha).toHaveBeenCalledWith('valid-token', {
 				secretKey: 'secret-key',
 				minScore: 0.7
 			});
 		});
 
 		test('rejects invalid reCAPTCHA token with 400', async () => {
-			mockVerifyRecaptchaToken.mockResolvedValue(false);
+			mockVerifyRecaptcha.mockResolvedValue({ success: false });
 
 			const handler = createContactApiHandler({
 				recaptchaSecretKey: 'secret-key'
@@ -535,7 +526,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('uses custom minScore configuration', async () => {
-			mockVerifyRecaptchaToken.mockResolvedValue(true);
+			mockVerifyRecaptcha.mockResolvedValue({ success: true });
 
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com',
@@ -553,14 +544,14 @@ describe('createContactApiHandler', () => {
 
 			await handler(event);
 
-			expect(mockVerifyRecaptchaToken).toHaveBeenCalledWith(
+			expect(mockVerifyRecaptcha).toHaveBeenCalledWith(
 				expect.any(String),
 				expect.objectContaining({ minScore: 0.9 })
 			);
 		});
 
 		test('uses custom secretKey configuration', async () => {
-			mockVerifyRecaptchaToken.mockResolvedValue(true);
+			mockVerifyRecaptcha.mockResolvedValue({ success: true });
 
 			const handler = createContactApiHandler({
 				adminEmail: 'admin@example.com',
@@ -578,7 +569,7 @@ describe('createContactApiHandler', () => {
 
 			await handler(event);
 
-			expect(mockVerifyRecaptchaToken).toHaveBeenCalledWith(
+			expect(mockVerifyRecaptcha).toHaveBeenCalledWith(
 				expect.any(String),
 				expect.objectContaining({ secretKey: 'custom-secret-key' })
 			);
@@ -957,8 +948,8 @@ describe('createContactApiHandler', () => {
 
 			// Reset and test failure logging
 			vi.clearAllMocks();
-			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-			mockValidateCsrfToken.mockReturnValue(true);
+			mockRateLimit.check.mockResolvedValue({ allowed: true });
+			mockValidateCsrf.mockReturnValue(true);
 			mockSanitizeFormData.mockImplementation((data) => data);
 			mockSendEmail.mockResolvedValue({ success: false, message: 'Failed to send' });
 
@@ -1048,7 +1039,7 @@ describe('createContactApiHandler', () => {
 	describe('Error Handling Tests', () => {
 		test('catches and handles unexpected errors', async () => {
 			// Force an error by making rate limiter throw
-			mockRateLimitFormSubmission.mockRejectedValue(new Error('Unexpected error'));
+			mockRateLimit.check.mockRejectedValue(new Error('Unexpected error'));
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -1063,7 +1054,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('returns 500 on internal errors', async () => {
-			mockRateLimitFormSubmission.mockRejectedValue(new Error('Internal error'));
+			mockRateLimit.check.mockRejectedValue(new Error('Internal error'));
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -1077,7 +1068,7 @@ describe('createContactApiHandler', () => {
 
 		test('logs errors properly', async () => {
 			const error = new Error('Test error');
-			mockRateLimitFormSubmission.mockRejectedValue(error);
+			mockRateLimit.check.mockRejectedValue(error);
 
 			const handler = createContactApiHandler();
 			const event = createMockRequestEvent({
@@ -1093,7 +1084,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('returns generic error message', async () => {
-			mockRateLimitFormSubmission.mockRejectedValue(new Error('Internal error'));
+			mockRateLimit.check.mockRejectedValue(new Error('Internal error'));
 
 			const handler = createContactApiHandler({
 				errorMessage: 'Something went wrong'
@@ -1110,7 +1101,7 @@ describe('createContactApiHandler', () => {
 		});
 
 		test('does not expose internal details', async () => {
-			mockRateLimitFormSubmission.mockRejectedValue(
+			mockRateLimit.check.mockRejectedValue(
 				new Error('Database connection failed at server.internal.company.local')
 			);
 
@@ -1130,10 +1121,10 @@ describe('createContactApiHandler', () => {
 
 	describe('Integration Tests', () => {
 		test('full happy path with all security checks and email sending', async () => {
-			mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-			mockValidateCsrfToken.mockReturnValue(true);
+			mockRateLimit.check.mockResolvedValue({ allowed: true });
+			mockValidateCsrf.mockReturnValue(true);
 			mockSanitizeFormData.mockImplementation((data) => data);
-			mockVerifyRecaptchaToken.mockResolvedValue(true);
+			mockVerifyRecaptcha.mockResolvedValue({ success: true });
 			mockSendEmail.mockResolvedValue({ success: true });
 
 			const handler = createContactApiHandler({
@@ -1161,10 +1152,10 @@ describe('createContactApiHandler', () => {
 			expect(response.status).toBe(200);
 			expect(data.success).toBe(true);
 			expect(data.message).toBe('Success!');
-			expect(mockRateLimitFormSubmission).toHaveBeenCalled();
-			expect(mockValidateCsrfToken).toHaveBeenCalled();
+			expect(mockRateLimit.check).toHaveBeenCalled();
+			expect(mockValidateCsrf).toHaveBeenCalled();
 			expect(mockSanitizeFormData).toHaveBeenCalled();
-			expect(mockVerifyRecaptchaToken).toHaveBeenCalled();
+			expect(mockVerifyRecaptcha).toHaveBeenCalled();
 			expect(mockSendEmail).toHaveBeenCalled();
 			expect(mockLogger.info).toHaveBeenCalledWith(
 				expect.stringContaining('Contact form submission'),
@@ -1202,8 +1193,8 @@ describe('createContactApiHandler', () => {
 describe('createContactFormHandlers', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockRateLimitFormSubmission.mockResolvedValue({ allowed: true });
-		mockValidateCsrfToken.mockReturnValue(true);
+		mockRateLimit.check.mockResolvedValue({ allowed: true });
+		mockValidateCsrf.mockReturnValue(true);
 		mockSanitizeFormData.mockImplementation((data) => data);
 		mockSendEmail.mockResolvedValue({ success: true });
 	});

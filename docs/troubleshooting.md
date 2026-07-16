@@ -182,10 +182,12 @@ Error: Failed to fetch CSRF token
 1. **Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { setCsrfCookie } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
 
 export async function GET(event) {
-	const token = setCsrfCookie(event);
+	const token = await csrf.getOrCreate(event);
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
 	});

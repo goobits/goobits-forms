@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-07-15
+
+### Breaking Changes
+
+- Removed the `@goobits/ui/security` and `@goobits/ui/security/csrf` exports. Server
+  applications now import CSRF primitives directly from
+  `@goobits/security/csrf/sveltekit`.
+- Removed the generic server-side rate-limit and reCAPTCHA verifier exports from
+  `@goobits/ui/services`. Their canonical owners are now
+  `@goobits/security/rate-limit` and `@goobits/security/recaptcha`.
+
+### Fixed
+
+- Contact handlers now enforce the documented `rateLimitMaxRequests` and
+  `rateLimitWindowMs` values through the bounded canonical limiter.
+- Category actions validate CSRF before reading the request body, so valid form
+  submissions are no longer rejected after the body has already been consumed.
+- Sketchpad.com keeps its established `csrf_token` cookie and form-field contract
+  while using the canonical stateless SvelteKit guard.
+
 ## [2.0.0] - 2025-11-18
 
 ### BREAKING CHANGES

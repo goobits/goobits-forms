@@ -172,11 +172,16 @@ Protect against cross-site request forgery.
 **1. Create CSRF endpoint:**
 ```javascript
 // src/routes/api/csrf/+server.js
-import { generateCsrfToken, setCsrfCookie } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-export async function GET({ cookies }) {
-	const token = generateCsrfToken();
-	setCsrfCookie(cookies, token);
+const csrf = createSvelteKitCsrf({
+	cookieName: 'csrf_token',
+	headerName: 'X-CSRF-Token',
+	tokenFieldName: 'csrf_token'
+});
+
+export async function GET(event) {
+	const token = await csrf.getOrCreate(event);
 
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
@@ -200,10 +205,12 @@ export async function GET({ cookies }) {
 **3. Generate token on page load:**
 ```javascript
 // src/routes/contact/+page.server.js
-import { generateCsrfToken } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-export async function load({ cookies }) {
-	const csrfToken = generateCsrfToken();
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+
+export async function load(event) {
+	const csrfToken = await csrf.getOrCreate(event);
 	return { csrfToken };
 }
 ```

@@ -9,6 +9,11 @@ Production-ready UI components for SvelteKit. Secure. Accessible. Done.
 
 > **Important:** This package was previously named `@goobits/forms`. Starting with v2.0.0, it has been renamed to `@goobits/ui` to reflect its expanded scope beyond forms to include modals, menus, tooltips, and other UI components. See [MIGRATION.md](./MIGRATION.md) for upgrade instructions.
 
+> **v3 security boundary:** UI form handlers use `@goobits/security` internally.
+> Applications that create CSRF tokens import
+> `@goobits/security/csrf/sveltekit` directly; `@goobits/ui` no longer re-exports
+> general-purpose server security utilities. See [MIGRATION.md](./MIGRATION.md#v300---canonical-security-ownership).
+
 ## TL;DR
 
 - Install with `npm install @goobits/ui` and call `initContactFormConfig` in `src/hooks.server.js`.

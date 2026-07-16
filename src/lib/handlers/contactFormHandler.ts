@@ -5,22 +5,19 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+import { createRateLimiter } from '@goobits/security/rate-limit';
+import { verifyRecaptcha } from '@goobits/security/recaptcha';
 import { createLogger } from '../utils/logger.js';
 import { sanitizeFormData } from '../utils/sanitizeInput.js';
-import {
-	rateLimitFormSubmission,
-	type RateLimitResult
-} from '../services/rateLimiterService.js';
-import { verifyRecaptchaToken } from '../services/recaptchaVerifierService.js';
-import { validateCsrfToken } from '../security/csrf.js';
 import sendEmail from '../services/emailService.js';
 
 const logger = createLogger('ContactFormHandler');
-
-/**
- * Re-export RateLimitResult from services
- */
-export type { RateLimitResult };
+const formCsrf = createSvelteKitCsrf({
+	cookieName: 'csrf_token',
+	headerName: 'X-CSRF-Token',
+	tokenFieldName: 'csrf_token'
+});
 
 /**
  * Custom validation function type
@@ -165,35 +162,37 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 		customValidation = null,
 		customSuccessHandler = null
 	} = options;
+	const rateLimiter = createRateLimiter({
+		keyPrefix: 'goobits-ui:contact',
+		windows: [
+			{
+				maxEvents: rateLimitMaxRequests,
+				name: 'contact',
+				windowMs: rateLimitWindowMs
+			}
+		]
+	});
 
-	return async ({ request, getClientAddress, cookies }: RequestEvent): Promise<Response> => {
+	return async (event: RequestEvent): Promise<Response> => {
+		const { request, getClientAddress } = event;
 		try {
 			// Get client IP address
 			const clientAddress = getClientAddress ? getClientAddress() : 'unknown';
 
 			// Apply rate limiting
-			const { allowed, retryAfter }: RateLimitResult = await rateLimitFormSubmission(
-				clientAddress,
-				null,
-				'contact',
-				{
-					maxRequests: rateLimitMaxRequests,
-					windowMs: rateLimitWindowMs,
-					message: rateLimitMessage
-				}
-			);
+			const rateLimit = await rateLimiter.check(clientAddress);
 
-			if (!allowed) {
+			if (!rateLimit.allowed) {
 				const errorResponse: ApiErrorResponse = {
 					success: false,
 					error: rateLimitMessage || 'Too many requests. Please try again later.',
-					retryAfter
+					retryAfter: rateLimit.retryAfterSec
 				};
 				return json(errorResponse, { status: 429 });
 			}
 
 			// Validate CSRF token
-			if (!(await validateCsrfToken(request, cookies?.get('csrf_token')))) {
+			if (!(await formCsrf.validate(event))) {
 				logger.error('CSRF validation failed for API request');
 				const errorResponse: ApiErrorResponse = {
 					success: false,
@@ -239,12 +238,12 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 			}
 
 			if (recaptchaEnabled) {
-				const isValidRecaptcha = await verifyRecaptchaToken(String(sanitizedData.recaptchaToken || ''), {
+				const recaptcha = await verifyRecaptcha(String(sanitizedData.recaptchaToken || ''), {
 					secretKey: recaptchaSecretKey,
 					minScore: recaptchaMinScore
 				});
 
-				if (!isValidRecaptcha) {
+				if (!recaptcha.success) {
 					const errorResponse: ApiErrorResponse = {
 						success: false,
 						error: 'reCAPTCHA verification failed'

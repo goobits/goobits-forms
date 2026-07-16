@@ -152,8 +152,8 @@ global.grecaptcha = {
 	execute: vi.fn().mockResolvedValue('mock-recaptcha-token')
 };
 
-// Or mock the verification service
-vi.mock('@goobits/ui/services/recaptchaVerifierService', () => ({
+// Or mock the canonical server verifier
+vi.mock('@goobits/security/recaptcha', () => ({
 	verifyRecaptcha: vi.fn().mockResolvedValue({
 		success: true,
 		score: 0.9
@@ -164,7 +164,7 @@ vi.mock('@goobits/ui/services/recaptchaVerifierService', () => ({
 ### Test with reCAPTCHA
 
 ```typescript
-import { verifyRecaptcha } from '@goobits/ui/services/recaptchaVerifierService';
+import { verifyRecaptcha } from '@goobits/security/recaptcha';
 
 test('verifies reCAPTCHA token', async () => {
 	const handler = createContactApiHandler({
@@ -201,24 +201,16 @@ test('verifies reCAPTCHA token', async () => {
 ## CSRF Protection Tests
 
 ```typescript
-import { generateCsrfToken, validateCsrfToken } from '@goobits/ui/security/csrf';
+const validateCsrf = vi.fn();
 
-test('generates valid CSRF token', () => {
-	const token = generateCsrfToken();
-	expect(token).toBeTruthy();
-	expect(typeof token).toBe('string');
-	expect(token.length).toBeGreaterThan(20);
-});
+vi.mock('@goobits/security/csrf/sveltekit', () => ({
+	createSvelteKitCsrf: () => ({ validate: validateCsrf })
+}));
 
-test('validates matching CSRF tokens', () => {
-	const token = generateCsrfToken();
-	expect(validateCsrfToken(token, token)).toBe(true);
-});
-
-test('rejects mismatched CSRF tokens', () => {
-	const token1 = generateCsrfToken();
-	const token2 = generateCsrfToken();
-	expect(validateCsrfToken(token1, token2)).toBe(false);
+test('rejects an invalid CSRF request', async () => {
+	validateCsrf.mockResolvedValue(false);
+	const response = await createContactApiHandler()(event);
+	expect(response.status).toBe(403);
 });
 ```
 
@@ -343,21 +335,20 @@ test('rejects invalid email', () => {
 ## Rate Limiting Tests
 
 ```typescript
-// Mock rate limiter for tests
-vi.mock('@goobits/ui/services/rateLimiterService', () => ({
-	checkRateLimit: vi.fn().mockResolvedValue({ allowed: true })
+const checkRateLimit = vi.fn();
+
+vi.mock('@goobits/security/rate-limit', () => ({
+	createRateLimiter: () => ({ check: checkRateLimit })
 }));
 
 test('rate limits excessive requests', async () => {
-	const { checkRateLimit } = await import('@goobits/ui/services/rateLimiterService');
-
 	// Allow first 5 requests
-	(checkRateLimit as any).mockResolvedValueOnce({ allowed: true });
+	checkRateLimit.mockResolvedValueOnce({ allowed: true });
 
 	// Block 6th request
-	(checkRateLimit as any).mockResolvedValueOnce({
+	checkRateLimit.mockResolvedValueOnce({
 		allowed: false,
-		retryAfter: 60000
+		retryAfterSec: 60
 	});
 
 	const handler = createContactApiHandler({

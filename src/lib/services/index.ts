@@ -20,9 +20,3 @@ export * from './screenReaderService.js';
 
 // Re-export email service utilities
 export * from './emailService.js';
-
-// Re-export rate limiter utilities
-export * from './rateLimiterService.js';
-
-// Re-export reCAPTCHA verifier utilities
-export * from './recaptchaVerifierService.js';

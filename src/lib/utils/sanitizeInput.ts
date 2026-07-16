@@ -30,13 +30,6 @@ const logger = createLogger('SanitizeInput');
 type SanitizableValue = string | number | boolean | null | undefined | object | unknown[];
 
 /**
- * Form data interface for sanitization
- */
-interface FormData {
-	[key: string]: SanitizableValue;
-}
-
-/**
  * Local error handling implementation
  *
  * @internal
@@ -292,12 +285,12 @@ export function sanitize(input: SanitizableValue): SanitizableValue {
  * // }
  * ```
  */
-export function sanitizeFormData(formData: FormData): FormData | undefined {
+export function sanitizeFormData<T extends Record<string, unknown>>(formData: T): T | undefined {
 	try {
 		// Validate input is an object
 		validateType(formData, 'object', 'formData', false);
 
-		const sanitized: FormData = { ...formData };
+		const sanitized: Record<string, unknown> = { ...formData };
 
 		// Sanitize each field based on its key and type
 		Object.keys(sanitized).forEach((key) => {
@@ -327,7 +320,7 @@ export function sanitizeFormData(formData: FormData): FormData | undefined {
 			// Numbers, booleans, and other primitives are left unchanged
 		});
 
-		return sanitized;
+		return sanitized as T;
 	} catch (error) {
 		handleError(MODULE_NAME, error as Error);
 		return undefined; // Return undefined on error for safety

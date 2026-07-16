@@ -1,4 +1,40 @@
-# Migration Guide: @goobits/forms → @goobits/ui
+# Migration Guide: @goobits/ui
+
+## v3.0.0 - Canonical Security Ownership
+
+Version 3 keeps UI components and form handlers in `@goobits/ui`, while moving
+general-purpose server security APIs to their dedicated package.
+
+Install the security package in applications that create or validate CSRF tokens:
+
+```bash
+pnpm add @goobits/security
+```
+
+Replace the removed UI security import with one application-owned SvelteKit
+composition:
+
+```ts
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit'
+
+export const contactCsrf = createSvelteKitCsrf({
+	cookieName: 'csrf_token',
+	headerName: 'X-CSRF-Token',
+	tokenFieldName: 'csrf_token'
+})
+
+export const handle = contactCsrf.handle
+```
+
+Generate a token with `await contactCsrf.getOrCreate(event)` and validate an
+action with `await contactCsrf.validate(event)`. Import standalone rate limiting
+and reCAPTCHA verification directly from `@goobits/security/rate-limit` and
+`@goobits/security/recaptcha` respectively.
+
+The `@goobits/ui` contact handlers already use these canonical implementations.
+Their existing `csrf_token` / `X-CSRF-Token` wire contract remains compatible.
+
+---
 
 ## v2.0.0 - Package Rename
 

@@ -389,10 +389,12 @@ export const POST = createTypedFormHandler(customSchema, async (data) => {
 ```typescript
 // src/routes/contact/+page.server.ts
 import type { PageServerLoad } from './$types';
-import { generateCsrfToken } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	const csrfToken = generateCsrfToken();
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+
+export const load: PageServerLoad = async (event) => {
+	const csrfToken = await csrf.getOrCreate(event);
 
 	return {
 		csrfToken

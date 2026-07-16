@@ -260,10 +260,12 @@ export const contactConfig: ContactConfig = {
 ````tabs
 ```javascript tab="JavaScript"
 // src/routes/api/csrf/+server.js
-import { setCsrfCookie } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
 
 export async function GET(event) {
-	const token = setCsrfCookie(event);
+	const token = await csrf.getOrCreate(event);
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
 	});
@@ -273,10 +275,12 @@ export async function GET(event) {
 ```typescript tab="TypeScript"
 // src/routes/api/csrf/+server.ts
 import type { RequestEvent } from '@sveltejs/kit';
-import { setCsrfCookie } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
 
 export async function GET(event: RequestEvent) {
-	const token = setCsrfCookie(event);
+	const token = await csrf.getOrCreate(event);
 	return new Response(JSON.stringify({ csrfToken: token }), {
 		headers: { 'Content-Type': 'application/json' }
 	});
@@ -411,10 +415,12 @@ src/
 
 ```javascript
 // src/routes/contact/+page.server.js
-import { setCsrfCookie } from '@goobits/ui/security/csrf';
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+
+const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
 
 export async function load(event) {
-	const csrfToken = setCsrfCookie(event);
+	const csrfToken = await csrf.getOrCreate(event);
 	return { csrfToken };
 }
 ```

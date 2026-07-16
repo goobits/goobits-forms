@@ -37,18 +37,6 @@ export * from './services/index.js';
 export * from './handlers/index.js';
 
 /**
- * @module security
- * @description Security utilities including CSRF token generation and validation.
- */
-export {
-	generateCsrfToken,
-	validateCsrfToken,
-	setCsrfCookie,
-	getCsrfToken,
-	createCsrfProtection
-} from './security/csrf.js';
-
-/**
  * @module utils
  * @description General utility functions for form handling and logging.
  */

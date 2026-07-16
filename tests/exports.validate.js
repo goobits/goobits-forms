@@ -39,7 +39,6 @@ const mainEntries = [
 	{ path: 'handlers/index.ts', description: 'Handlers entry' },
 	{ path: 'validation/index.ts', description: 'Validation entry' },
 	{ path: 'i18n/index.ts', description: 'i18n entry' },
-	{ path: 'security/csrf.ts', description: 'CSRF security' },
 	{ path: 'services/index.ts', description: 'Services entry' },
 	{ path: 'utils/index.ts', description: 'Utils entry' }
 ];

@@ -4,6 +4,24 @@ Upgrade guides for @goobits/ui version migrations.
 
 ---
 
+## v2.x → v3.0.0
+
+Version 3 removes general-purpose server security exports from the UI package.
+Install `@goobits/security` and import the required owner directly:
+
+```ts
+import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
+import { createRateLimiter } from '@goobits/security/rate-limit';
+import { verifyRecaptcha } from '@goobits/security/recaptcha';
+```
+
+The built-in contact handlers already use these implementations. Applications
+that create tokens should configure `createSvelteKitCsrf` once and call
+`getOrCreate(event)` from loads or token endpoints. See the root
+[migration guide](../MIGRATION.md#v300---canonical-security-ownership).
+
+---
+
 ## v1.1.0 → v1.2.0
 
 **Release Date:** 2025-11-10
@@ -84,14 +102,10 @@ recaptcha: {
 
 ### Breaking Changes
 
-**1. Removed @goobits/security Dependency**
+**1. Historical security bundling (superseded in v3)**
 
-Security features are now built-in. No code changes needed if using standard APIs.
-
-```javascript
-// Still works the same
-import { generateCsrfToken, validateCsrfToken } from '@goobits/ui/security/csrf';
-```
+Version 1.1 temporarily bundled server security inside the UI package. Those
+paths were removed in v3; current applications should follow the v3 guide above.
 
 **2. Package Manager Change**
 
@@ -115,33 +129,8 @@ Migrated from Bun to pnpm. Update scripts if you were using Bun-specific feature
 
 ### Migration Steps
 
-1. **Remove @goobits/security** if explicitly installed:
-```bash
-npm uninstall @goobits/security
-```
-
-2. **Update imports** if importing from @goobits/security:
-```javascript
-// AVOID: Old
-import { generateCsrfToken } from '@goobits/security';
-
-// RECOMMENDED: New
-import { generateCsrfToken } from '@goobits/ui/security/csrf';
-```
-
-3. **Add nanoid dependency** (auto-installed with @goobits/ui@1.1.0+):
-```bash
-npm install nanoid
-```
-
-4. **Update CSRF implementation** - generateCsrfToken is now synchronous:
-```javascript
-// AVOID: Old (async)
-const token = await generateCsrfToken();
-
-// RECOMMENDED: New (sync)
-const token = generateCsrfToken();
-```
+These historical steps are intentionally omitted because they would recreate a
+security boundary that no longer exists.
 
 ### Security Improvements
 
@@ -206,9 +195,6 @@ import { initContactFormConfig } from '@goobits/ui/config';
 
 // Handlers
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
-
-// Security
-import { generateCsrfToken } from '@goobits/ui/security/csrf';
 
 // Validation
 import { contactSchema } from '@goobits/ui/validation';
