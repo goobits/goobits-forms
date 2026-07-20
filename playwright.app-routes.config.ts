@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
+delete process.env.NO_COLOR
+delete process.env.FORCE_COLOR
+
 export default defineConfig({
 	testDir: './e2e-site',
 	fullyParallel: false,
@@ -18,5 +21,14 @@ export default defineConfig({
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] }
 		}
-	]
+	],
+	webServer: {
+		command: 'pnpm --dir ../.. run dev:svelte',
+		env: { ...process.env, NODE_ENV: 'development' },
+		reuseExistingServer: !process.env.CI,
+		stderr: 'pipe',
+		stdout: 'ignore',
+		timeout: 120_000,
+		url: 'http://127.0.0.1:3630/classroom'
+	}
 })

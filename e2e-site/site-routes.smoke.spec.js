@@ -1,44 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 import { getProtectedRoutes, getPublicRoutes } from './route-discovery.js'
-
-function attachIssueCollectors(page) {
-	/** @type {string[]} */
-	const consoleErrors = []
-	/** @type {string[]} */
-	const pageErrors = []
-	/** @type {string[]} */
-	const failedRequests = []
-	/** @type {string[]} */
-	const badResponses = []
-
-	page.on('console', (message) => {
-		if (message.type() === 'error') {
-			consoleErrors.push(message.text())
-		}
-	})
-
-	page.on('pageerror', (error) => {
-		pageErrors.push(error.message)
-	})
-
-	page.on('requestfailed', (request) => {
-		const type = request.resourceType()
-		if ([ 'document', 'script', 'stylesheet', 'fetch', 'xhr' ].includes(type)) {
-			failedRequests.push(`${type} ${request.method()} ${request.url()} :: ${request.failure()?.errorText || 'request failed'}`)
-		}
-	})
-
-	page.on('response', (response) => {
-		const request = response.request()
-		const type = request.resourceType()
-		if ([ 'document', 'script', 'stylesheet', 'fetch', 'xhr' ].includes(type) && response.status() >= 400) {
-			badResponses.push(`${type} ${response.status()} ${request.method()} ${response.url()}`)
-		}
-	})
-
-	return { consoleErrors, pageErrors, failedRequests, badResponses }
-}
+import { attachIssueCollectors } from './site-health.js'
 
 async function assertHealthyNavigation(page, route) {
 	const issues = attachIssueCollectors(page)
