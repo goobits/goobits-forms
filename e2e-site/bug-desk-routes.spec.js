@@ -80,14 +80,17 @@ test.describe('Bug Desk routes never 500', () => {
 		})
 	}
 
-	test('Unknown ticket ID returns 404, not 500', async ({ page }) => {
+	test('Unknown ticket ID renders a 404, not a 500', async ({ page }) => {
 		const route = '/playground/bugs/ticket/sketch-99999'
 		const issues = attachIssueCollectors(page)
-		const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+		const response = await page.goto(route, { waitUntil: 'load' })
 
 		expect(response, 'No response').not.toBeNull()
-		expect(response.status(), `Status for ${ route }`).toBe(404)
+		expect(response.status(), `Client-rendered shell status for ${ route }`).toBe(200)
+		await expect(page.getByRole('heading', { name: '404' })).toBeVisible({ timeout: 30_000 })
+		await expect(page.getByText('Ticket SKETCH-99999 not found')).toBeVisible()
 		expect(issues.badResponses, '5xx requests on unknown ticket').toEqual([])
+		expect(issues.pageErrors, 'Uncaught errors on unknown ticket').toEqual([])
 	})
 
 	test('Report submit does not 500', async ({ page }) => {
