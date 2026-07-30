@@ -1,3 +1,5 @@
 packages:
+  - '.'
   - 'demo'
-  - 'packages/@goobits/*'
+  - '../../../../packages/@goobits/keyboard'
+  - '../../../../packages/@goobits/security'
