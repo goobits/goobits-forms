@@ -408,15 +408,16 @@ global.localStorage = localStorageMock as any;
 
 ---
 
-## Continuous Integration
+## Optional Remote Verification
 
-### GitHub Actions Example
+### Manual GitHub Actions Example
 
 ```yaml
 # .github/workflows/test.yml
 name: Test
 
-on: [push, pull_request]
+on:
+	workflow_dispatch:
 
 jobs:
 	test:

@@ -623,17 +623,18 @@ Bad:
 </span>
 ```
 
-## CI/CD Integration
+## Optional Remote Verification
 
 ### GitHub Actions
 
-Add accessibility tests to your CI pipeline:
+For an explicitly requested remote accessibility run:
 
 ```yaml
 # .github/workflows/accessibility.yml
 name: Accessibility Tests
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 
 jobs:
   a11y-tests:

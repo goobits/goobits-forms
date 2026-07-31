@@ -257,15 +257,16 @@ test.describe('Independent tests', () => {
 })
 ```
 
-## CI/CD Integration
+## Optional Remote Verification
 
 ### GitHub Actions
 
-E2E tests run automatically on push and pull requests via GitHub Actions.
+E2E tests run locally by default. The repository workflow is manual-only; use
+it only when someone explicitly requests a remote run.
 
 See `.github/workflows/e2e.yml` for configuration.
 
-### Local CI Simulation
+### Local Strict-Mode Simulation
 
 To run tests as they would in CI:
 
