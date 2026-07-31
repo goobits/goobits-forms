@@ -1,12 +1,19 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+/node_modules
+/.pnpm-store
 
 # Build outputs
 dist/
 build/
 .svelte-kit/
 package/
+/dist
+/build
+/.svelte-kit
+/package
+/.turbo
 
 # Environment files
 .env
@@ -31,6 +38,8 @@ pids/
 # Coverage directory used by tools like istanbul
 coverage/
 .nyc_output/
+/coverage
+/.nyc_output
 
 # IDE
 .vscode/
@@ -72,4 +81,6 @@ temp/
 /playwright-report/
 /playwright/.cache/
 /test-results/
+/playwright-report
+/test-results
 /.llm
