@@ -72,11 +72,11 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			$lib: path.resolve(__dirname, './src/lib'),
-			'$app/environment': path.resolve(__dirname, './tests/mocks/app-environment.ts'),
-			'$app/stores': path.resolve(__dirname, './tests/mocks/app-stores.ts'),
-			'$app/navigation': path.resolve(__dirname, './tests/mocks/app-navigation.ts'),
-			'$app/forms': path.resolve(__dirname, './tests/mocks/app-forms.ts')
+			$lib: path.resolve(import.meta.dirname, './src/lib'),
+			'$app/environment': path.resolve(import.meta.dirname, './tests/mocks/app-environment.ts'),
+			'$app/stores': path.resolve(import.meta.dirname, './tests/mocks/app-stores.ts'),
+			'$app/navigation': path.resolve(import.meta.dirname, './tests/mocks/app-navigation.ts'),
+			'$app/forms': path.resolve(import.meta.dirname, './tests/mocks/app-forms.ts')
 		},
 		conditions: ['browser']
 	}

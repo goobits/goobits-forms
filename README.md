@@ -186,7 +186,7 @@ import '@goobits/ui/ui/ContactForm.css';
 }
 ```
 
-See [variables.css](./ui/variables.css) for all customization options.
+See [variables.css](./src/lib/ui/variables.css) for all customization options.
 
 ---
 

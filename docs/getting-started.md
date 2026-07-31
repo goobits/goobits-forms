@@ -376,7 +376,7 @@ Override design tokens:
 }
 ```
 
-See [variables.css](../ui/variables.css) for all available customization options.
+See [variables.css](../src/lib/ui/variables.css) for all available customization options.
 
 ### Override Component Styles
 
