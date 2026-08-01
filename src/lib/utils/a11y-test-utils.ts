@@ -128,7 +128,6 @@ export async function testWCAG_AAA(container: HTMLElement): Promise<AxeResults> 
 		}
 	});
 }
-
 /**
  * Test for keyboard navigation accessibility
  * Verifies that an element can receive focus

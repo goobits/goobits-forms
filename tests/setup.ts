@@ -1,7 +1,11 @@
 import '@testing-library/jest-dom/vitest';
+import { setTimeout as setNodeTimeout } from 'node:timers';
 import { cleanup } from '@testing-library/svelte';
+import { flushSync } from 'svelte';
 import { vi, expect } from 'vitest';
 import { toHaveNoViolations } from 'jest-axe';
+
+import { cleanupScreenReaderRegions } from '../src/lib/services/screenReaderService.js';
 
 // Extend Vitest matchers with axe-core accessibility matchers
 expect.extend(toHaveNoViolations);
@@ -159,8 +163,13 @@ afterAll(() => {
 });
 
 afterEach(async () => {
-	cleanup();
-	await Promise.resolve();
+	flushSync(() => cleanup());
+	cleanupScreenReaderRegions();
+	await new Promise<void>((resolve) => {
+		const timeout = setNodeTimeout(resolve, 0);
+		timeout.unref();
+	});
+	flushSync();
 });
 
 // Reset all mocks before each test
