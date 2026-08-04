@@ -99,6 +99,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: {
@@ -122,6 +123,7 @@ import type { RequestHandler } from './$types';
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL!,
 	fromEmail: process.env.FROM_EMAIL!,
 	emailServiceConfig: {
@@ -262,7 +264,7 @@ export const contactConfig: ContactConfig = {
 // src/routes/api/csrf/+server.js
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export async function GET(event) {
 	const token = await csrf.getOrCreate(event);
@@ -277,7 +279,7 @@ export async function GET(event) {
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export async function GET(event: RequestEvent) {
 	const token = await csrf.getOrCreate(event);
@@ -295,6 +297,7 @@ export async function GET(event: RequestEvent) {
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 
@@ -326,6 +329,7 @@ import type { RequestHandler } from './$types';
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL!,
 	fromEmail: process.env.FROM_EMAIL!,
 
@@ -417,7 +421,7 @@ src/
 // src/routes/contact/+page.server.js
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export async function load(event) {
 	const csrfToken = await csrf.getOrCreate(event);
@@ -515,6 +519,7 @@ export const contactConfig: ContactConfig = {
 // src/routes/api/contact/+server.js
 // No changes needed - categories are handled automatically
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: {
@@ -551,6 +556,7 @@ Route emails to different departments based on category:
 ```javascript
 // src/routes/api/contact/+server.js
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	// Use custom success handler for routing
 	customSuccessHandler: async (data, clientAddress) => {
 		const emailService = createEmailProvider({
@@ -669,6 +675,7 @@ export const contactConfig: ContactConfig = {
 // src/routes/api/contact/+server.js
 // Files are automatically included as email attachments!
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: {
@@ -717,6 +724,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 const s3 = new S3Client({ region: 'us-east-1' });
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: { provider: 'nodemailer', /* ... */ },
@@ -785,6 +793,7 @@ Before starting this recipe, ensure you have:
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: { provider: 'nodemailer', /* ... */ },
@@ -829,6 +838,7 @@ Validate email exists in your CRM before accepting submission:
 ```javascript
 // src/routes/api/contact/+server.js
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: { provider: 'nodemailer', /* ... */ },

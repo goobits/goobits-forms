@@ -13,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
+const GENERATED_DIRECTORIES = new Set(['build', 'coverage', 'dist', 'node_modules']);
 const errors = [];
 const warnings = [];
 
@@ -81,8 +82,8 @@ function getMarkdownFiles(dir = '') {
 		const relativePath = path.join(dir, entry.name);
 
 		if (entry.isDirectory()) {
-			// Skip node_modules, .git, etc.
-			if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
+			// Validate authored documentation, never copied build output.
+			if (!entry.name.startsWith('.') && !GENERATED_DIRECTORIES.has(entry.name)) {
 				files.push(...getMarkdownFiles(relativePath));
 			}
 		} else if (entry.name.endsWith('.md')) {

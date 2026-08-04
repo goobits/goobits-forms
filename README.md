@@ -68,11 +68,14 @@ initContactFormConfig({
 
 ### Create API
 
+Set `CONTACT_CSRF_SECRET` to at least 32 random bytes in every runtime.
+
 ```javascript
 // src/routes/api/contact/+server.js
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: { provider: 'mock' } // or 'nodemailer', 'aws-ses'

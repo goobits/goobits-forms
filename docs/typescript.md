@@ -219,6 +219,7 @@ import type { RequestHandler } from './$types';
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST: RequestHandler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL!,
 	fromEmail: process.env.FROM_EMAIL!,
 	customSuccessHandler: async (data, clientAddress, recaptchaScore) => {
@@ -242,6 +243,7 @@ function validatePhone(phone: string): boolean {
 }
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	customValidation: (data: ContactFormData) => {
 		const errors: Record<string, string> = {};
 
@@ -391,7 +393,7 @@ export const POST = createTypedFormHandler(customSchema, async (data) => {
 import type { PageServerLoad } from './$types';
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export const load: PageServerLoad = async (event) => {
 	const csrfToken = await csrf.getOrCreate(event);

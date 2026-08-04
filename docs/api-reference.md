@@ -547,6 +547,7 @@ import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
@@ -646,6 +647,7 @@ token generation and validation share the same wire contract.
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
 export const contactCsrf = createSvelteKitCsrf({
+	secret: process.env.CONTACT_CSRF_SECRET,
 	cookieName: 'csrf_token',
 	headerName: 'X-CSRF-Token',
 	tokenFieldName: 'csrf_token'

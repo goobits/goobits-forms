@@ -16,6 +16,7 @@ This example demonstrates how to create a contact form API endpoint using the `@
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	// Email configuration
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,

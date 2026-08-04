@@ -184,7 +184,7 @@ Error: Failed to fetch CSRF token
 // src/routes/api/csrf/+server.js
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export async function GET(event) {
 	const token = await csrf.getOrCreate(event);
@@ -323,6 +323,7 @@ RECAPTCHA_SECRET_KEY=your_secret_key_here
 2. **Pass to handler:**
 ```javascript
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
 });
 ```
@@ -427,6 +428,7 @@ Form overflows or has layout issues on mobile devices
 1. **Check email service configuration:**
 ```javascript
 const handler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: 'admin@example.com', // Must be valid
 	fromEmail: 'noreply@example.com', // Must be valid
 	emailServiceConfig: {
@@ -555,6 +557,7 @@ Error: Rate limit exceeded. Please try again later.
 1. **Adjust rate limits:**
 ```javascript
 createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	rateLimitMaxRequests: 10, // Increase from default 3
 	rateLimitWindowMs: 60000   // Change from default 1 hour to 1 minute
 });

@@ -18,6 +18,7 @@ composition:
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit'
 
 export const contactCsrf = createSvelteKitCsrf({
+	secret: process.env.CONTACT_CSRF_SECRET,
 	cookieName: 'csrf_token',
 	headerName: 'X-CSRF-Token',
 	tokenFieldName: 'csrf_token'
@@ -31,8 +32,9 @@ action with `await contactCsrf.validate(event)`. Import standalone rate limiting
 and reCAPTCHA verification directly from `@goobits/security/rate-limit` and
 `@goobits/security/recaptcha` respectively.
 
-The `@goobits/ui` contact handlers already use these canonical implementations.
-Their existing `csrf_token` / `X-CSRF-Token` wire contract remains compatible.
+Pass the same application-owned secret as `csrfSecret` when creating an
+`@goobits/ui` contact handler. The handler no longer owns an implicit secret;
+its existing `csrf_token` / `X-CSRF-Token` wire contract remains compatible.
 
 ---
 

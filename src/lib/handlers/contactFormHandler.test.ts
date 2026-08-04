@@ -51,7 +51,26 @@ vi.mock('../utils/logger.ts', () => ({
 }));
 
 // Import the handler after mocks are set up
-import { createContactApiHandler, createContactFormHandlers } from './contactFormHandler';
+import {
+	createContactApiHandler as createContactApiHandlerImpl,
+	createContactFormHandlers as createContactFormHandlersImpl,
+	type ContactApiHandlerOptions
+} from './contactFormHandler';
+
+const TEST_CSRF_SECRET = 'forms-contact-handler-test-secret-0001';
+type TestContactApiHandlerOptions = Omit<ContactApiHandlerOptions, 'csrfSecret'> & {
+	csrfSecret?: string | Uint8Array;
+};
+
+function createContactApiHandler(options: TestContactApiHandlerOptions = {}) {
+	const { csrfSecret = TEST_CSRF_SECRET, ...handlerOptions } = options;
+	return createContactApiHandlerImpl({ ...handlerOptions, csrfSecret });
+}
+
+function createContactFormHandlers(options: TestContactApiHandlerOptions = {}) {
+	const { csrfSecret = TEST_CSRF_SECRET, ...handlerOptions } = options;
+	return createContactFormHandlersImpl({ ...handlerOptions, csrfSecret });
+}
 
 /**
  * Helper function to create mock RequestEvent for testing
@@ -100,6 +119,12 @@ function createMockRequestEvent(options: {
 }
 
 describe('createContactApiHandler', () => {
+	test('requires an application-owned CSRF secret', () => {
+		expect(() => createContactApiHandlerImpl({ csrfSecret: undefined })).toThrow(
+			/createContactApiHandler requires csrfSecret/
+		);
+	});
+
 	beforeEach(() => {
 		// Clear all mocks before each test
 		vi.clearAllMocks();

@@ -13,11 +13,6 @@ import { sanitizeFormData } from '../utils/sanitizeInput.js';
 import sendEmail from '../services/emailService.js';
 
 const logger = createLogger('ContactFormHandler');
-const formCsrf = createSvelteKitCsrf({
-	cookieName: 'csrf_token',
-	headerName: 'X-CSRF-Token',
-	tokenFieldName: 'csrf_token'
-});
 
 /**
  * Custom validation function type
@@ -70,6 +65,8 @@ export interface ContactFormData {
  * API handler configuration options
  */
 export interface ContactApiHandlerOptions {
+	/** Application-owned CSRF signing secret containing at least 32 bytes */
+	csrfSecret: string | Uint8Array | undefined;
 	/** Admin email address to receive notifications */
 	adminEmail?: string;
 	/** From email address for notifications */
@@ -139,6 +136,7 @@ export type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
  * ```typescript
  * // In +server.ts
  * export const POST = createContactApiHandler({
+ *   csrfSecret: process.env.CONTACT_CSRF_SECRET,
  *   adminEmail: 'admin@example.com',
  *   fromEmail: 'noreply@example.com',
  *   rateLimitMaxRequests: 5,
@@ -146,8 +144,9 @@ export type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
  * });
  * ```
  */
-export function createContactApiHandler(options: ContactApiHandlerOptions = {}): RequestHandler {
+export function createContactApiHandler(options: ContactApiHandlerOptions): RequestHandler {
 	const {
+		csrfSecret,
 		adminEmail,
 		fromEmail,
 		emailServiceConfig,
@@ -162,6 +161,15 @@ export function createContactApiHandler(options: ContactApiHandlerOptions = {}):
 		customValidation = null,
 		customSuccessHandler = null
 	} = options;
+	if (!csrfSecret) {
+		throw new Error('createContactApiHandler requires csrfSecret');
+	}
+	const formCsrf = createSvelteKitCsrf({
+		secret: csrfSecret,
+		cookieName: 'csrf_token',
+		headerName: 'X-CSRF-Token',
+		tokenFieldName: 'csrf_token'
+	});
 	const rateLimiter = createRateLimiter({
 		keyPrefix: 'goobits-ui:contact',
 		windows: [
@@ -430,6 +438,7 @@ export interface ContactFormHandlers {
  * ```typescript
  * // In +server.ts
  * const handlers = createContactFormHandlers({
+ *   csrfSecret: process.env.CONTACT_CSRF_SECRET,
  *   adminEmail: 'contact@company.com',
  *   successMessage: 'Thanks for reaching out!',
  *   rateLimitMaxRequests: 10
@@ -439,7 +448,7 @@ export interface ContactFormHandlers {
  * ```
  */
 export function createContactFormHandlers(
-	options: ContactFormHandlersOptions = {}
+	options: ContactFormHandlersOptions
 ): ContactFormHandlers {
 	return {
 		POST: createContactApiHandler(options)

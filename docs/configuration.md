@@ -165,6 +165,7 @@ Server-side handler options.
 
 ```javascript
 createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	// Required
 	adminEmail: 'admin@example.com',
 	fromEmail: 'noreply@example.com',

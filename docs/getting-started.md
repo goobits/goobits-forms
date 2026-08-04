@@ -81,6 +81,7 @@ Create server endpoint to process form submissions:
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: {
@@ -151,6 +152,7 @@ export const contactConfig = {
 **3. Update API handler:**
 ```javascript
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY
@@ -175,6 +177,7 @@ Protect against cross-site request forgery.
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
 const csrf = createSvelteKitCsrf({
+	secret: process.env.CONTACT_CSRF_SECRET,
 	cookieName: 'csrf_token',
 	headerName: 'X-CSRF-Token',
 	tokenFieldName: 'csrf_token'
@@ -207,7 +210,7 @@ export async function GET(event) {
 // src/routes/contact/+page.server.js
 import { createSvelteKitCsrf } from '@goobits/security/csrf/sveltekit';
 
-const csrf = createSvelteKitCsrf({ cookieName: 'csrf_token' });
+const csrf = createSvelteKitCsrf({ secret: process.env.CONTACT_CSRF_SECRET, cookieName: 'csrf_token' });
 
 export async function load(event) {
 	const csrfToken = await csrf.getOrCreate(event);
@@ -324,6 +327,7 @@ export const contactConfig = {
 **2. Handle uploads server-side:**
 ```javascript
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	customSuccessHandler: async (data) => {

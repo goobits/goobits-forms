@@ -27,6 +27,7 @@ import { ContactForm } from '@goobits/ui/ui';
 import { createContactApiHandler } from '@goobits/ui/handlers/contactFormHandler';
 
 export const POST = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: process.env.ADMIN_EMAIL,
 	fromEmail: process.env.FROM_EMAIL,
 	emailServiceConfig: {
@@ -49,6 +50,7 @@ export const POST = createContactApiHandler({
 ```javascript tab="JavaScript"
 // JavaScript example
 const handler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: 'admin@example.com',
 	fromEmail: 'noreply@example.com'
 });
@@ -59,6 +61,7 @@ const handler = createContactApiHandler({
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = createContactApiHandler({
+	csrfSecret: process.env.CONTACT_CSRF_SECRET,
 	adminEmail: 'admin@example.com',
 	fromEmail: 'noreply@example.com'
 });

@@ -91,6 +91,7 @@ import { RequestEvent } from '@sveltejs/kit';
 
 describe('Contact API Handler', () => {
 	const handler = createContactApiHandler({
+		csrfSecret: 'forms-contact-handler-test-secret-0001',
 		adminEmail: 'admin@test.com',
 		fromEmail: 'noreply@test.com',
 		emailServiceConfig: { provider: 'mock' }
@@ -168,6 +169,7 @@ import { verifyRecaptcha } from '@goobits/security/recaptcha';
 
 test('verifies reCAPTCHA token', async () => {
 	const handler = createContactApiHandler({
+		csrfSecret: 'forms-contact-handler-test-secret-0001',
 		adminEmail: 'admin@test.com',
 		fromEmail: 'noreply@test.com',
 		recaptchaSecretKey: 'test-secret',
@@ -352,6 +354,7 @@ test('rate limits excessive requests', async () => {
 	});
 
 	const handler = createContactApiHandler({
+		csrfSecret: 'forms-contact-handler-test-secret-0001',
 		adminEmail: 'admin@test.com',
 		fromEmail: 'noreply@test.com',
 		rateLimitMaxRequests: 5,

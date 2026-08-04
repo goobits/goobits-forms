@@ -56,12 +56,5 @@ export { configureLogger, LogLevels } from './utils/logger.js';
  */
 export { initContactFormConfig, getValidatorForCategory } from './config/contactSchemas.js';
 
-/**
- * @function createCategoryRouter
- * @description Creates category-based routing functions for dynamic form handlers.
- * @param {object} config - The router configuration.
- */
-export { createCategoryRouter, createContactRouteHandlers } from './handlers/categoryRouter.js';
-
 // UI Components are exported separately to avoid SSR issues.
 // Example: import { ContactForm } from '@goobits/ui/ui';
